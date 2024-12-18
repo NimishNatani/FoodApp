@@ -6,11 +6,17 @@ import com.foodapp.core.domain.Result
 import com.foodapp.foodapp.data.dto.AuthResponse
 import com.foodapp.foodapp.data.dto.RestaurantAuthRequest
 import com.foodapp.foodapp.data.dto.UserAuthRequest
+import com.foodapp.foodapp.storage.TokenStorage
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.utils.EmptyContent.headers
+import io.ktor.http.HttpHeaders
 
-class AuthApi(private val client: HttpClient) {
+class AuthApi(private val client: HttpClient,private val tokenStorage: TokenStorage) {
 
     private val BASE_URL = "http://localhost:8080/api"
 
@@ -18,6 +24,15 @@ class AuthApi(private val client: HttpClient) {
         return safeCall<AuthResponse> {
             client.post("${BASE_URL}/login/user") {
                 setBody(request)
+            }
+        }
+    }
+    suspend fun validate(): Result<AuthResponse, DataError.Remote> {
+        return safeCall<AuthResponse> {
+            client.get("$BASE_URL/user/validate"){
+//                headers{
+//                    append(HttpHeaders.Authorization,"Bearer ${tokenStorage.getToken().toString()}")
+//                }
             }
         }
     }

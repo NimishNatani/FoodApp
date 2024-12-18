@@ -7,6 +7,6 @@ data class LoginUiState(
     val errorMessage: String? = null,
     val result:String = "",
     var isUser:Boolean=true,
-    val message:String?=null
+    var message:String?=null
 
 )

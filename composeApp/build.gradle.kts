@@ -48,6 +48,8 @@ kotlin {
             implementation(libs.koin.androidx.compose)
             implementation(libs.ktor.client.okhttp)
             implementation(libs.ktor.client.plugins)
+
+            implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
@@ -81,6 +83,9 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.okhttp)
 
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)
@@ -120,6 +125,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.security.crypto.ktx)
     debugImplementation(compose.uiTooling)
 //    add("kspAndroidTest", "io.mockative:mockative-processor:1.1.4")
 //    add("kspIosX64Test", "io.mockative:mockative-processor:1.1.4")

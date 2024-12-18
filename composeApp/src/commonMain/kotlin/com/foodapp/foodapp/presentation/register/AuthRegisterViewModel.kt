@@ -5,12 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.foodapp.core.domain.onError
 import com.foodapp.core.domain.onSuccess
 import com.foodapp.foodapp.domain.repository.AuthRepository
+import com.foodapp.foodapp.storage.TokenStorage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class AuthRegisterViewModel(private val authRepository: AuthRepository) : ViewModel() {
+class AuthRegisterViewModel(private val authRepository: AuthRepository,private val tokenStorage: TokenStorage) : ViewModel() {
     private val _uiState = MutableStateFlow(RegisterUiState())
     val uiState = _uiState.asStateFlow()
 
@@ -45,6 +46,7 @@ class AuthRegisterViewModel(private val authRepository: AuthRepository) : ViewMo
             if (state.password == state.confirmPassword && state.email.contains("@")) {
                 val result = authRepository.register(state.email, state.password, isUser)
                 result.onSuccess { authToken ->
+                    tokenStorage.saveToken(authToken.token)
                     _uiState.update { it.copy(isLoading = false, result = authToken.token, message = authToken.message) }
                 }.onError { error ->
                     _uiState.update { it.copy(isLoading = false, errorMessage = error.toString()+"comeafter") }

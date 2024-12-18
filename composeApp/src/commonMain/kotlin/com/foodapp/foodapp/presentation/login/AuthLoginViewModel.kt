@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.foodapp.core.domain.onError
 import com.foodapp.core.domain.onSuccess
 import com.foodapp.foodapp.domain.repository.AuthRepository
+import com.foodapp.foodapp.storage.TokenStorage
 
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,10 +13,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class AuthLoginViewModel(private val authRepository: AuthRepository,
+class AuthLoginViewModel(private val authRepository: AuthRepository,private val tokenStorage: TokenStorage
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(LoginUiState())
+    private val _uiState = MutableStateFlow(LoginUiState(message = tokenStorage.getToken()))
     val uiState =_uiState.asStateFlow()
+
 
     fun onEvent(intent: LoginIntent) {
         when (intent) {

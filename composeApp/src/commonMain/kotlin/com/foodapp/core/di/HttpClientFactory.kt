@@ -1,8 +1,12 @@
 package com.foodapp.core.di
 
+import com.foodapp.foodapp.storage.TokenStorage
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.auth.Auth
+import io.ktor.client.plugins.auth.providers.BearerTokens
+import io.ktor.client.plugins.auth.providers.bearer
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.LogLevel
@@ -13,7 +17,7 @@ import io.ktor.http.contentType
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
-object HttpClientFactory {
+class HttpClientFactory(private val tokenStorage: TokenStorage) {
 
     fun create(engine: HttpClientEngine): HttpClient {
         return HttpClient(engine) {
@@ -35,6 +39,23 @@ object HttpClientFactory {
                     }
                 }
                 level = LogLevel.ALL
+            }
+            install(Auth) {
+//                bearer {
+//                    loadTokens {
+//                        BearerTokens(
+//                            accessToken = tokenStorage.getToken().toString(),
+//                            refreshToken = ""
+//                        )
+//                    }
+//                    sendWithoutRequest { request ->
+//                        request.url.host == "http://localhost:8080/api/login/restaurant" ||
+//                                request.url.host == "http://localhost:8080/api/register/restaurant" ||
+//                                request.url.host == "http://localhost:8080/api/login/user" ||
+//                                request.url.host == "http://localhost:8080/api/register/user"
+//
+//                    }
+//                }
             }
             defaultRequest {
                 contentType(ContentType.Application.Json)

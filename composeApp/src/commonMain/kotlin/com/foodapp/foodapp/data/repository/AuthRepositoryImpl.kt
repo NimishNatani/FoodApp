@@ -11,10 +11,11 @@ import com.foodapp.core.domain.map
 import com.foodapp.foodapp.data.dto.RestaurantAuthRequest
 import com.foodapp.foodapp.data.dto.UserAuthRequest
 import com.foodapp.foodapp.domain.models.AuthToken
+import com.foodapp.foodapp.storage.TokenStorage
 
 
 class AuthRepositoryImpl(
-    private val apiService: AuthApi
+    private val apiService: AuthApi,
 ) : AuthRepository {
 
     override suspend fun login(email: String, password: String, isUser: Boolean): Result<AuthToken, DataError.Remote> {
@@ -23,7 +24,9 @@ class AuthRepositoryImpl(
             val request = UserAuthRequest(email, password)
             apiService.loginUser(request).map { it.toAuthToken() }
         } else {val request = RestaurantAuthRequest(email, password)
-            apiService.loginRestaurant(request).map { it.toAuthToken() } }
+            apiService.validate().map { it.toAuthToken() }
+//            apiService.loginRestaurant(request).map { it.toAuthToken() }
+        }
     }
 
     override suspend fun register(email: String, password: String, isUser: Boolean): Result<AuthToken, DataError.Remote> {
