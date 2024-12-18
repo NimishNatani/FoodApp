@@ -1,0 +1,16 @@
+package com.foodapp.foodapp.domain.models
+
+data class Booking(
+    var bookingId: String,
+    var userId: String,
+    var restaurantId: String,
+    var isAcceptedByRestaurant: Boolean,
+    var isBookingCompleted: Boolean,
+    var message: List<Message>,
+    var foodItems: List<FoodItem>,
+    var acceptedTime: Int?,
+    var isPaymentDone: Boolean,
+    var paymentId: String?,
+    var reviewIds: List<String>,
+    var amount: Double?
+)
