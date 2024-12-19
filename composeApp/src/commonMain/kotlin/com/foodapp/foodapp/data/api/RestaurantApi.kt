@@ -6,6 +6,7 @@ import com.foodapp.core.domain.Result
 import com.foodapp.foodapp.data.dto.RestaurantDto
 import com.foodapp.foodapp.storage.TokenStorage
 import io.ktor.client.HttpClient
+import io.ktor.client.request.get
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
 import io.ktor.http.HttpHeaders
@@ -16,7 +17,7 @@ class RestaurantApi(private val client: HttpClient, private val tokenStorage: To
 
     suspend fun getRestaurantByJwt(): Result<RestaurantDto, DataError.Remote> {
         return safeCall<RestaurantDto> {
-            client.post("$BASE_URL/restaurant/profile") {
+            client.get("$BASE_URL/restaurant/profile") {
                 headers {
                     append(
                         HttpHeaders.Authorization,

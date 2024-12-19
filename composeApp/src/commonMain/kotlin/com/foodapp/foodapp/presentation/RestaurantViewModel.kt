@@ -21,14 +21,16 @@ class RestaurantViewModel(private  val restaurantRepository: RestaurantRepositor
     fun getRestaurant(onSuccess: () -> Unit,onFailure: () -> Unit) {
         viewModelScope.launch {
             restaurantRepository.getRestaurantByJwttoken().onSuccess {result ->
-                _restaurant.update { it?.copy(restaurantId =result.restaurantId, restaurantImage = result.restaurantImage,
-                    restaurantName = result.restaurantName, latitude = result.latitude, longitude = result.longitude
-                ,city = result.city, state = result.state, address = result.address, contactDetails = result.contactDetails,
-                    postalCode = result.postalCode, totalReviews = result.totalReviews, ratings = result.ratings,
-                    bookingIds = result.bookingIds, paymentIds = result.paymentIds, foodItems = result.foodItems,
-                    reviewIds = result.reviewIds) }
-                onSuccess()
+                _restaurant.value = result
+                if (restaurant.value==result) {
+                    onSuccess()
+                }
             }.onError { onFailure() }
+
         }
+    }
+
+    fun setRestaurant(restaurant:Restaurant?){
+        _restaurant.value = restaurant
     }
 }

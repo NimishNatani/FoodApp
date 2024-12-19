@@ -1,5 +1,8 @@
 package com.foodapp.foodapp.domain.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class User(
     val userId:String,
     val username:String,

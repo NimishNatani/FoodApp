@@ -41,6 +41,7 @@ class AuthLoginViewModel(private val authRepository: AuthRepository,private val 
             result.onSuccess {
                 authToken ->
                 _uiState.update { it.copy(isLoading = false, result = authToken.token ,message = authToken.message) }
+                tokenStorage.saveToken(authToken.token)
             }
             result.onError { error->
             _uiState.update { it.copy(isLoading = false, errorMessage = error.toString()) }}

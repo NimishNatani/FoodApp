@@ -7,10 +7,10 @@ fun UserDto.toUser(): User {
     return User(
         userId = userId,
         username = username,
-        userImage = userImage,
-        contactDetails = contactDetails,
-        bookingIds = bookingIds,
-        paymentIds = paymentIds,
-        reviewIds = reviewIds
+        userImage = userImage?:"",
+        contactDetails = contactDetails?:"",
+        bookingIds = bookingIds?: emptyList(),
+        paymentIds = paymentIds?: emptyList(),
+        reviewIds = reviewIds?: emptyList()
     )
 }
