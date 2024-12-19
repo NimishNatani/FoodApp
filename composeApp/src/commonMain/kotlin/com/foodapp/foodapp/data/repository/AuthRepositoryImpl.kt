@@ -10,7 +10,9 @@ import com.foodapp.core.domain.Result
 import com.foodapp.core.domain.map
 import com.foodapp.foodapp.data.dto.RestaurantAuthRequest
 import com.foodapp.foodapp.data.dto.UserAuthRequest
+import com.foodapp.foodapp.data.mappers.toValidateUser
 import com.foodapp.foodapp.domain.models.AuthToken
+import com.foodapp.foodapp.domain.models.ValidateUser
 import com.foodapp.foodapp.storage.TokenStorage
 
 
@@ -35,5 +37,9 @@ class AuthRepositoryImpl(
             apiService.registerUser(request).map { it.toAuthToken() }
         } else {val request = RestaurantAuthRequest(email, password)
             apiService.registerRestaurant(request).map { it.toAuthToken() } }
+    }
+
+    override suspend fun validateUser(): Result<ValidateUser, DataError.Remote> {
+        return apiService.validate().map { it.toValidateUser() };
     }
 }

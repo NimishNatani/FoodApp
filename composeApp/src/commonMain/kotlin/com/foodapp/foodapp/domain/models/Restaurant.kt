@@ -2,10 +2,9 @@ package com.foodapp.foodapp.domain.models
 
 data class Restaurant(
     var restaurantId: String,
-    var restaurantImage: String,
+    var restaurantImage: String="",
     var restaurantName: String,
-    var contactDetails: String,
-    var password: String,
+    var contactDetails: String="",
     var latitude: Double,
     var longitude: Double,
     var address: String,

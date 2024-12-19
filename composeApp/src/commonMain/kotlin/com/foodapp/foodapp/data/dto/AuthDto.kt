@@ -19,3 +19,7 @@ data class AuthResponse(
      val jwt: String,    // Matches the "jwt" field in the JSON
      val message: String //)
 )
+@Serializable
+data class CheckUser(
+     val userType: String,
+)

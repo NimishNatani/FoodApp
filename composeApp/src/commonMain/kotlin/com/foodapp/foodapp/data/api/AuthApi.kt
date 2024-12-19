@@ -4,6 +4,7 @@ import com.foodapp.core.di.safeCall
 import com.foodapp.core.domain.DataError
 import com.foodapp.core.domain.Result
 import com.foodapp.foodapp.data.dto.AuthResponse
+import com.foodapp.foodapp.data.dto.CheckUser
 import com.foodapp.foodapp.data.dto.RestaurantAuthRequest
 import com.foodapp.foodapp.data.dto.UserAuthRequest
 import com.foodapp.foodapp.storage.TokenStorage
@@ -27,12 +28,12 @@ class AuthApi(private val client: HttpClient,private val tokenStorage: TokenStor
             }
         }
     }
-    suspend fun validate(): Result<AuthResponse, DataError.Remote> {
-        return safeCall<AuthResponse> {
+    suspend fun validate(): Result<CheckUser, DataError.Remote> {
+        return safeCall<CheckUser> {
             client.get("$BASE_URL/user/validate"){
-//                headers{
-//                    append(HttpHeaders.Authorization,"Bearer ${tokenStorage.getToken().toString()}")
-//                }
+                headers{
+                    append(HttpHeaders.Authorization,"Bearer ${tokenStorage.getToken().toString()}")
+                }
             }
         }
     }

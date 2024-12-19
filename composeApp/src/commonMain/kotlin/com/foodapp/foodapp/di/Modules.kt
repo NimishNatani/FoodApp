@@ -2,10 +2,19 @@ package com.foodapp.foodapp.di
 
 import com.foodapp.core.di.HttpClientFactory
 import com.foodapp.foodapp.data.api.AuthApi
+import com.foodapp.foodapp.data.api.RestaurantApi
+import com.foodapp.foodapp.data.api.UserApi
 import com.foodapp.foodapp.data.repository.AuthRepositoryImpl
+import com.foodapp.foodapp.data.repository.UserRepositoryImpl
+import com.foodapp.foodapp.data.repository.RestaurantRepositoryImpl
 import com.foodapp.foodapp.domain.repository.AuthRepository
+import com.foodapp.foodapp.domain.repository.RestaurantRepository
+import com.foodapp.foodapp.domain.repository.UserRepository
+import com.foodapp.foodapp.presentation.RestaurantViewModel
+import com.foodapp.foodapp.presentation.UserViewModel
 import com.foodapp.foodapp.presentation.login.AuthLoginViewModel
 import com.foodapp.foodapp.presentation.register.AuthRegisterViewModel
+import com.foodapp.foodapp.presentation.starter.AuthValidationViewModel
 import com.foodapp.foodapp.storage.TokenStorage
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
@@ -16,7 +25,6 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-
 expect val platformModule: Module
 expect fun createTokenStorageModule(): Module
 
@@ -35,9 +43,17 @@ val appModule = module {
 
 
     single { AuthApi(get(),get()) }
+    single { UserApi(get(),get()) }
+    single { RestaurantApi(get(),get()) }
 
     singleOf(::AuthRepositoryImpl).bind<AuthRepository>()
+    singleOf(::UserRepositoryImpl).bind<UserRepository>()
+    singleOf(::RestaurantRepositoryImpl).bind<RestaurantRepository>()
 
-    viewModelOf (:: AuthRegisterViewModel)
-    viewModelOf ( ::AuthLoginViewModel )
+    viewModel { AuthRegisterViewModel(authRepository = get(), get()) }
+    viewModel { AuthLoginViewModel(authRepository = get(), get()) }
+    viewModel { AuthValidationViewModel(authRepository = get()) }
+    viewModel { UserViewModel(  get()) }
+    viewModel { RestaurantViewModel(  get()) }
+
 }

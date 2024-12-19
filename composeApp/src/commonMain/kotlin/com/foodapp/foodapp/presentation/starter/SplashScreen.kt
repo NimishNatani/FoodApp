@@ -8,17 +8,40 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import kotlinx.coroutines.delay
 import androidx.compose.runtime.LaunchedEffect
+import com.foodapp.core.domain.onError
+import com.foodapp.core.domain.onSuccess
+import com.foodapp.foodapp.presentation.UserViewModel
 import com.foodapp.foodapp.presentation.navigation.Route
+import com.foodapp.foodapp.sharedObjects.SharedObject.sharedUser
 
 @Composable
-fun SplashScreen(navController: NavController) {
+fun SplashScreen(viewModel: AuthValidationViewModel,onResponse:() ->Unit, navController: NavController) {
     LaunchedEffect(Unit) {
-        val response =
-        delay(2000) // Show splash for 2 seconds
-       navController.navigate(Route.UserSelection) {
-            popUpTo(Route.SplashScreen) { inclusive = true }
+        val response =viewModel.validateUser()
+       response.onSuccess {
+           when (it.isUser) {
+               "user" -> {
+                   sharedUser=true
+                   onResponse()
+               }
+               "restaurant" -> {
+                   sharedUser= false
+                   onResponse()
+               }
+               else -> {
+                   navController.navigate(Route.UserSelection){
+                       navController.popBackStack()
+                   }
+               }
+           }
+       }
+        response.onError {error->
+
+                navController.navigate(Route.UserSelection){
+                    navController.popBackStack()
+
+            }
         }
     }
 

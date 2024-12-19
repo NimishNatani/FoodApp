@@ -6,5 +6,5 @@ data class AuthToken(
 )
 
 data class ValidateUser(
-    val isUser: Boolean,
+    val isUser: String,
 )

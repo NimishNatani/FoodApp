@@ -2,6 +2,7 @@ package com.foodapp.foodapp.presentation.register
 
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -56,6 +57,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun RegisterScreenRoot(
     viewModel: AuthRegisterViewModel = koinViewModel(),
     onRegisterClicked: () -> Unit,
+    onLogin: () -> Unit,
     isUser: Boolean = true,
     modifier: Modifier = Modifier
 ) {
@@ -70,6 +72,7 @@ fun RegisterScreenRoot(
 
     RegisterScreen(
         state = state,
+        onLogin = {onLogin()},
         onEvent = { event ->
             viewModel.onEvent(event)
         },
@@ -81,6 +84,7 @@ fun RegisterScreenRoot(
 @Composable
 fun RegisterScreen(
     state: RegisterUiState,
+    onLogin:()->Unit,
     onEvent: (RegisterIntent) -> Unit,
     isUser: Boolean,
     modifier: Modifier = Modifier
@@ -169,6 +173,7 @@ fun RegisterScreen(
         Text(
             text = AnnotatedString("Login Now", spanStyle = SpanStyle(fontStyle = FontStyle.Italic, textDecoration = TextDecoration.Underline)),
 //            onClick / { /* Navigate to Sign Up */ },
+            modifier = Modifier.clickable { onLogin() },
             style = TextStyle(color = Black, fontWeight = FontWeight.Bold)
         )
 

@@ -9,9 +9,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.foodapp.foodapp.presentation.navigation.Route
+import com.foodapp.foodapp.sharedObjects.SharedObject.sharedUser
 
 @Composable
-fun UserSelectionScreen(onUserSelected: (isUser: Boolean) -> Unit) {
+fun UserSelectionScreen(onUserSelected: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -20,7 +21,8 @@ fun UserSelectionScreen(onUserSelected: (isUser: Boolean) -> Unit) {
         Text("Who are you?", fontSize = 24.sp, modifier = Modifier.padding(bottom = 32.dp))
 
         Button(
-            onClick = { onUserSelected( true) },
+            onClick = {sharedUser = true
+                onUserSelected( ) },
             modifier = Modifier.size(150.dp)
         ) {
             Text("User", fontSize = 20.sp)
@@ -29,7 +31,9 @@ fun UserSelectionScreen(onUserSelected: (isUser: Boolean) -> Unit) {
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { onUserSelected(false) },
+            onClick = {
+                sharedUser = false
+                onUserSelected() },
             modifier = Modifier.size(150.dp)
         ) {
             Text("Restaurant", fontSize = 20.sp)

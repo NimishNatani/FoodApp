@@ -1,6 +1,7 @@
 package com.foodapp.foodapp.presentation.login
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -54,6 +55,7 @@ import org.jetbrains.compose.resources.painterResource
 fun LoginScreenRoot(
     viewModel: AuthLoginViewModel = koinViewModel(),
     onLoginClicked: () -> Unit,
+    onSignUp: () -> Unit,
     isUser: Boolean = true,
     modifier: Modifier = Modifier
 ) {
@@ -62,6 +64,7 @@ fun LoginScreenRoot(
 
     LoginScreen(
         state = state,
+        onSignUp = {onSignUp()},
         onEvent = { event ->
             when (event) {
                 is LoginIntent.SubmitLogin -> {
@@ -79,6 +82,7 @@ fun LoginScreenRoot(
 @Composable
 fun LoginScreen(
     state: LoginUiState,
+    onSignUp:()->Unit,
     onEvent: (LoginIntent) -> Unit,
     isUser: Boolean,
     modifier: Modifier = Modifier
@@ -154,6 +158,7 @@ fun LoginScreen(
         Text(
             text = AnnotatedString("Sign Up Now", spanStyle = SpanStyle(fontStyle = FontStyle.Italic, textDecoration = TextDecoration.Underline)),
 //            onClick / { /* Navigate to Sign Up */ },
+            modifier = Modifier.clickable { onSignUp() },
             style = TextStyle(color = Black, fontWeight = FontWeight.Bold)
         )
     }

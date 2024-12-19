@@ -32,12 +32,12 @@ import com.foodapp.foodapp.presentation.register.RegisterUiState
 //    )
 //}
 
-@Preview(backgroundColor = Color.WHITE.toLong(), showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-    LoginScreen(
-        state = LoginUiState(),
-        onEvent = {},
-        isUser = true
-    )
-}
+//@Preview(backgroundColor = Color.WHITE.toLong(), showBackground = true)
+//@Composable
+//fun LoginScreenPreview() {
+//    LoginScreen(
+//        state = LoginUiState(),
+//        onEvent = {},
+//        isUser = true
+//    )
+//}

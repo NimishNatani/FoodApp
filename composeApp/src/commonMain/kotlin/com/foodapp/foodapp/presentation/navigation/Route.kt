@@ -10,18 +10,14 @@ sealed interface Route {
     data object UserSelection : Route
 
     @Serializable
-    data class Register(val isUser: Boolean) : Route{
-        companion object {
-            const val route = "register/{isUser}"
-            fun createRoute(isUser: Boolean) = "register/$isUser"
-        }
-    }
+    data object Register : Route
 
     @Serializable
-    data class Login(val isUser: Boolean) : Route {
-        companion object {
-            const val route = "login/{isUser}"
-            fun createRoute(isUser: Boolean) = "login/$isUser"
-        }
-    }
+    data object Login : Route
+
+    @Serializable
+    data object UserHomeScreen:Route
+
+    @Serializable
+    data object RestaurantHomeScreen:Route
 }
