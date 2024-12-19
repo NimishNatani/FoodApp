@@ -1,4 +1,4 @@
-package com.foodapp.foodapp.presentation
+package com.foodapp.foodapp.presentation.components
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background

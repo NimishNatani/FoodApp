@@ -1,6 +1,7 @@
 package com.foodapp.foodapp.presentation.register
 
 data class RegisterUiState(
+    val name:String = "",
     val email: String = "",
     val password: String = "",
     val confirmPassword: String = "",

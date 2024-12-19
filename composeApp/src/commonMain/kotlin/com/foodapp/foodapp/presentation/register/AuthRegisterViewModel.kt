@@ -17,6 +17,10 @@ class AuthRegisterViewModel(private val authRepository: AuthRepository,private v
 
     fun onEvent(intent: RegisterIntent) {
         when (intent) {
+            is RegisterIntent.NameChanged -> {
+                _uiState.value = _uiState.value.copy(name = intent.name)
+            }
+
             is RegisterIntent.EmailChanged -> {
                 _uiState.value = _uiState.value.copy(email = intent.email)
             }
@@ -44,7 +48,7 @@ class AuthRegisterViewModel(private val authRepository: AuthRepository,private v
         viewModelScope.launch {
             // Simulate network call
             if (state.password == state.confirmPassword && state.email.contains("@")) {
-                val result = authRepository.register(state.email, state.password, isUser)
+                val result = authRepository.register(state.name, state.email, state.password, isUser)
                 result.onSuccess { authToken ->
                     tokenStorage.saveToken(authToken.token)
                     _uiState.update { it.copy(isLoading = false, result = authToken.token, message = authToken.message) }

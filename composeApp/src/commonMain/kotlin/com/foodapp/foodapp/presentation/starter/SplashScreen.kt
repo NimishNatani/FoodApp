@@ -15,6 +15,7 @@ import com.foodapp.foodapp.presentation.navigation.Route
 @Composable
 fun SplashScreen(navController: NavController) {
     LaunchedEffect(Unit) {
+        val response =
         delay(2000) // Show splash for 2 seconds
        navController.navigate(Route.UserSelection) {
             popUpTo(Route.SplashScreen) { inclusive = true }

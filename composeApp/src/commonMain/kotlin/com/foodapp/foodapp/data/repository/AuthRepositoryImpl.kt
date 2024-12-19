@@ -21,17 +21,17 @@ class AuthRepositoryImpl(
     override suspend fun login(email: String, password: String, isUser: Boolean): Result<AuthToken, DataError.Remote> {
 
         return if (isUser) {
-            val request = UserAuthRequest(email, password)
+            val request = UserAuthRequest("",email, password)
             apiService.loginUser(request).map { it.toAuthToken() }
         } else {val request = RestaurantAuthRequest(email, password)
-            apiService.validate().map { it.toAuthToken() }
-//            apiService.loginRestaurant(request).map { it.toAuthToken() }
+//            apiService.validate().map { it.toAuthToken() }
+            apiService.loginRestaurant(request).map { it.toAuthToken() }
         }
     }
 
-    override suspend fun register(email: String, password: String, isUser: Boolean): Result<AuthToken, DataError.Remote> {
+    override suspend fun register(name:String,email: String, password: String, isUser: Boolean): Result<AuthToken, DataError.Remote> {
         return if (isUser){
-            val request = UserAuthRequest(email, password)
+            val request = UserAuthRequest(name,email, password)
             apiService.registerUser(request).map { it.toAuthToken() }
         } else {val request = RestaurantAuthRequest(email, password)
             apiService.registerRestaurant(request).map { it.toAuthToken() } }
