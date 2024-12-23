@@ -17,20 +17,16 @@ class RestaurantViewModel(private  val restaurantRepository: RestaurantRepositor
     private val _restaurant = MutableStateFlow<Restaurant?>(null)
     val restaurant = _restaurant.asStateFlow()
 
-
-    fun getRestaurant(onSuccess: () -> Unit,onFailure: () -> Unit) {
+    fun setRestaurant(restaurant: Restaurant){
+        _restaurant.value = restaurant
+    }
+    fun getRestaurant(onFailure: () -> Unit) {
         viewModelScope.launch {
             restaurantRepository.getRestaurantByJwttoken().onSuccess {result ->
                 _restaurant.value = result
-                if (restaurant.value==result) {
-                    onSuccess()
-                }
             }.onError { onFailure() }
 
         }
     }
 
-    fun setRestaurant(restaurant:Restaurant?){
-        _restaurant.value = restaurant
-    }
 }

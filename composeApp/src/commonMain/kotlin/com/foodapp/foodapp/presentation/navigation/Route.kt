@@ -1,12 +1,21 @@
 package com.foodapp.foodapp.presentation.navigation
 
+import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.domain.models.User
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 sealed interface Route {
 
     @Serializable
-    data object FoodGraph:Route
+    data object AuthGraph:Route
+
+    @Serializable
+    data object UserGraph : Route
+
+    @Serializable
+    data object RestaurantGraph : Route
 
     @Serializable
     data object SplashScreen : Route
@@ -21,8 +30,8 @@ sealed interface Route {
     data object Login : Route
 
     @Serializable
-    data class UserHomeScreen(val user: User):Route
+    data object UserHomeScreen : Route
 
     @Serializable
-    data object RestaurantHomeScreen:Route
+    data object RestaurantHomeScreen : Route
 }

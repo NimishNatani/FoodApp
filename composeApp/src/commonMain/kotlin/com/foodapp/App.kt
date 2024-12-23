@@ -14,11 +14,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.foodapp.core.presentation.Red
+import com.foodapp.foodapp.domain.models.Restaurant
+import com.foodapp.foodapp.domain.models.User
 import com.foodapp.foodapp.presentation.RestaurantViewModel
 import com.foodapp.foodapp.presentation.UserViewModel
 import com.foodapp.foodapp.presentation.login.AuthLoginViewModel
 import com.foodapp.foodapp.presentation.login.LoginScreenRoot
+import com.foodapp.foodapp.presentation.navigation.CustomNavType
 import com.foodapp.foodapp.presentation.navigation.Route
 import com.foodapp.foodapp.presentation.register.AuthRegisterViewModel
 import com.foodapp.foodapp.presentation.register.RegisterScreenRoot
@@ -26,8 +30,10 @@ import com.foodapp.foodapp.presentation.starter.AuthValidationViewModel
 import com.foodapp.foodapp.presentation.starter.SplashScreen
 import com.foodapp.foodapp.presentation.starter.UserSelectionScreen
 import com.foodapp.foodapp.sharedObjects.SharedObject.sharedUser
+import kotlinx.serialization.json.Json
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.reflect.typeOf
 
 
 @Composable
@@ -40,51 +46,21 @@ fun App() {
 
         NavHost(
             navController = navController,
-            startDestination = Route.FoodGraph
+            startDestination = Route.AuthGraph
         ) {
-            navigation<Route.FoodGraph>(
+            navigation<Route.AuthGraph>(
                 startDestination = Route.SplashScreen,
 
-            ) {
+                ) {
                 // Splash Screen
                 composable<Route.SplashScreen> {
 
                     val viewModel: AuthValidationViewModel =
                         koinViewModel<AuthValidationViewModel>()
-                    val sharedUserViewModel = it.sharedKoinViewModel<UserViewModel>(navController)
-                    val sharedRestaurantViewModel =
-                        it.sharedKoinViewModel<RestaurantViewModel>(navController)
-
-                    LaunchedEffect(Unit){
-                        sharedUserViewModel.setUser(null)
-                        sharedRestaurantViewModel.setRestaurant(null)
-                    }
 
                     SplashScreen(
                         viewModel,
-                        onResponse = {
-                            when (sharedUser) {
-                                true -> {
-                                    sharedUserViewModel.getUser(onSuccess = {
-                                        navController.navigate(
-                                            Route.UserHomeScreen
-                                        )
-                                    },
-                                        onFailure = { navController.navigate(Route.UserSelection) { navController.popBackStack() } })
-                                }
-                                false -> {
-                                    sharedRestaurantViewModel.getRestaurant(onSuccess = {
-                                        navController.navigate(
-                                            Route.RestaurantHomeScreen
-                                        )
-                                    },
-                                        onFailure = { navController.navigate(Route.UserSelection) { navController.popBackStack() } })
-                                }
-                                else -> {
-                                    navController.navigate(Route.UserSelection)
-                                }
-                            }
-                        },
+                        onResponse = { navigationFunction(navController) },
                         navController
                     )
                 }
@@ -101,11 +77,16 @@ fun App() {
                 // Register Screen
                 composable<Route.Register> {
                     val viewModel: AuthRegisterViewModel = koinViewModel()
+                    val authViewModel: AuthValidationViewModel = koinViewModel()
 
                     if (sharedUser != null) {
                         RegisterScreenRoot(
                             viewModel,
-                            onRegisterClicked = { navController.navigate(Route.Login) },
+                            onRegisterClicked = {
+                                navigationFunction(
+                                    navController
+                                )
+                            },
                             isUser = sharedUser!!,
                             onLogin = { navController.navigate(Route.Login) { navController.popBackStack() } }
                         )
@@ -119,11 +100,12 @@ fun App() {
                 // Login Screen
                 composable<Route.Login> {
                     val viewModel: AuthLoginViewModel = koinViewModel()
+                    val authViewModel: AuthValidationViewModel = koinViewModel()
 
                     if (sharedUser != null) {
                         LoginScreenRoot(
                             viewModel = viewModel,
-                            onLoginClicked = {},
+                            onLoginClicked = { navigationFunction(navController) },
                             isUser = sharedUser!!,
                             onSignUp = { navController.navigate(Route.Register) { navController.popBackStack() } }
                         )
@@ -133,32 +115,59 @@ fun App() {
                         }
                     }
                 }
-
+            }
+            navigation<Route.UserGraph>(
+                startDestination = Route.UserHomeScreen,
+            ) {
                 composable<Route.UserHomeScreen> {
-                    val sharedUserViewModel = it.sharedKoinViewModel<UserViewModel>(navController)
+                    val sharedUserViewModel =
+                        it.sharedKoinViewModel<UserViewModel>(navController)
 
+                    sharedUserViewModel.getUser( onFailure = {
+                        navController.navigate(Route.UserSelection) {
+                            navController.popBackStack(Route.UserSelection, false)
+                        }
+                    })
                     val user by sharedUserViewModel.user.collectAsStateWithLifecycle()
+
 
                     LaunchedEffect(user) {
                         user?.let {
                             println(user)
                         }
                     }
-                    Text("Welcome ${user?.username ?: "Loading..."}")
+                    Text("Welcome ${user?.username}")
 
                 }
-                composable<Route.RestaurantHomeScreen> {
+            }
+            navigation<Route.RestaurantGraph>(
+                startDestination = Route.RestaurantHomeScreen
+            ) {
+                composable<Route.RestaurantHomeScreen>(
+                ) {
                     val sharedRestaurantViewModel =
                         it.sharedKoinViewModel<RestaurantViewModel>(navController)
-                    Text(text = sharedRestaurantViewModel.restaurant.value.toString(), color = Red)
+
+                    sharedRestaurantViewModel.getRestaurant(onFailure ={
+                        navController.navigate(Route.UserSelection) {
+                            navController.popBackStack(Route.UserSelection, false)
+                        }
+                    } )
+
+
+                    Text(
+                        text = sharedRestaurantViewModel.restaurant.value.toString(),
+                        color = Red
+                    )
                 }
             }
+
         }
     }
 }
 
 @Composable
-private inline fun <reified T: ViewModel> NavBackStackEntry.sharedKoinViewModel(
+private inline fun <reified T : ViewModel> NavBackStackEntry.sharedKoinViewModel(
     navController: NavController
 ): T {
     val navGraphRoute = destination.parent?.route ?: return koinViewModel<T>()
@@ -168,4 +177,30 @@ private inline fun <reified T: ViewModel> NavBackStackEntry.sharedKoinViewModel(
     return koinViewModel(
         viewModelStoreOwner = parentEntry
     )
+}
+
+inline fun <reified T : Any> NavBackStackEntry.toRoute(): T {
+    val json = arguments?.getString("data") ?: throw IllegalArgumentException("Missing argument")
+    return Json.decodeFromString(json)
+}
+
+
+private fun navigationFunction(navController: NavController) {
+    when (sharedUser) {
+        true -> {
+            navController.navigate(Route.UserGraph) {
+                navController.popBackStack(Route.UserGraph, false)
+            }
+        }
+
+        false -> {
+            navController.navigate(Route.RestaurantGraph) {
+                navController.popBackStack(Route.RestaurantGraph, false)
+            }
+        }
+
+        else -> {
+            navController.navigate(Route.UserSelection)
+        }
+    }
 }

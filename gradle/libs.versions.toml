@@ -26,6 +26,7 @@ ksp = "2.1.0-1.0.29"
 sqlite = "2.5.0-alpha12"
 room = "2.7.0-alpha12"
 securityCryptoKtx = "1.0.0"
+uriKmp = "0.0.18"
 
 [libraries]
 klogger = { module = "com.soywiz.korlibs.klogger:klogger", version.ref = "klogger" }
@@ -72,6 +73,7 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 androidx-security-crypto-ktx = { group = "androidx.security", name = "security-crypto-ktx", version.ref = "securityCryptoKtx" }
+uri-kmp = { module = "com.eygraber:uri-kmp", version.ref = "uriKmp" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

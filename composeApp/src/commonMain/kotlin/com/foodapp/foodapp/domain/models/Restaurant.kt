@@ -1,5 +1,8 @@
 package com.foodapp.foodapp.domain.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Restaurant(
     var restaurantId: String,
     var restaurantImage: String="",

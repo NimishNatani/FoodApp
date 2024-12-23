@@ -21,22 +21,21 @@ class UserViewModel(
     private val _user = MutableStateFlow<User?>(null)
     val user = _user.asStateFlow()
 
+    fun setUser(user: User){
+        _user.value = user
+    }
 
-     fun getUser(onSuccess: () -> Unit,onFailure: () -> Unit) {
+
+    fun getUser(onFailure: () -> Unit) {
         viewModelScope.launch {
             userRepository.getUserByJwttoken().onSuccess {result ->
                 println("User fetched successfully: $result")
                 _user.value = result
-                if (user.value==result){
-                    onSuccess()
-                }
                 println("User: ${user.value}")
             }.onError { onFailure() }
 
         }
     }
 
-    fun setUser(user:User?){
-        _user.value = user
-    }
+
 }

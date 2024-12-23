@@ -75,6 +75,9 @@ kotlin {
 
 //            implementation(libs.klogger)
 
+            implementation(libs.uri.kmp)
+
+
             implementation(libs.bundles.ktor)
             implementation(libs.bundles.coil)
         }
