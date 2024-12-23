@@ -29,6 +29,8 @@ import com.foodapp.foodapp.presentation.register.RegisterScreenRoot
 import com.foodapp.foodapp.presentation.starter.AuthValidationViewModel
 import com.foodapp.foodapp.presentation.starter.SplashScreen
 import com.foodapp.foodapp.presentation.starter.UserSelectionScreen
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.UserMainScreenRoot
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.UserMainScreenViewModel
 import com.foodapp.foodapp.sharedObjects.SharedObject.sharedUser
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -120,6 +122,7 @@ fun App() {
                 startDestination = Route.UserHomeScreen,
             ) {
                 composable<Route.UserHomeScreen> {
+                    val userMainScreenViewModel = koinViewModel<UserMainScreenViewModel>()
                     val sharedUserViewModel =
                         it.sharedKoinViewModel<UserViewModel>(navController)
 
@@ -129,14 +132,7 @@ fun App() {
                         }
                     })
                     val user by sharedUserViewModel.user.collectAsStateWithLifecycle()
-
-
-                    LaunchedEffect(user) {
-                        user?.let {
-                            println(user)
-                        }
-                    }
-                    Text("Welcome ${user?.username}")
+                    UserMainScreenRoot(userMainScreenViewModel)
 
                 }
             }

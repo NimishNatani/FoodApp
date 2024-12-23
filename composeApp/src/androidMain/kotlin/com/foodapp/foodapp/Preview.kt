@@ -9,6 +9,8 @@ import com.foodapp.foodapp.presentation.login.LoginScreen
 import com.foodapp.foodapp.presentation.login.LoginUiState
 import com.foodapp.foodapp.presentation.register.RegisterScreen
 import com.foodapp.foodapp.presentation.register.RegisterUiState
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.MainScreenState
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.UserMainScreen
 
 //@Preview
 //@Composable
@@ -41,3 +43,11 @@ import com.foodapp.foodapp.presentation.register.RegisterUiState
 //        isUser = true
 //    )
 //}
+
+@Preview(backgroundColor = Color.WHITE.toLong(), showBackground = true)
+@Composable
+fun LoginScreenPreview() {
+    UserMainScreen(
+        state = MainScreenState(),onAction = {}
+    )
+}
