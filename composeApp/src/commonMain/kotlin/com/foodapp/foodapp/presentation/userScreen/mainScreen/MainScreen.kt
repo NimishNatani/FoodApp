@@ -30,6 +30,7 @@ import com.foodapp.core.presentation.SandYellow
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.bookingScreen.UserBookingScreenRoot
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.favoriteScreen.UserFavoriteScreenRoot
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen.UserHomeScreenRoot
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen.UserHomeScreenViewModel
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.profileScreen.UserProfileScreenRoot
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -47,7 +48,7 @@ fun UserMainScreenRoot(
 
 @Composable
 fun UserMainScreen(state: MainScreenState, onAction: (MainScreenAction) -> Unit) {
-
+val userHomeScreenViewModel = koinViewModel<UserHomeScreenViewModel>()
     val items = listOf(
         BottomNavItem(0, Icons.Default.Home),
         BottomNavItem(1, Icons.Default.ShoppingCart),
@@ -59,7 +60,7 @@ fun UserMainScreen(state: MainScreenState, onAction: (MainScreenAction) -> Unit)
         Box(modifier = Modifier.weight(1f)) {
             when (state.selectedTabIndex.iconNumber) {
                 0 -> {
-                    UserHomeScreenRoot()
+                    UserHomeScreenRoot(userHomeScreenViewModel, onNotificationClick = {})
                 }
 
                 1 -> {
@@ -76,12 +77,6 @@ fun UserMainScreen(state: MainScreenState, onAction: (MainScreenAction) -> Unit)
             }
         }
 
-        // Bottom Navigation Bar
-//        BottomNavigationBar(
-//            items = items,
-//            selectedItem = state.selectedTabIndex,
-//            onItemSelected = {selectedItem-> onAction(MainScreenAction.OnTabSelected(selectedItem.iconNumber, selectedItem.iconResId)) },
-//        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -108,30 +103,6 @@ fun UserMainScreen(state: MainScreenState, onAction: (MainScreenAction) -> Unit)
     }
 }
 
-@Composable
-fun BottomNavigationBar(
-    items: List<BottomNavItem>,
-    selectedItem: BottomNavItem,
-    onItemSelected: (BottomNavItem) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(shape = RoundedCornerShape(0.dp, 0.dp, 0.dp, 0.dp), color = SandYellow)
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        items.forEach { item ->
-            BottomNavItemView(
-                item = item,
-                isSelected = item == selectedItem,
-                onClick = { onItemSelected(item) }
-            )
-        }
-    }
-}
 
 @Composable
 fun BottomNavItemView(

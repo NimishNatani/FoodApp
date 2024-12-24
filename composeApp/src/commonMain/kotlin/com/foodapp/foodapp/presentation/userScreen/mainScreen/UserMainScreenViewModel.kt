@@ -11,18 +11,8 @@ class UserMainScreenViewModel():ViewModel() {
 
     fun onAction(action: MainScreenAction){
         when(action){
-            is MainScreenAction.OnSearchQueryChange -> {
-                _uiState.value = _uiState.value.copy(searchQuery = action.query)
-            }
             is MainScreenAction.OnTabSelected -> {
                 _uiState.value = _uiState.value.copy(selectedTabIndex = BottomNavItem(action.index,action.icon))
-            }
-            is MainScreenAction.OnRestaurantClick -> {
-
-            }
-            is MainScreenAction.OnFoodSelected -> {
-            }
-            is MainScreenAction.OnFoodNameSelected -> {
             }
         }
 

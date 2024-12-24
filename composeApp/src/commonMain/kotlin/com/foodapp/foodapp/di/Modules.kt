@@ -16,6 +16,7 @@ import com.foodapp.foodapp.presentation.login.AuthLoginViewModel
 import com.foodapp.foodapp.presentation.register.AuthRegisterViewModel
 import com.foodapp.foodapp.presentation.starter.AuthValidationViewModel
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.UserMainScreenViewModel
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen.UserHomeScreenViewModel
 import com.foodapp.foodapp.storage.TokenStorage
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
@@ -55,6 +56,7 @@ val appModule = module {
     viewModel { AuthLoginViewModel(authRepository = get(), get()) }
     viewModel { AuthValidationViewModel(authRepository = get()) }
     viewModel { UserMainScreenViewModel( ) }
+    viewModel { UserHomeScreenViewModel()}
     viewModel { UserViewModel(  get()) }
     viewModel { RestaurantViewModel(  get()) }
 

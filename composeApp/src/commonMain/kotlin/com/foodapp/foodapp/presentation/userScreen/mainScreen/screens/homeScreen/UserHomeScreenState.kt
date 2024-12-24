@@ -1,0 +1,23 @@
+package com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen
+
+import com.foodapp.core.presentation.UiText
+import com.foodapp.foodapp.domain.models.Food
+import com.foodapp.foodapp.domain.models.Restaurant
+import kotlinproject.composeapp.generated.resources.Res
+import kotlinproject.composeapp.generated.resources.compose_multiplatform
+import org.jetbrains.compose.resources.DrawableResource
+
+data class UserHomeScreenState(
+    val searchQuery: String = "Search Here",
+    val searchResults: SearchItem = SearchItem(),
+    val favoriteRestaurant: List<Restaurant> = emptyList(),
+    val favoriteFood: List<Food> = emptyList(),
+    val isLoading: Boolean = false,
+    val errorMessage: UiText? = null,
+    val category:Pair<DrawableResource,String> = Pair(Res.drawable.compose_multiplatform,"Indian")
+)
+
+data class SearchItem (
+    val restaurantList:List<Restaurant> = emptyList<Restaurant>(),
+    val foodList:List<Food> = emptyList<Food>()
+)
