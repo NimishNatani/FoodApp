@@ -1,9 +1,14 @@
 package com.foodapp.foodapp.domain.models
 
+import kotlinproject.composeapp.generated.resources.Res
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Food(
     var foodId: String,
     var foodName: String,
     var foodDescription: String,
+    var foodTags:List<String>,
     var foodImage: String,
     var foodDetails: List<FoodDetails>,
     var isAvailable: Boolean,
@@ -13,6 +18,7 @@ data class Food(
     var restaurantId: String
 )
 
+@Serializable
 data class FoodDetails(
     var foodSize: String,
     var foodPrice :Double

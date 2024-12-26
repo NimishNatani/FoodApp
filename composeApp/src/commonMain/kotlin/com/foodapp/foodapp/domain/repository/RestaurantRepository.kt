@@ -9,4 +9,7 @@ interface RestaurantRepository {
 
     suspend fun getRestaurantByJwttoken(): Result<Restaurant, DataError.Remote>
 
+    suspend fun getRestaurantsByCity(city: String):Result<List<Restaurant>, DataError.Remote>
+
+
 }

@@ -1,5 +1,6 @@
 package com.foodapp.foodapp.data.dto
 
+import com.foodapp.foodapp.domain.models.Food
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -13,11 +14,11 @@ data class RestaurantDto(
     val address: String,
     val city: String,
     val state: String,
-    val postalCode: String,
+    val postelCode: String,
     val totalReviews: Int,
-    val ratings: Double,
-    val bookingIds: List<String>,
-    val paymentIds: List<String>,
-    val foodItems: List<String>,
-    val reviewIds: List<String>
+    val ratings: Double?,
+    val bookingIds: List<String> =emptyList(),
+    val paymentIds: List<String> =emptyList(),
+    val foodItems: List<FoodDto> =emptyList(),
+    val reviewIds: List<String> =emptyList()
 )

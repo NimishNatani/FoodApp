@@ -62,17 +62,17 @@ fun LoginScreenRoot(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     state.isUser = isUser
 
+    LaunchedEffect(state.result) {
+        if (state.result.isNotEmpty()) {
+            onLoginClicked()
+        }
+    }
+
     LoginScreen(
         state = state,
         onSignUp = {onSignUp()},
         onEvent = { event ->
-            when (event) {
-                is LoginIntent.SubmitLogin -> {
-                    viewModel.onEvent(event)
-                    onLoginClicked()
-                }
-                else -> viewModel.onEvent(event)
-            }
+            viewModel.onEvent(event)
         },
         isUser = isUser,
         modifier = modifier

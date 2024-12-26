@@ -56,7 +56,7 @@ val appModule = module {
     viewModel { AuthLoginViewModel(authRepository = get(), get()) }
     viewModel { AuthValidationViewModel(authRepository = get()) }
     viewModel { UserMainScreenViewModel( ) }
-    viewModel { UserHomeScreenViewModel()}
+    viewModel { UserHomeScreenViewModel(get())}
     viewModel { UserViewModel(  get()) }
     viewModel { RestaurantViewModel(  get()) }
 

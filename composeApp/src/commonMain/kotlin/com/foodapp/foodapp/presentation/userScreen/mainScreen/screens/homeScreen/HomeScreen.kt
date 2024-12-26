@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -77,93 +78,16 @@ fun UserHomeScreen(
         Pair(Res.drawable.compose_multiplatform,"Drinks")
     )
     // List of Restaurants
-    val restaurants = listOf(
-        Restaurant(
-            restaurantId = "R001",
-            restaurantImage = "image_url_1",
-            restaurantName = "Spicy Paradise",
-            contactDetails = "+1234567890",
-            latitude = 12.9716,
-            longitude = 77.5946,
-            address = "123 Food Street",
-            city = "Bangalore",
-            state = "Karnataka",
-            postalCode = "560001",
-            totalReviews = 120,
-            ratings = 4.5,
-        ),
-        Restaurant(
-            restaurantId = "R002",
-            restaurantImage = "image_url_2",
-            restaurantName = "Green Veggie Delight",
-            contactDetails = "+9876543210",
-            latitude = 19.0760,
-            longitude = 72.8777,
-            address = "456 Veggie Lane",
-            city = "Mumbai",
-            state = "Maharashtra",
-            postalCode = "400001",
-            totalReviews = 85,
-            ratings = 4.2,
-        )
-    )
 
-// List of Foods
-    val foods = listOf(
-        Food(
-            foodId = "F001",
-            foodName = "Paneer Butter Masala",
-            foodDescription = "Rich and creamy paneer curry.",
-            foodImage = "food_image_1",
-            foodDetails = listOf(
-                FoodDetails(foodSize = "Half", foodPrice = 150.0),
-                FoodDetails(foodSize = "Full", foodPrice = 250.0)
-            ),
-            isAvailable = true,
-            isVeg = true,
-            rating = 4.6,
-            totalReviews = 50,
-            restaurantId = "R001"
-        ),
-        Food(
-            foodId = "F002",
-            foodName = "Chicken Biryani",
-            foodDescription = "Aromatic and flavorful chicken biryani.",
-            foodImage = "food_image_2",
-            foodDetails = listOf(
-                FoodDetails(foodSize = "Single", foodPrice = 200.0),
-                FoodDetails(foodSize = "Family", foodPrice = 500.0)
-            ),
-            isAvailable = true,
-            isVeg = false,
-            rating = 4.8,
-            totalReviews = 80,
-            restaurantId = "R001"
-        ),
-        Food(
-            foodId = "F003",
-            foodName = "Veggie Burger",
-            foodDescription = "Fresh veggie patty with sauces and buns.",
-            foodImage = "food_image_3",
-            foodDetails = listOf(
-                FoodDetails(foodSize = "Regular", foodPrice = 100.0),
-                FoodDetails(foodSize = "Large", foodPrice = 150.0)
-            ),
-            isAvailable = true,
-            isVeg = true,
-            rating = 4.4,
-            totalReviews = 30,
-            restaurantId = "R002"
-        )
-    )
 
     if (state.isLoading) {
+        onAction(UserHomeScreenAction.OnGettingRestaurants("Jaipur"))
         Text("Loading")
     } else if (!state.isLoading && state.errorMessage != null) {
-        Text("Error")
+        Text(state.errorMessage.asString())
     } else {
         Column(modifier = Modifier.fillMaxSize().background(White).verticalScroll(rememberScrollState())) {
-            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp)) {
+            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 15.dp)) {
                 Text(
                     "Find The Best Food & Restaurants",
                     style = MaterialTheme.typography.bodyLarge,
@@ -171,12 +95,12 @@ fun UserHomeScreen(
                     fontSize = 24.sp,
                     modifier = Modifier.weight(1f)
                 )
-                Box(modifier = Modifier.background(SandYellow, CircleShape)){
+                Box(modifier = Modifier.background(SandYellow, CircleShape).padding(8.dp)){
                     Icon(
                         imageVector = Icons.Default.Notifications,
                         contentDescription = "Notification",
                         tint = DarkGrey,
-                        modifier = Modifier.padding(horizontal = 18.dp).size(30.dp)
+                        modifier = Modifier.padding(horizontal = 2.dp, vertical = 2.dp).size(30.dp)
                     )
                 }
             }
@@ -190,12 +114,13 @@ fun UserHomeScreen(
                     onImeSearch = {},
                     modifier = Modifier.weight(1f)
                 )
-                Box(modifier = Modifier.background(LightGrey, CircleShape)){
+                Spacer(modifier = Modifier.width(5.dp))
+                Box(modifier = Modifier.background(LightGrey, RoundedCornerShape(15.dp))){
                     Icon(
                         painter = painterResource(Res.drawable.ic_sort),
                         contentDescription = "Notification",
                         tint = DarkGrey,
-                        modifier = Modifier.padding(horizontal = 18.dp).size(50.dp)
+                        modifier = Modifier.padding(horizontal = 5.dp, vertical = 5.dp).size(40.dp)
                     )
                 }
             }
@@ -214,7 +139,7 @@ fun UserHomeScreen(
                     fontSize = 20.sp,
                     modifier = Modifier.weight(1f))
                 Row {
-                    Text("View All", color = Red, fontSize = 16.sp, modifier = Modifier.padding(top=6.dp))
+                    Text("View All", color = Red, fontSize = 16.sp, modifier = Modifier.padding(top=3.dp))
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_forward),
                         contentDescription = "arrow",
@@ -226,7 +151,7 @@ fun UserHomeScreen(
             Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp).horizontalScroll(
                 rememberScrollState()
             )){
-                restaurants.forEach { restaurant ->
+                state.searchResults.restaurantList.take(6).forEach { restaurant ->
                     RestaurantCard(
                         imageUrl = restaurant.restaurantImage,
                         name = restaurant.restaurantName,
@@ -251,7 +176,7 @@ fun UserHomeScreen(
                     fontSize = 20.sp,
                     modifier = Modifier.weight(1f))
                 Row {
-                    Text("View All", color = Red, fontSize = 16.sp, modifier = Modifier.padding(top=6.dp))
+                    Text("View All", color = Red, fontSize = 16.sp, modifier = Modifier.padding(top=3.dp))
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_forward),
                         contentDescription = "arrow",
@@ -263,7 +188,7 @@ fun UserHomeScreen(
             Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp).horizontalScroll(
                 rememberScrollState()
             )){
-                foods.forEach { food ->
+                state.searchResults.foodList.take(6).forEach { food ->
                     FoodCard(
                         imageUrl = food.foodImage,
                         name = food.foodName,

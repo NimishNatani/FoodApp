@@ -8,11 +8,11 @@ import kotlinproject.composeapp.generated.resources.compose_multiplatform
 import org.jetbrains.compose.resources.DrawableResource
 
 data class UserHomeScreenState(
-    val searchQuery: String = "Search Here",
+    val searchQuery: String = "",
     val searchResults: SearchItem = SearchItem(),
     val favoriteRestaurant: List<Restaurant> = emptyList(),
     val favoriteFood: List<Food> = emptyList(),
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val errorMessage: UiText? = null,
     val category:Pair<DrawableResource,String> = Pair(Res.drawable.compose_multiplatform,"Indian")
 )

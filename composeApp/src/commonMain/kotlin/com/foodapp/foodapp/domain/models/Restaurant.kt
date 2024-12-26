@@ -18,6 +18,6 @@ data class Restaurant(
     var ratings: Double? = null,
     var bookingIds: List<String> = emptyList(),
     var paymentIds: List<String> = emptyList(),
-    var foodItems: List<String> = emptyList(),
+    var foodItems: List<Food> = emptyList(),
     var reviewIds: List<String> = emptyList()
 )

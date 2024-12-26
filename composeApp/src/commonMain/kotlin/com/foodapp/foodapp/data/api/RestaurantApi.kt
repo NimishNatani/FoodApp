@@ -8,7 +8,9 @@ import com.foodapp.foodapp.storage.TokenStorage
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.headers
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.http.HttpHeaders
 
 class RestaurantApi(private val client: HttpClient, private val tokenStorage: TokenStorage) {
@@ -26,7 +28,20 @@ class RestaurantApi(private val client: HttpClient, private val tokenStorage: To
                 }
             }
         }
+    }
 
+    suspend fun getRestaurantsByCity(city:String): Result<List<RestaurantDto>, DataError.Remote> {
+        return safeCall<List<RestaurantDto>> {
+            client.get("$BASE_URL/user/restaurant/search/byCity") {
+                headers {
+                    append(
+                        HttpHeaders.Authorization,
+                        "Bearer ${tokenStorage.getToken().toString()}"
+                    )
+                }
+                parameter("city", city)
+            }
+        }
     }
 
 }

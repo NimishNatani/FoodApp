@@ -14,12 +14,14 @@ fun RestaurantDto.toRestaurant():Restaurant {
         address = address,
         city = city,
         state = state,
-        postalCode = postalCode,
+        postalCode = postelCode,
         totalReviews = totalReviews,
         ratings = ratings,
         bookingIds = bookingIds,
         paymentIds = paymentIds,
-        foodItems = foodItems,
+        foodItems =foodItems.map { food ->
+             food.toFood()
+        },
         reviewIds = reviewIds
     )
 }

@@ -9,6 +9,6 @@ sealed interface UserHomeScreenAction {
     data class OnFoodSelected(val food: Food): UserHomeScreenAction
     data class OnFoodNameSelected(val food: Food):UserHomeScreenAction
     data class OnCategorySelected(val category:String):UserHomeScreenAction
-    data class OnGettingRestaurants(val searchQuery:String):UserHomeScreenAction
+    data class OnGettingRestaurants(val city:String):UserHomeScreenAction
     data class OnGettingFoods(val searchQuery:String):UserHomeScreenAction
 }

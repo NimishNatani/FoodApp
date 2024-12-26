@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -138,6 +139,7 @@ fun RestaurantCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+                Spacer(Modifier.height(4.dp))
                 Text(
                     text = tags.joinToString(separator = " | "),
                     color = White,
@@ -152,7 +154,7 @@ fun RestaurantCard(
                     imageVector = Icons.Default.LocationOn,
                     contentDescription = "Location",
                     tint = White.copy(alpha = 0.7f),
-                    modifier = Modifier.size(14.dp).padding(top=10.dp)
+                    modifier = Modifier.size(14.dp).padding(top=1.dp)
                 )
                 Spacer(modifier = Modifier.width(2.dp))
                 Text(
@@ -238,6 +240,7 @@ fun FoodCard(
                     fontWeight = FontWeight.Bold
                 )
             }
+            Spacer(modifier = Modifier.height(4.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
@@ -281,7 +284,7 @@ fun FoodCard(
 
 @Composable
 fun CategoryCard(name:String,image:DrawableResource,isSelected:String ,onSelected:()->Unit){
-    Card(modifier = Modifier.size(70.dp,30.dp),
+    Card(modifier = Modifier.height(30.dp).width(70.dp).clickable { onSelected() },
         colors = CardDefaults.cardColors(containerColor = if (isSelected==name) Red else LightGrey),
         shape = RoundedCornerShape(25.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
@@ -293,7 +296,7 @@ fun CategoryCard(name:String,image:DrawableResource,isSelected:String ,onSelecte
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))
-            Text(name,fontSize = 12.sp, color = if (isSelected==name) White else DarkGrey)
+            Text(name,fontSize = 12.sp, color = if (isSelected==name) White else DarkGrey, textAlign = TextAlign.Center)
         }
     }
 
