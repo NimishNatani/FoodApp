@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -51,7 +52,7 @@ fun RestaurantCard(
     imageUrl: String?,
     name: String,
     tags: List<String>,
-    rating: String,
+    rating: String?,
     totalReviews: Int,
     distance: String,
     isFavorite: Boolean = false,
@@ -102,7 +103,7 @@ fun RestaurantCard(
                             modifier = Modifier.clickable { onFavoriteClick() }.size(18.dp)
                         )
                         Text(
-                            text = rating,
+                            text = rating?:"0.0",
                             color = Black,
                             fontWeight = FontWeight.Bold,
                             fontSize = 14.sp
@@ -139,7 +140,6 @@ fun RestaurantCard(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(Modifier.height(4.dp))
                 Text(
                     text = tags.joinToString(separator = " | "),
                     color = White,
@@ -149,12 +149,12 @@ fun RestaurantCard(
                 )
 
             }
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
                     imageVector = Icons.Default.LocationOn,
                     contentDescription = "Location",
                     tint = White.copy(alpha = 0.7f),
-                    modifier = Modifier.size(14.dp).padding(top=1.dp)
+                    modifier = Modifier.size(22.dp)
                 )
                 Spacer(modifier = Modifier.width(2.dp))
                 Text(
@@ -240,7 +240,6 @@ fun FoodCard(
                     fontWeight = FontWeight.Bold
                 )
             }
-            Spacer(modifier = Modifier.height(4.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
@@ -253,7 +252,7 @@ fun FoodCard(
                         imageVector = Icons.Default.Star, // Replace with actual icon
                         contentDescription = "Rating Icon",
                         tint = SandYellow,
-                        modifier = Modifier.size(12.dp)
+                        modifier = Modifier.size(24.dp).padding(top = 6.dp)
                     )
                     Text(
                         text = rating,
@@ -267,9 +266,9 @@ fun FoodCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.LocationOn, // Replace with actual icon
-                        contentDescription = "Rating Icon",
+                        contentDescription = "Location Icon",
                         tint = Red,
-                        modifier = Modifier.size(12.dp)
+                        modifier = Modifier.size(22.dp).padding(top = 6.dp)
                     )
                     Text(
                         text = "$distance Km Away",
@@ -283,21 +282,47 @@ fun FoodCard(
 }
 
 @Composable
-fun CategoryCard(name:String,image:DrawableResource,isSelected:String ,onSelected:()->Unit){
-    Card(modifier = Modifier.height(30.dp).width(70.dp).clickable { onSelected() },
-        colors = CardDefaults.cardColors(containerColor = if (isSelected==name) Red else LightGrey),
+fun CategoryCard(
+    name: String,
+    image: DrawableResource, // Drawable resource ID
+    isSelected: String,
+    onSelected: () -> Unit
+) {
+    val isSelectedCategory = isSelected == name
+
+    Card(
+        modifier = Modifier
+            .height(40.dp)
+            .wrapContentWidth() // Allow width to adjust dynamically
+            .clickable { onSelected() },
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSelectedCategory) Red else LightGrey
+        ),
         shape = RoundedCornerShape(25.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
-    ){
-        Row(modifier = Modifier.fillMaxSize().padding(horizontal = 4.dp, vertical = 2.dp).align(Alignment.CenterHorizontally)) {
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 8.dp, vertical = 4.dp), // Adjust padding for proper alignment
+            verticalAlignment = Alignment.CenterVertically, // Align content vertically
+            horizontalArrangement = Arrangement.Center // Center content horizontally
+        ) {
             Icon(
                 painter = painterResource(image),
                 contentDescription = "Category Icon",
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier.size(20.dp),
+                tint = if (isSelectedCategory) White else DarkGrey // Adjust tint based on selection
             )
             Spacer(modifier = Modifier.width(4.dp))
-            Text(name,fontSize = 12.sp, color = if (isSelected==name) White else DarkGrey, textAlign = TextAlign.Center)
+            Text(
+                text = name,
+                fontSize = 12.sp,
+                color = if (isSelectedCategory) White else DarkGrey,
+                textAlign = TextAlign.Center,
+                maxLines = 1, // Ensure single line
+                overflow = TextOverflow.Ellipsis, // Add ellipsis for truncated text
+                modifier = Modifier.wrapContentWidth() // Dynamically adjust width based on text
+            )
         }
     }
-
 }

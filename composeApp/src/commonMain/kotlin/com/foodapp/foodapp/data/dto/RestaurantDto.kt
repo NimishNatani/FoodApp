@@ -17,6 +17,7 @@ data class RestaurantDto(
     val postelCode: String,
     val totalReviews: Int,
     val ratings: Double?,
+    val restaurantTags: List<String>,
     val bookingIds: List<String> =emptyList(),
     val paymentIds: List<String> =emptyList(),
     val foodItems: List<FoodDto> =emptyList(),

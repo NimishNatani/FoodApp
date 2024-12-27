@@ -14,15 +14,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.foodapp.core.presentation.Red
-import com.foodapp.foodapp.domain.models.Restaurant
-import com.foodapp.foodapp.domain.models.User
 import com.foodapp.foodapp.presentation.RestaurantViewModel
 import com.foodapp.foodapp.presentation.UserViewModel
 import com.foodapp.foodapp.presentation.login.AuthLoginViewModel
 import com.foodapp.foodapp.presentation.login.LoginScreenRoot
-import com.foodapp.foodapp.presentation.navigation.CustomNavType
 import com.foodapp.foodapp.presentation.navigation.Route
 import com.foodapp.foodapp.presentation.register.AuthRegisterViewModel
 import com.foodapp.foodapp.presentation.register.RegisterScreenRoot
@@ -35,7 +31,6 @@ import com.foodapp.foodapp.sharedObjects.SharedObject.sharedUser
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.reflect.typeOf
 
 
 @Composable
@@ -125,12 +120,13 @@ fun App() {
                     val userMainScreenViewModel = koinViewModel<UserMainScreenViewModel>()
                     val sharedUserViewModel =
                         it.sharedKoinViewModel<UserViewModel>(navController)
-
-                    sharedUserViewModel.getUser( onFailure = {
-                        navController.navigate(Route.UserSelection) {
-                            navController.popBackStack(Route.UserSelection, false)
-                        }
-                    })
+                    LaunchedEffect(Unit) {
+                        sharedUserViewModel.getUser(onFailure = {
+                            navController.navigate(Route.UserSelection) {
+                                navController.popBackStack(Route.UserSelection, false)
+                            }
+                        })
+                    }
                     val user by sharedUserViewModel.user.collectAsStateWithLifecycle()
                     UserMainScreenRoot(userMainScreenViewModel)
 
@@ -139,16 +135,15 @@ fun App() {
             navigation<Route.RestaurantGraph>(
                 startDestination = Route.RestaurantHomeScreen
             ) {
-                composable<Route.RestaurantHomeScreen>(
-                ) {
+                composable<Route.RestaurantHomeScreen> {
                     val sharedRestaurantViewModel =
                         it.sharedKoinViewModel<RestaurantViewModel>(navController)
 
-                    sharedRestaurantViewModel.getRestaurant(onFailure ={
+                    sharedRestaurantViewModel.getRestaurant(onFailure = {
                         navController.navigate(Route.UserSelection) {
                             navController.popBackStack(Route.UserSelection, false)
                         }
-                    } )
+                    })
 
 
                     Text(

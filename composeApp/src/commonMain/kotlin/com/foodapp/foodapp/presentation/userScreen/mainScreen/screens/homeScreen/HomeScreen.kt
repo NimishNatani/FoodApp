@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -53,7 +54,9 @@ fun UserHomeScreenRoot(
     onNotificationClick: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
-
+//    LaunchedEffect(Unit) {
+//        viewModel.onAction(UserHomeScreenAction.OnGettingRestaurants("Jaipur"))
+//    }
     UserHomeScreen(
         state = state,
         onAction = { action ->
@@ -69,33 +72,35 @@ fun UserHomeScreen(
     onAction: (UserHomeScreenAction) -> Unit
 ) {
     val categoryList = listOf(
-        Pair(Res.drawable.compose_multiplatform,"Indian"),
-        Pair(Res.drawable.compose_multiplatform,"Chinese"),
-        Pair(Res.drawable.compose_multiplatform,"Ice Cream"),
-        Pair(Res.drawable.compose_multiplatform,"Italian"),
-        Pair(Res.drawable.compose_multiplatform,"Fast Food"),
-        Pair(Res.drawable.compose_multiplatform,"Sweets"),
-        Pair(Res.drawable.compose_multiplatform,"Drinks")
+        Pair(Res.drawable.compose_multiplatform, "Indian"),
+        Pair(Res.drawable.compose_multiplatform, "Chinese"),
+        Pair(Res.drawable.compose_multiplatform, "Ice Cream"),
+        Pair(Res.drawable.compose_multiplatform, "Italian"),
+        Pair(Res.drawable.compose_multiplatform, "Fast Food"),
+        Pair(Res.drawable.compose_multiplatform, "Sweets"),
+        Pair(Res.drawable.compose_multiplatform, "Drinks")
     )
     // List of Restaurants
 
 
     if (state.isLoading) {
-        onAction(UserHomeScreenAction.OnGettingRestaurants("Jaipur"))
         Text("Loading")
     } else if (!state.isLoading && state.errorMessage != null) {
         Text(state.errorMessage.asString())
     } else {
-        Column(modifier = Modifier.fillMaxSize().background(White).verticalScroll(rememberScrollState())) {
+        Column(
+            modifier = Modifier.fillMaxSize().background(White)
+                .verticalScroll(rememberScrollState())
+        ) {
             Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 15.dp)) {
                 Text(
-                    "Find The Best Food & Restaurants",
+                    "Find The Best Food \n& Restaurants",
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp,
                     modifier = Modifier.weight(1f)
                 )
-                Box(modifier = Modifier.background(SandYellow, CircleShape).padding(8.dp)){
+                Box(modifier = Modifier.background(SandYellow, CircleShape).padding(8.dp)) {
                     Icon(
                         imageVector = Icons.Default.Notifications,
                         contentDescription = "Notification",
@@ -111,11 +116,13 @@ fun UserHomeScreen(
                     onSearchQueryChange = {
                         onAction(UserHomeScreenAction.OnSearchQueryChange(it))
                     },
-                    onImeSearch = {},
+                    onImeSearch = {
+                        onAction(UserHomeScreenAction.OnSearch(query = state.searchQuery))
+                    },
                     modifier = Modifier.weight(1f)
                 )
                 Spacer(modifier = Modifier.width(5.dp))
-                Box(modifier = Modifier.background(LightGrey, RoundedCornerShape(15.dp))){
+                Box(modifier = Modifier.background(LightGrey, RoundedCornerShape(15.dp))) {
                     Icon(
                         painter = painterResource(Res.drawable.ic_sort),
                         contentDescription = "Notification",
@@ -126,7 +133,11 @@ fun UserHomeScreen(
             }
             Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp)) {
                 categoryList.forEach {
-                    CategoryCard(name = it.second, image = it.first,isSelected = state.category.second, onSelected = {})
+                    CategoryCard(
+                        name = it.second,
+                        image = it.first,
+                        isSelected = state.category.second,
+                        onSelected = {onAction(UserHomeScreenAction.OnCategorySelected(Pair(it.first,it.second)))})
                     Spacer(modifier = Modifier.width(8.dp))
 
                 }
@@ -137,25 +148,31 @@ fun UserHomeScreen(
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
-                    modifier = Modifier.weight(1f))
+                    modifier = Modifier.weight(1f)
+                )
                 Row {
-                    Text("View All", color = Red, fontSize = 16.sp, modifier = Modifier.padding(top=3.dp))
+                    Text("View All", color = Red, fontSize = 16.sp, modifier = Modifier)
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_forward),
                         contentDescription = "arrow",
                         tint = Red,
-                        )
+                        modifier = Modifier.padding(top = 1.dp)
+
+                    )
                 }
             }
 
-            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp).horizontalScroll(
-                rememberScrollState()
-            )){
-                state.searchResults.restaurantList.take(6).forEach { restaurant ->
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp)
+                    .horizontalScroll(
+                        rememberScrollState()
+                    )
+            ) {
+                state.filterResults.restaurantList.take(6).forEach { restaurant ->
                     RestaurantCard(
                         imageUrl = restaurant.restaurantImage,
                         name = restaurant.restaurantName,
-                        tags = listOf("Tag1", "Tag2", "Tag3"),
+                        tags = restaurant.restaurantTags,
                         rating = restaurant.ratings.toString(),
                         totalReviews = restaurant.totalReviews,
                         distance = "1.5",
@@ -174,21 +191,26 @@ fun UserHomeScreen(
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold,
                     fontSize = 20.sp,
-                    modifier = Modifier.weight(1f))
+                    modifier = Modifier.weight(1f)
+                )
                 Row {
-                    Text("View All", color = Red, fontSize = 16.sp, modifier = Modifier.padding(top=3.dp))
+                    Text("View All", color = Red, fontSize = 16.sp, modifier = Modifier)
                     Icon(
                         painter = painterResource(Res.drawable.ic_arrow_forward),
                         contentDescription = "arrow",
                         tint = Red,
+                        modifier = Modifier.padding(top = 1.dp)
                     )
                 }
             }
 
-            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp).horizontalScroll(
-                rememberScrollState()
-            )){
-                state.searchResults.foodList.take(6).forEach { food ->
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp)
+                    .horizontalScroll(
+                        rememberScrollState()
+                    )
+            ) {
+                state.filterResults.foodList.take(6).forEach { food ->
                     FoodCard(
                         imageUrl = food.foodImage,
                         name = food.foodName,

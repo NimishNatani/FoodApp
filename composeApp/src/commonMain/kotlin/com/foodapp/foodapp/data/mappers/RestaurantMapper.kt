@@ -22,6 +22,7 @@ fun RestaurantDto.toRestaurant():Restaurant {
         foodItems =foodItems.map { food ->
              food.toFood()
         },
+        restaurantTags = restaurantTags?: emptyList(),
         reviewIds = reviewIds
     )
 }
