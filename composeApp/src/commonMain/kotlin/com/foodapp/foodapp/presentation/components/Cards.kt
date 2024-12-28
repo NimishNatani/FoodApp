@@ -1,5 +1,6 @@
 package com.foodapp.foodapp.presentation.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +39,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
+import coil3.compose.rememberAsyncImagePainter
 import com.foodapp.core.presentation.Black
 import com.foodapp.core.presentation.DarkGrey
 import com.foodapp.core.presentation.Green
@@ -46,6 +48,9 @@ import com.foodapp.core.presentation.Red
 import com.foodapp.core.presentation.SandYellow
 import com.foodapp.core.presentation.TextSize
 import com.foodapp.core.presentation.White
+import io.kamel.image.KamelImage
+import io.kamel.image.asyncPainterResource
+import io.ktor.http.Url
 import kotlinproject.composeapp.generated.resources.Res
 import kotlinproject.composeapp.generated.resources.ic__favorite
 import kotlinproject.composeapp.generated.resources.ic_favorite_border
@@ -53,7 +58,7 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
-fun RestaurantCard(
+fun NearestRestaurantCard(
     imageUrl: String?,
     name: String,
     tags: List<String>,
@@ -69,8 +74,8 @@ fun RestaurantCard(
     Card(
         modifier = modifier
             .padding(8.dp)
-            .fillMaxWidth()
-            .height(150.dp)
+            .width(250.dp)
+            .height(120.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = White),
@@ -79,24 +84,24 @@ fun RestaurantCard(
         Row(modifier = Modifier.fillMaxSize()) {
             // Image Section
             Box(modifier = Modifier.wrapContentSize().background(Green)) {
-                AsyncImage(
-                    model = imageUrl,
+                KamelImage(
+                    { asyncPainterResource(data = Url("https://t3.ftcdn.net/jpg/03/24/73/92/360_F_324739203_keeq8udvv0P2h1MLYJ0GLSlTBagoXS48.jpg")) },
                     contentDescription = "Image",
                     contentScale = ContentScale.FillBounds,
                     modifier = Modifier
-                        .width(150.dp)
+                        .width(100.dp)
                         .height(150.dp)
                 )
                 // Favorite Icon
                 Box(
                     modifier = Modifier.wrapContentSize().clip(CircleShape)
-                        .align(Alignment.TopStart).padding(8.dp).background(White)
+                        .align(Alignment.TopStart).padding(2.dp).background(White)
                 ) {
                     Icon(
                         painter = painterResource(if (isFavorite) Res.drawable.ic__favorite else Res.drawable.ic_favorite_border), // Replace with your favorite icon
                         contentDescription = "Favorite",
                         modifier = Modifier
-                            .size(50.dp)
+                            .size(35.dp)
                             .align(Alignment.TopEnd)
                             .padding(8.dp)
                             .clickable { onFavoriteClick() }
@@ -108,22 +113,25 @@ fun RestaurantCard(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
             ) {
                 Text(
                     text = name,
                     fontSize = TextSize.large,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.height(25.dp)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(2.dp))
 
                 Text(
                     text = tags.joinToString(" | "),
-                    fontSize = TextSize.regular,
-                    color = DarkGrey
+                    fontSize = TextSize.small,
+                    color = DarkGrey,
+                    modifier = Modifier.height(23.dp)
+
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(2.dp))
 
                 // Delivery Time, Rating, and Location
                 Row(
@@ -149,23 +157,25 @@ fun RestaurantCard(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "$rating($totalReviews)" ,
+                            text = "$rating($totalReviews)",
                             color = SandYellow,
                             fontSize = TextSize.small
                         )
                     }
 
                 }
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.height(20.dp)
+
                 ) {
                     Icon(
                         imageVector = Icons.Default.LocationOn, // Replace with actual icon
                         contentDescription = "Location Icon",
                         tint = Green,
-                        modifier = Modifier.size(30.dp).padding(top = 4.dp)
+                        modifier = Modifier.size(30.dp).padding(top = 5.dp)
                     )
                     Text(
                         text = address,
@@ -175,6 +185,67 @@ fun RestaurantCard(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun PopularRestaurant(
+    imageUrl: String?,
+    name: String,
+    rating: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Card(
+        modifier = modifier
+            .padding(8.dp)
+            .width(100.dp)
+            .height(150.dp)
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = White),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Box(modifier = Modifier.fillMaxWidth().height(85.dp).background(Green)) {
+            KamelImage(
+                { asyncPainterResource(data = Url("https://t3.ftcdn.net/jpg/03/24/73/92/360_F_324739203_keeq8udvv0P2h1MLYJ0GLSlTBagoXS48.jpg")) },
+                contentDescription = "Image",
+                modifier = Modifier,
+                contentScale = ContentScale.FillBounds
+            )
+            Box(
+                modifier = Modifier.wrapContentSize()
+                    .clip(RoundedCornerShape(topStart = 5.dp, topEnd = 5.dp))
+                    .align(Alignment.BottomEnd)
+            ) {
+                Row(
+                    modifier = Modifier.wrapContentSize().background(White),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Star, // Replace with your star icon
+                        contentDescription = "Rating",
+                        tint = SandYellow,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    Text(
+                        text = rating,
+                        color = SandYellow,
+                        fontSize = TextSize.small
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                }
+            }
+        }
+        Text(
+            text = name,
+            modifier = Modifier.fillMaxSize().align(Alignment.CenterHorizontally).padding(8.dp),
+            fontSize = TextSize.large,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }
 
@@ -293,11 +364,8 @@ fun FoodCard(
 fun CategoryCard(
     name: String,
     image: DrawableResource, // Drawable resource ID
-    isSelected: String,
     onSelected: () -> Unit
 ) {
-    val isSelectedCategory = isSelected == name
-
     Column(
         modifier = Modifier
             .wrapContentHeight()
@@ -306,12 +374,13 @@ fun CategoryCard(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Icon(
-            painter = painterResource(image),
-            contentDescription = "Category Icon",
-            modifier = Modifier.size(50.dp).clip(CircleShape),
-
-            )
+        KamelImage(
+            {
+//            painter = painterResource(image),
+                asyncPainterResource(data = Url("https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg"))
+            }, contentDescription = "Category Icon",
+            modifier = Modifier.size(50.dp).clip(CircleShape)
+        )
         Spacer(modifier = Modifier.width(4.dp))
         Text(
             text = name,

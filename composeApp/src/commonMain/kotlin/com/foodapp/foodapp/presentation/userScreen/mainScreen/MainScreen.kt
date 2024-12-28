@@ -102,7 +102,7 @@ fun UserMainScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(shape = RoundedCornerShape(20.dp, 0.dp, 0.dp, 0.dp), color = White)
-                .border(width = 1.dp, color = Green)
+                .border(width = 1.dp, color = Green, shape = RoundedCornerShape(topStart = 20.dp))
                 .padding(vertical = 8.dp),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically

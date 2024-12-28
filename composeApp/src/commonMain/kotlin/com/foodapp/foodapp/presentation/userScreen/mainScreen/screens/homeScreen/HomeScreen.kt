@@ -27,14 +27,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.foodapp.core.presentation.DarkGrey
 import com.foodapp.core.presentation.GreenShade
 import com.foodapp.core.presentation.LightGrey
 import com.foodapp.core.presentation.White
 import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.presentation.components.CategoryCard
-import com.foodapp.foodapp.presentation.components.FoodCard
-import com.foodapp.foodapp.presentation.components.RestaurantCard
+import com.foodapp.foodapp.presentation.components.NearestRestaurantCard
+import com.foodapp.foodapp.presentation.components.PopularRestaurant
 import com.foodapp.foodapp.presentation.components.SearchBar
 import kotlinproject.composeapp.generated.resources.Res
 import kotlinproject.composeapp.generated.resources.compose_multiplatform
@@ -140,12 +139,14 @@ fun UserHomeScreen(
                 )
 
             }
-            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
                 categoryList.forEach {
                     CategoryCard(
                         name = it.second,
                         image = it.first,
-                        isSelected = state.category.second,
                         onSelected = {
                             onAction(
                                 UserHomeScreenAction.OnCategorySelected(
@@ -180,20 +181,15 @@ fun UserHomeScreen(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp)
                     .horizontalScroll(
                         rememberScrollState()
-                    )
+                    ),horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                state.filterResults.restaurantList.take(6).forEach { restaurant ->
-                    RestaurantCard(
-                        imageUrl = restaurant.restaurantImage,
-                        name = restaurant.restaurantName,
-                        tags = restaurant.restaurantTags,
-                        rating = restaurant.ratings.toString(),
-                        totalReviews = restaurant.totalReviews,
-                        distance = "1.5",
-                        isFavorite = false,
-                        onFavoriteClick = {},
-                        address = "jaiput fhskdndjdvk",
-                        onClick = {}
+                state.filterResults.mealTimeFoodList.take(6).forEach { food ->
+                    CategoryCard(
+                        name = food.foodName,
+                        image = Res.drawable.compose_multiplatform,
+                        onSelected = {
+
+                        }
 
                     )
                     Spacer(modifier = Modifier.width(8.dp))
@@ -223,15 +219,18 @@ fun UserHomeScreen(
                         rememberScrollState()
                     )
             ) {
-                state.filterResults.foodList.take(6).forEach { food ->
-                    FoodCard(
-                        imageUrl = food.foodImage,
-                        name = food.foodName,
-                        rating = food.rating.toString(),
+                state.filterResults.nearestRestaurantList.take(6).forEach { restaurant ->
+                    NearestRestaurantCard(
+                        imageUrl = restaurant.restaurantImage,
+                        name = restaurant.restaurantName,
+                        tags = restaurant.restaurantTags,
+                        rating = restaurant.ratings.toString(),
+                        totalReviews = restaurant.totalReviews,
                         distance = "1.5",
                         isFavorite = false,
                         onFavoriteClick = {},
-                        price = food.foodDetails[0].foodPrice.toString()
+                        address = restaurant.address + restaurant.city + restaurant.state,
+                        onClick = {}
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                 }
@@ -259,19 +258,18 @@ fun UserHomeScreen(
                         rememberScrollState()
                     )
             ) {
-                state.filterResults.foodList.take(6).forEach { food ->
-                    FoodCard(
-                        imageUrl = food.foodImage,
-                        name = food.foodName,
-                        rating = food.rating.toString(),
-                        distance = "1.5",
-                        isFavorite = false,
-                        onFavoriteClick = {},
-                        price = food.foodDetails[0].foodPrice.toString()
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+                state.filterResults.popularRestaurantList.take(6)
+                    .forEach { restaurant ->
+                        PopularRestaurant(
+                            imageUrl = restaurant.restaurantImage,
+                            name = restaurant.restaurantName,
+                            rating = restaurant.ratings.toString(),
+                            onClick = {},
+                            modifier = Modifier
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
 
-                }
+                    }
             }
         }
     }

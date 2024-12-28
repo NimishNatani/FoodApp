@@ -10,7 +10,7 @@ import org.jetbrains.compose.resources.DrawableResource
 data class UserHomeScreenState(
     val searchQuery: String = "",
     val searchResults: SearchItem = SearchItem(),
-    val filterResults:SearchItem = SearchItem(),
+    val filterResults:FilterItem = FilterItem(),
     val favoriteRestaurant: List<Restaurant> = emptyList(),
     val favoriteFood: List<Food> = emptyList(),
     val isLoading: Boolean = true,
@@ -21,4 +21,10 @@ data class UserHomeScreenState(
 data class SearchItem (
     val restaurantList:List<Restaurant> = emptyList<Restaurant>(),
     val foodList:List<Food> = emptyList<Food>()
+)
+
+data class FilterItem (
+    val popularRestaurantList:List<Restaurant> = emptyList<Restaurant>(),
+    val nearestRestaurantList:List<Restaurant> = emptyList<Restaurant>(),
+    val mealTimeFoodList:List<Food> = emptyList<Food>()
 )

@@ -82,6 +82,8 @@ kotlin {
 
             implementation(libs.bundles.ktor)
             implementation(libs.bundles.coil)
+
+            implementation(libs.kamel.image)
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)

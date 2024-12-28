@@ -92,7 +92,7 @@ class UserHomeScreenViewModel(private val restaurantRepository: RestaurantReposi
         val originalRestaurants = uiState.value.searchResults.restaurantList
         val originalFoods = uiState.value.searchResults.restaurantList.flatMap { it.foodItems }
 
-        val filteredRestaurants = if (!searchQuery.isNullOrEmpty()) {
+      if (!searchQuery.isNullOrEmpty()) {
             // Filter and sort restaurants and food based on the search query
             val filteredAndSortedRestaurants = originalRestaurants.filter { restaurant ->
                 restaurant.restaurantName.contains(searchQuery, ignoreCase = true) ||
@@ -128,31 +128,31 @@ class UserHomeScreenViewModel(private val restaurantRepository: RestaurantReposi
 
             // Return both filtered and sorted restaurants and foods
             Pair(filteredAndSortedRestaurants, filteredAndSortedFoods)
-
         } else {
-            val filteredRestaurants = originalRestaurants.filter { restaurant ->
-                restaurant.restaurantTags.any { it.contains(selectedCategory, ignoreCase = true) }
-            }.sortedBy { restaurant ->
-                restaurant.restaurantTags.count { it.contains(selectedCategory, ignoreCase = true) }
+            val mealType = getMealTime()
+            val popularRestaurantList = originalRestaurants.sortedBy { it.ratings }
+
+            val nearestRestaurantList = originalRestaurants.sortedBy { it.ratings }
+
+            val mealTimeFoodList = originalFoods.filter { food ->
+                food.foodType.any { it.contains(mealType, ignoreCase = true) }
+            }.sortedBy { food ->
+                food.foodType.count { it.contains(mealType, ignoreCase = true) }
             }
 
-            val filteredFoods = originalFoods.filter { food ->
-                food.foodTags.any { it.contains(selectedCategory, ignoreCase = true) }
-            }.sortedBy { food ->
-                food.foodTags.count { it.contains(selectedCategory, ignoreCase = true) }
-            }
-            Pair(filteredRestaurants, filteredFoods)
+          _uiState.update {
+              it.copy(
+                  isLoading = false,
+                  filterResults = FilterItem(
+                      popularRestaurantList = popularRestaurantList,
+                      nearestRestaurantList = nearestRestaurantList,
+                      mealTimeFoodList = mealTimeFoodList
+                  )
+              )
+          }
         }
 
         // Update UI state with filtered and sorted data
-        _uiState.update {
-            it.copy(
-                isLoading = false,
-                filterResults = SearchItem(
-                    restaurantList = filteredRestaurants.first,
-                    foodList = filteredRestaurants.second
-                )
-            )
-        }
+
     }
 }
