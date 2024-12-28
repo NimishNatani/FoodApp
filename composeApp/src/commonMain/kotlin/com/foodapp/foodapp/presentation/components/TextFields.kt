@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -31,12 +32,11 @@ fun CustomTextField(
     type: String,
     backgroundColor: Color = White,
     textColor:Color = Black,
-    borderColor:Color = DarkGrey
 ) {
     // State to manage password visibility
     var passwordVisible by remember { mutableStateOf(false) }
 
-    OutlinedTextField(
+    TextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label, fontSize = 16.sp, color = DarkGrey) },
@@ -52,14 +52,17 @@ fun CustomTextField(
         ),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(vertical = 8.dp)
+            .clip(RoundedCornerShape(20.dp))
             .background(White),
         shape = RoundedCornerShape(20.dp),
-        colors = OutlinedTextFieldDefaults.colors(
+        colors = TextFieldDefaults.colors(
+            disabledIndicatorColor = Color.Transparent,
+            errorIndicatorColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent,
             unfocusedTextColor = textColor,
             focusedTextColor = textColor,
-            unfocusedBorderColor = borderColor,
-            focusedBorderColor = borderColor,
             unfocusedContainerColor = backgroundColor,
             focusedContainerColor = backgroundColor,
             disabledContainerColor = backgroundColor,

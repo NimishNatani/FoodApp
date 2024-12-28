@@ -2,6 +2,7 @@ package com.foodapp.foodapp.presentation.register
 
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,39 +13,28 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.key.Key.Companion.R
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.foodapp.core.presentation.Black
 import com.foodapp.core.presentation.DarkGrey
+import com.foodapp.core.presentation.Green
 import com.foodapp.core.presentation.LightGrey
+import com.foodapp.core.presentation.TextSize
 import com.foodapp.foodapp.presentation.components.CustomButton
 import com.foodapp.foodapp.presentation.components.CustomTextField
 import com.foodapp.foodapp.presentation.components.OutlinedCustomButton
@@ -72,7 +62,7 @@ fun RegisterScreenRoot(
 
     RegisterScreen(
         state = state,
-        onLogin = {onLogin()},
+        onLogin = { onLogin() },
         onEvent = { event ->
             viewModel.onEvent(event)
         },
@@ -84,7 +74,7 @@ fun RegisterScreenRoot(
 @Composable
 fun RegisterScreen(
     state: RegisterUiState,
-    onLogin:()->Unit,
+    onLogin: () -> Unit,
     onEvent: (RegisterIntent) -> Unit,
     isUser: Boolean,
     modifier: Modifier = Modifier
@@ -92,7 +82,8 @@ fun RegisterScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .background(LightGrey)
+            .padding(horizontal = 16.dp,vertical = 8.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -102,13 +93,31 @@ fun RegisterScreen(
             contentDescription = "App Logo",
             modifier = Modifier.size(120.dp)
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Create Your Account",
+            fontSize = TextSize.heading1,
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = if (isUser) "Username" else "Restaurant Name",
+            fontSize = TextSize.regular,
+            modifier = Modifier.fillMaxWidth().align(Alignment.Start)
+        )
 
         CustomTextField(
-            label = if(isUser) "Username" else "Restaurant Name",
+            label = if (isUser) "Username" else "Restaurant Name",
             value = state.name,
             onValueChange = { onEvent(RegisterIntent.NameChanged(it)) },
             type = "text"
+        )
+        Text(
+            text = "Email-id",
+            fontSize = TextSize.regular,
+            modifier = Modifier.fillMaxWidth().align(Alignment.Start)
         )
 
         CustomTextField(
@@ -117,12 +126,22 @@ fun RegisterScreen(
             onValueChange = { onEvent(RegisterIntent.EmailChanged(it)) },
             type = "email"
         )
+        Text(
+            text = "Password",
+            fontSize = TextSize.regular,
+            modifier = Modifier.fillMaxWidth().align(Alignment.Start)
+        )
 
         CustomTextField(
             label = "Password",
             value = state.password,
             onValueChange = { onEvent(RegisterIntent.PasswordChanged(it)) },
             type = "password"
+        )
+        Text(
+            text = "Confirm Password",
+            fontSize = TextSize.regular,
+            modifier = Modifier.fillMaxWidth().align(Alignment.Start)
         )
         CustomTextField(
             label = "Confirm Password",
@@ -131,10 +150,10 @@ fun RegisterScreen(
             type = "password"
         )
 
-       CustomButton(
-           text = "Register",
-           onClick = { onEvent(RegisterIntent.SubmitRegister(state.isUser)) }
-       )
+        CustomButton(
+            text = "Sign Up",
+            onClick = { onEvent(RegisterIntent.SubmitRegister(state.isUser)) }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -168,13 +187,19 @@ fun RegisterScreen(
 
         Text(
             text = "Already have an account?",
-            color = DarkGrey
+            color = Black
         )
         Text(
-            text = AnnotatedString("Login Now", spanStyle = SpanStyle(fontStyle = FontStyle.Italic, textDecoration = TextDecoration.Underline)),
+            text = AnnotatedString(
+                "Login Now",
+                spanStyle = SpanStyle(
+                    fontStyle = FontStyle.Italic,
+                    textDecoration = TextDecoration.Underline
+                )
+            ),
 //            onClick / { /* Navigate to Sign Up */ },
             modifier = Modifier.clickable { onLogin() },
-            style = TextStyle(color = Black, fontWeight = FontWeight.Bold)
+            style = TextStyle(color = Green, fontWeight = FontWeight.Bold)
         )
 
 

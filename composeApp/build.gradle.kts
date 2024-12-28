@@ -76,6 +76,8 @@ kotlin {
 //            implementation(libs.klogger)
 
             implementation(libs.uri.kmp)
+            implementation(libs.kotlinx.datetime)
+
 
 
             implementation(libs.bundles.ktor)

@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,9 +25,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -36,12 +40,13 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.foodapp.core.presentation.Black
 import com.foodapp.core.presentation.DarkGrey
+import com.foodapp.core.presentation.Green
 import com.foodapp.core.presentation.LightGrey
 import com.foodapp.core.presentation.Red
 import com.foodapp.core.presentation.SandYellow
+import com.foodapp.core.presentation.TextSize
 import com.foodapp.core.presentation.White
 import kotlinproject.composeapp.generated.resources.Res
-import kotlinproject.composeapp.generated.resources.compose_multiplatform
 import kotlinproject.composeapp.generated.resources.ic__favorite
 import kotlinproject.composeapp.generated.resources.ic_favorite_border
 import org.jetbrains.compose.resources.DrawableResource
@@ -55,117 +60,121 @@ fun RestaurantCard(
     rating: String?,
     totalReviews: Int,
     distance: String,
+    address: String,
     isFavorite: Boolean = false,
+    onClick: () -> Unit,
     onFavoriteClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Card(
         modifier = modifier
-            .width(300.dp)
-            .height(200.dp),
-        colors = CardDefaults.cardColors(containerColor = Red),
-        shape = RoundedCornerShape(12.dp)
-
+            .padding(8.dp)
+            .fillMaxWidth()
+            .height(150.dp)
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = White),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
-        Box(
-            modifier = Modifier.background(
-                color = SandYellow,
-                shape = RoundedCornerShape(topEnd = 12.dp, topStart = 12.dp)
-            )
-                .width(300.dp).height(130.dp)
-
-        ) {
-            // Background Image
-            AsyncImage(
-                model = imageUrl, // Replace with actual image loading
-                contentDescription = "Restaurant Image",
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier.fillMaxSize()
-
-            )
-
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth().padding(12.dp)
-            ) {
-                // Rating Badge
-                Box(
+        Row(modifier = Modifier.fillMaxSize()) {
+            // Image Section
+            Box(modifier = Modifier.wrapContentSize().background(Green)) {
+                AsyncImage(
+                    model = imageUrl,
+                    contentDescription = "Image",
+                    contentScale = ContentScale.FillBounds,
                     modifier = Modifier
-                        .background(White, RoundedCornerShape(20.dp))
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .width(150.dp)
+                        .height(150.dp)
+                )
+                // Favorite Icon
+                Box(
+                    modifier = Modifier.wrapContentSize().clip(CircleShape)
+                        .align(Alignment.TopStart).padding(8.dp).background(White)
                 ) {
-                    Row {
+                    Icon(
+                        painter = painterResource(if (isFavorite) Res.drawable.ic__favorite else Res.drawable.ic_favorite_border), // Replace with your favorite icon
+                        contentDescription = "Favorite",
+                        modifier = Modifier
+                            .size(50.dp)
+                            .align(Alignment.TopEnd)
+                            .padding(8.dp)
+                            .clickable { onFavoriteClick() }
+                    )
+                }
+            }
+
+            // Content Section
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                Text(
+                    text = name,
+                    fontSize = TextSize.large,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = tags.joinToString(" | "),
+                    fontSize = TextSize.regular,
+                    color = DarkGrey
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Delivery Time, Rating, and Location
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    modifier = Modifier.fillMaxWidth().height(20.dp)
+                ) {
+
+                    Text(
+                        text = distance + "Km",
+                        fontSize = TextSize.regular,
+                        color = DarkGrey
+                    )
+
+                    VerticalDivider(thickness = 1.dp, color = LightGrey)
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            imageVector = Icons.Default.Star, // Replace with actual icon
-                            contentDescription = "Favorite",
+                            imageVector = Icons.Default.Star, // Replace with your star icon
+                            contentDescription = "Rating",
                             tint = SandYellow,
-                            modifier = Modifier.clickable { onFavoriteClick() }.size(18.dp)
+                            modifier = Modifier.size(16.dp)
                         )
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = rating?:"0.0",
-                            color = Black,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
-                        )
-                        Text(
-                            text = "($totalReviews)",
-                            color = Black.copy(alpha = 0.7f),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 8.sp
+                            text = "$rating($totalReviews)" ,
+                            color = SandYellow,
+                            fontSize = TextSize.small
                         )
                     }
-                }
 
-                // Favorite Icon
-                Box(modifier = Modifier.background(White, shape = CircleShape).padding(4.dp)) {
+                }
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     Icon(
-                        painter = painterResource(if (isFavorite) Res.drawable.ic__favorite else Res.drawable.ic_favorite_border), // Replace with actual icon
-                        contentDescription = "Favorite",
-                        tint = Red,
-                        modifier = Modifier.clickable { onFavoriteClick() }
+                        imageVector = Icons.Default.LocationOn, // Replace with actual icon
+                        contentDescription = "Location Icon",
+                        tint = Green,
+                        modifier = Modifier.size(30.dp).padding(top = 4.dp)
+                    )
+                    Text(
+                        text = address,
+                        color = DarkGrey,
+                        fontSize = TextSize.small
                     )
                 }
             }
         }
-
-        // Restaurant Details
-        Row(modifier = Modifier.fillMaxSize().background(Red).padding(10.dp)) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = name,
-                    color = White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = tags.joinToString(separator = " | "),
-                    color = White,
-                    fontSize = 12.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = "Location",
-                    tint = White.copy(alpha = 0.7f),
-                    modifier = Modifier.size(22.dp)
-                )
-                Spacer(modifier = Modifier.width(2.dp))
-                Text(
-                    text = "$distance Km Away",
-                    color = White.copy(alpha = 0.7f),
-                    fontSize = 12.sp
-                )
-            }
-        }
-
-
     }
 }
 
@@ -203,8 +212,7 @@ fun FoodCard(
             )
             Row(modifier = Modifier.padding(8.dp).align(Alignment.TopEnd)) {
                 Box(
-                    modifier = Modifier.background(White, shape = CircleShape).padding(4.dp)
-                        ,
+                    modifier = Modifier.background(White, shape = CircleShape).padding(4.dp),
 //                    contentAlignment = Alignment.TopEnd
                 ) {
                     Icon(
@@ -290,39 +298,30 @@ fun CategoryCard(
 ) {
     val isSelectedCategory = isSelected == name
 
-    Card(
+    Column(
         modifier = Modifier
-            .height(40.dp)
+            .wrapContentHeight()
             .wrapContentWidth() // Allow width to adjust dynamically
             .clickable { onSelected() },
-        colors = CardDefaults.cardColors(
-            containerColor = if (isSelectedCategory) Red else LightGrey
-        ),
-        shape = RoundedCornerShape(25.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp)
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 4.dp), // Adjust padding for proper alignment
-            verticalAlignment = Alignment.CenterVertically, // Align content vertically
-            horizontalArrangement = Arrangement.Center // Center content horizontally
-        ) {
-            Icon(
-                painter = painterResource(image),
-                contentDescription = "Category Icon",
-                modifier = Modifier.size(20.dp),
-                tint = if (isSelectedCategory) White else DarkGrey // Adjust tint based on selection
+
+        Icon(
+            painter = painterResource(image),
+            contentDescription = "Category Icon",
+            modifier = Modifier.size(50.dp).clip(CircleShape),
+
             )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = name,
-                fontSize = 12.sp,
-                color = if (isSelectedCategory) White else DarkGrey,
-                textAlign = TextAlign.Center,
-                maxLines = 1, // Ensure single line
-                overflow = TextOverflow.Ellipsis, // Add ellipsis for truncated text
-                modifier = Modifier.wrapContentWidth() // Dynamically adjust width based on text
-            )
-        }
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = name,
+            fontSize = TextSize.small,
+            color = Black,
+            textAlign = TextAlign.Center,
+            maxLines = 1, // Ensure single line
+            overflow = TextOverflow.Ellipsis, // Add ellipsis for truncated text
+            modifier = Modifier.wrapContentWidth() // Dynamically adjust width based on text
+        )
+
     }
 }

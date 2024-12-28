@@ -12,6 +12,7 @@ data class FoodDto(
     val foodDetailList: List<FoodDetailsDto>,
     val available: Boolean,
     val veg: Boolean,
+    val foodType :List<String>,
     val rating: Double?,
     val totalReviews: Int?,
     val restaurantId: String

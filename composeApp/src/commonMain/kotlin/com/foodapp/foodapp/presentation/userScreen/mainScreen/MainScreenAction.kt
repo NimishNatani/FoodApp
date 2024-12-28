@@ -6,6 +6,6 @@ import com.foodapp.foodapp.domain.models.Restaurant
 
 sealed interface MainScreenAction {
 
-    data class OnTabSelected(val index: Int,val icon:ImageVector): MainScreenAction
+    data class OnTabSelected(val index: Int,val icon:ImageVector,val name:String): MainScreenAction
 
 }

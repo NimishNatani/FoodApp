@@ -12,7 +12,7 @@ class UserMainScreenViewModel():ViewModel() {
     fun onAction(action: MainScreenAction){
         when(action){
             is MainScreenAction.OnTabSelected -> {
-                _uiState.value = _uiState.value.copy(selectedTabIndex = BottomNavItem(action.index,action.icon))
+                _uiState.value = _uiState.value.copy(selectedTabIndex = BottomNavItem(action.index,action.icon,action.name))
             }
         }
 

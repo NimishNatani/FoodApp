@@ -41,6 +41,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import com.foodapp.core.presentation.Black
 import com.foodapp.core.presentation.DarkGrey
+import com.foodapp.core.presentation.Green
+import com.foodapp.core.presentation.TextSize
 import com.foodapp.foodapp.presentation.components.CustomButton
 import com.foodapp.foodapp.presentation.components.CustomTextField
 import com.foodapp.foodapp.presentation.components.OutlinedCustomButton
@@ -90,7 +92,7 @@ fun LoginScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp,vertical = 8.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -100,7 +102,21 @@ fun LoginScreen(
             contentDescription = "App Logo",
             modifier = Modifier.size(120.dp)
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Login Into Your Account",
+            fontSize = TextSize.heading1,
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Email-id",
+            fontSize = TextSize.regular,
+            modifier = Modifier.fillMaxWidth().align(Alignment.Start)
+        )
+
 
         CustomTextField(
             label = "Email-id",
@@ -108,7 +124,11 @@ fun LoginScreen(
             onValueChange = { onEvent(LoginIntent.EmailChanged(it)) },
             type = "email"
         )
-
+        Text(
+            text = "Password",
+            fontSize = TextSize.regular,
+            modifier = Modifier.fillMaxWidth().align(Alignment.Start)
+        )
         CustomTextField(
             label = "Password",
             value = state.password,
@@ -153,13 +173,13 @@ fun LoginScreen(
 
         Text(
             text = "Don't have an account?",
-            color = DarkGrey
+            color = Black
         )
         Text(
             text = AnnotatedString("Sign Up Now", spanStyle = SpanStyle(fontStyle = FontStyle.Italic, textDecoration = TextDecoration.Underline)),
 //            onClick / { /* Navigate to Sign Up */ },
             modifier = Modifier.clickable { onSignUp() },
-            style = TextStyle(color = Black, fontWeight = FontWeight.Bold)
+            style = TextStyle(color = Green, fontWeight = FontWeight.Bold)
         )
     }
 }

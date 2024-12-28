@@ -9,24 +9,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.foodapp.core.presentation.Black
-import com.foodapp.core.presentation.Red
+import com.foodapp.core.presentation.DarkGrey
+import com.foodapp.core.presentation.TextSize
 import com.foodapp.core.presentation.White
 
 @Composable
 fun CustomButton(
     text: String,
     onClick: () -> Unit,
-    buttonColor: Color = Red
+    buttonColor: Color = DarkGrey
 ) {
     Button(
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 16.dp),
+            .padding(vertical = 8.dp, horizontal = 10.dp),
         colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
-        shape = RoundedCornerShape(20.dp)
+        shape = RoundedCornerShape(10.dp)
     ) {
-        Text(text = text, fontSize = 16.sp, color = White)
+        CustomButtonText(text)
     }
 }
 

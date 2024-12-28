@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foodapp.core.domain.onError
 import com.foodapp.core.domain.onSuccess
+import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.domain.models.User
 import com.foodapp.foodapp.domain.repository.AuthRepository
 import com.foodapp.foodapp.domain.repository.UserRepository
@@ -21,6 +22,9 @@ class UserViewModel(
     private val _user = MutableStateFlow<User?>(null)
     val user = _user.asStateFlow()
 
+    private val _getCityRestaurants = MutableStateFlow<List<Restaurant>>(emptyList())
+    val getCityRestaurants = _getCityRestaurants.asStateFlow()
+
     fun setUser(user: User){
         _user.value = user
     }
@@ -35,6 +39,10 @@ class UserViewModel(
             }.onError { onFailure() }
 
         }
+    }
+
+    fun setListRestaurants(list: List<Restaurant>){
+        _getCityRestaurants.value = list
     }
 
 

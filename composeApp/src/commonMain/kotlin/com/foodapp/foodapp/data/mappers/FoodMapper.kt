@@ -17,7 +17,8 @@ fun FoodDto.toFood(): Food {
         isVeg = veg,
         rating = rating,
         totalReviews = totalReviews,
-        restaurantId = restaurantId
+        restaurantId = restaurantId,
+        foodType = foodType
     )
 }
 

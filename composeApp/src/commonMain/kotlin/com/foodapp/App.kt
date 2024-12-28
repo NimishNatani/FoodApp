@@ -128,8 +128,15 @@ fun App() {
                         })
                     }
                     val user by sharedUserViewModel.user.collectAsStateWithLifecycle()
-                    UserMainScreenRoot(userMainScreenViewModel)
+                    UserMainScreenRoot(userMainScreenViewModel, onViewAllRestaurantScreen = {restaurants ->
+                        sharedUserViewModel.setListRestaurants(restaurants)
+                        navController.navigate(Route.RestaurantHomeScreen)
+                    })
 
+                }
+                composable<Route.ViewAllRestaurantScreen> {
+                    val sharedUserViewModel =
+                        it.sharedKoinViewModel<UserViewModel>(navController)
                 }
             }
             navigation<Route.RestaurantGraph>(

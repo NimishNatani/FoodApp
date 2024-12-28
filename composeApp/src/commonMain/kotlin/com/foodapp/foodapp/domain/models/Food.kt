@@ -13,6 +13,7 @@ data class Food(
     var foodDetails: List<FoodDetails>,
     var isAvailable: Boolean,
     var isVeg: Boolean,
+    var foodType: List<String>,
     var rating: Double?,
     var totalReviews: Int?,
     var restaurantId: String

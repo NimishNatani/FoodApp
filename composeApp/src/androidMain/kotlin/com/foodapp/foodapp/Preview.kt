@@ -2,6 +2,7 @@ package com.foodapp.foodapp
 
 import android.graphics.Color
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.foodapp.foodapp.presentation.components.CustomTextField
 import com.foodapp.foodapp.presentation.components.FoodCard
@@ -35,6 +36,7 @@ import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen
 //    RegisterScreen(
 //        state = RegisterUiState(),
 //        onEvent = {},
+//        onLogin = {},
 //        isUser = true
 //    )
 //}
@@ -45,27 +47,31 @@ import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen
 //    LoginScreen(
 //        state = LoginUiState(),
 //        onEvent = {},
-//        isUser = true
+//        isUser = true,
+//        onSignUp = {  },
+//        modifier = Modifier
 //    )
 //}
 
 //
 
 
-//@Preview(backgroundColor = Color.WHITE.toLong(), showBackground = true)
-//@Composable
-//fun LoginScreenPreview() {
-//    RestaurantCard(
-//        imageUrl = "https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg",
-//        name = "Restaurant Name",
-//        tags = listOf("Tag1", "Tag2", "Tag3"),
-//        rating = "4.5",
-//        totalReviews = 11,
-//        distance = "1.5",
-//        isFavorite = false,
-//        onFavoriteClick = {}
-//    )
-//}
+@Preview(backgroundColor = Color.WHITE.toLong(), showBackground = true)
+@Composable
+fun LoginScreenPreview() {
+    RestaurantCard(
+        imageUrl = "https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg",
+        name = "Restaurant Name",
+        tags = listOf("Tag1", "Tag2", "Tag3"),
+        rating = "4.5",
+        totalReviews = 11,
+        distance = "1.5",
+        isFavorite = false,
+        onFavoriteClick = {},
+        onClick = {},
+        address = "jaiput fhskdndjdvk"
+    )
+}
 
 //@Preview(backgroundColor = Color.WHITE.toLong(), showBackground = true)
 //@Composable
@@ -81,11 +87,13 @@ import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen
 //    )
 //}
 
-@Preview(backgroundColor = Color.WHITE.toLong(), showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-   UserHomeScreen(
-       state = UserHomeScreenState(),
-       onAction = {}
-   )
-}
+//@Preview(backgroundColor = Color.WHITE.toLong(), showBackground = true)
+//@Composable
+//fun LoginScreenPreview() {
+//   UserHomeScreen(
+//       state = UserHomeScreenState(isLoading = false),
+//       onAction = {},
+//       onViewAllRestaurantScreen = {}
+//
+//   )
+//}
