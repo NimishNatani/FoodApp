@@ -6,6 +6,6 @@ import org.koin.dsl.KoinAppDeclaration
 fun initKoin(config: KoinAppDeclaration? = null) {
     startKoin {
         config?.invoke(this)
-        modules(appModule, platformModule, createTokenStorageModule()) // Only include ViewModels module
+        modules(appModule, platformModule, createTokenStorageModule(), getPlatformConfiguration()) // Only include ViewModels module
     }
 }

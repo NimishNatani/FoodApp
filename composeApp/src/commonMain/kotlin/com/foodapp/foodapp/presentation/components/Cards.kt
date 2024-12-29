@@ -2,6 +2,7 @@ package com.foodapp.foodapp.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -364,7 +365,8 @@ fun FoodCard(
 fun CategoryCard(
     name: String,
     image: DrawableResource, // Drawable resource ID
-    onSelected: () -> Unit
+    onSelected: () -> Unit,
+    isSelected: Boolean = false
 ) {
     Column(
         modifier = Modifier
@@ -379,13 +381,13 @@ fun CategoryCard(
 //            painter = painterResource(image),
                 asyncPainterResource(data = Url("https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg"))
             }, contentDescription = "Category Icon",
-            modifier = Modifier.size(50.dp).clip(CircleShape)
+            modifier = Modifier.size(50.dp).clip(CircleShape).border(width = 1.dp,color = if (isSelected) Green else White, shape = CircleShape)
         )
         Spacer(modifier = Modifier.width(4.dp))
         Text(
             text = name,
             fontSize = TextSize.small,
-            color = Black,
+            color = if (isSelected) Green else Black,
             textAlign = TextAlign.Center,
             maxLines = 1, // Ensure single line
             overflow = TextOverflow.Ellipsis, // Add ellipsis for truncated text

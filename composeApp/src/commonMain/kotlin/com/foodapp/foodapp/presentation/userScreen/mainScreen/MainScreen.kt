@@ -48,14 +48,16 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun UserMainScreenRoot(
     viewModel: UserMainScreenViewModel = koinViewModel(),
-    onViewAllRestaurantScreen: (List<Restaurant>) -> Unit
+    onViewAllRestaurantScreen: (List<Restaurant>) -> Unit,
+    onViewAllCategoryScreen: (List<Restaurant>) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     UserMainScreen(state, onAction = { action ->
         viewModel.onAction(action)
     },
-        onViewAllRestaurantScreen = { onViewAllRestaurantScreen(it) })
+        onViewAllRestaurantScreen = { onViewAllRestaurantScreen(it) },
+        onViewAllCategoryScreen = {onViewAllCategoryScreen(it)})
 
 }
 
@@ -63,7 +65,8 @@ fun UserMainScreenRoot(
 fun UserMainScreen(
     state: MainScreenState,
     onAction: (MainScreenAction) -> Unit,
-    onViewAllRestaurantScreen: (List<Restaurant>) -> Unit
+    onViewAllRestaurantScreen: (List<Restaurant>) -> Unit,
+    onViewAllCategoryScreen: (List<Restaurant>) -> Unit
 ) {
     val userHomeScreenViewModel = koinViewModel<UserHomeScreenViewModel>()
     val items = listOf(
@@ -81,7 +84,8 @@ fun UserMainScreen(
             when (state.selectedTabIndex.iconNumber) {
                 0 -> {
                     UserHomeScreenRoot(userHomeScreenViewModel, onNotificationClick = {},
-                        onViewAllRestaurantScreen = { onViewAllRestaurantScreen(it) })
+                        onViewAllRestaurantScreen = { onViewAllRestaurantScreen(it) },
+                        onViewAllCategoryScreen = {onViewAllCategoryScreen(it)})
                 }
 
                 1 -> {

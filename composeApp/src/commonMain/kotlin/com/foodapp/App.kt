@@ -27,6 +27,7 @@ import com.foodapp.foodapp.presentation.starter.SplashScreen
 import com.foodapp.foodapp.presentation.starter.UserSelectionScreen
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.UserMainScreenRoot
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.UserMainScreenViewModel
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen.ViewAllCategoryScreenRoot
 import com.foodapp.foodapp.sharedObjects.SharedObject.sharedUser
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -128,15 +129,27 @@ fun App() {
                         })
                     }
                     val user by sharedUserViewModel.user.collectAsStateWithLifecycle()
-                    UserMainScreenRoot(userMainScreenViewModel, onViewAllRestaurantScreen = {restaurants ->
-                        sharedUserViewModel.setListRestaurants(restaurants)
-                        navController.navigate(Route.RestaurantHomeScreen)
-                    })
+                    UserMainScreenRoot(
+                        userMainScreenViewModel,
+                        onViewAllRestaurantScreen = { restaurants ->
+                            sharedUserViewModel.setListRestaurants(restaurants)
+                            navController.navigate(Route.RestaurantHomeScreen)
+                        },
+                        onViewAllCategoryScreen = { restaurants ->
+                            sharedUserViewModel.setListRestaurants(restaurants)
+                            navController.navigate(Route.ViewAllCategoryScreen)
+                        })
 
                 }
                 composable<Route.ViewAllRestaurantScreen> {
                     val sharedUserViewModel =
                         it.sharedKoinViewModel<UserViewModel>(navController)
+                }
+                composable<Route.ViewAllCategoryScreen> {
+                    val sharedUserViewModel =
+                        it.sharedKoinViewModel<UserViewModel>(navController)
+
+                    ViewAllCategoryScreenRoot(restaurants = sharedUserViewModel.getCityRestaurants.value)
                 }
             }
             navigation<Route.RestaurantGraph>(

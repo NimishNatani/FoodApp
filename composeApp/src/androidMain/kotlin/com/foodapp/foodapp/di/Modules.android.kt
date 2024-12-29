@@ -1,6 +1,8 @@
 package com.foodapp.foodapp.di
 
 import android.content.Context
+import com.foodapp.foodapp.presentation.components.PlatformConfiguration
+import com.foodapp.foodapp.screensize.ScreenSize
 import com.foodapp.foodapp.storage.AndroidTokenStorage
 import com.foodapp.foodapp.storage.TokenStorage
 import io.ktor.client.engine.HttpClientEngine
@@ -17,3 +19,6 @@ actual val platformModule: Module
 actual fun createTokenStorageModule(): Module = module {
     single<TokenStorage> { AndroidTokenStorage(androidContext()) }
 }
+actual fun getPlatformConfiguration(): Module = module {
+        single<PlatformConfiguration> { ScreenSize(androidContext()) }
+    }

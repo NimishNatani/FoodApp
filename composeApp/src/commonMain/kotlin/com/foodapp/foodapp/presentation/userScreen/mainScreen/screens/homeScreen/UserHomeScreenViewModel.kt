@@ -5,13 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.foodapp.core.domain.onError
 import com.foodapp.core.domain.onSuccess
 import com.foodapp.core.presentation.UiText
+import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.domain.repository.RestaurantRepository
+import com.foodapp.foodapp.presentation.components.PlatformConfiguration
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class UserHomeScreenViewModel(private val restaurantRepository: RestaurantRepository) :
+class UserHomeScreenViewModel(private val restaurantRepository: RestaurantRepository,private val screenSize:PlatformConfiguration) :
     ViewModel() {
 
     private val _uiState = MutableStateFlow(UserHomeScreenState())
@@ -37,7 +39,7 @@ class UserHomeScreenViewModel(private val restaurantRepository: RestaurantReposi
 
             is UserHomeScreenAction.OnCategorySelected -> {
                 _uiState.value = _uiState.value.copy(category = action.category, isLoading = true)
-                getRestaurantAndFood(
+                getFilterRestaurantByCategory(
                     selectedCategory = action.category.second,
                 )
 
@@ -46,14 +48,13 @@ class UserHomeScreenViewModel(private val restaurantRepository: RestaurantReposi
             is UserHomeScreenAction.OnGettingRestaurants -> {
                 getRestaurantsByCity(
                     city = action.city,
-                    onComplete = {getRestaurantAndFood(selectedCategory = uiState.value.category.second)}
+                    onComplete = { getRestaurantAndFood() }
                 )
             }
 
             is UserHomeScreenAction.OnSearch -> {
-                _uiState.value = _uiState.value.copy( isLoading = true)
+                _uiState.value = _uiState.value.copy(isLoading = true)
                 getRestaurantAndFood(
-                    selectedCategory = uiState.value.category.second,
                     searchQuery = action.query
                 )
             }
@@ -62,13 +63,15 @@ class UserHomeScreenViewModel(private val restaurantRepository: RestaurantReposi
 
     private fun getRestaurantsByCity(
         city: String = "Jaipur",
-        onComplete:()->Unit
+        onComplete: () -> Unit
     ) {
         viewModelScope.launch {
             restaurantRepository.getRestaurantsByCity(city).onSuccess { restaurants ->
-                _uiState.update {uiState ->
+                _uiState.update { uiState ->
                     uiState.copy(
-                        searchResults =  SearchItem(restaurants, restaurants.flatMap { it.foodItems })
+                        searchResults = SearchItem(
+                            restaurants,
+                            restaurants.flatMap { it.foodItems })
                     )
                 }
                 onComplete()
@@ -86,13 +89,32 @@ class UserHomeScreenViewModel(private val restaurantRepository: RestaurantReposi
         }
     }
 
-    private fun getRestaurantAndFood(selectedCategory: String = "Indian",
-                                     searchQuery: String? = null){
+    private fun getFilterRestaurantByCategory(selectedCategory: String = "Indian") {
+        val filterRestaurant = uiState.value.searchResults.restaurantList.filter { restaurant ->
+            restaurant.restaurantName.contains(selectedCategory, ignoreCase = true) ||
+                    restaurant.restaurantTags.any { tag ->
+                        tag.contains(selectedCategory, ignoreCase = true)
+                    } || restaurant.foodItems.any { food ->
+                food.foodName.contains(selectedCategory, ignoreCase = true) ||
+                        food.foodDescription.contains(selectedCategory, ignoreCase = true) ||
+                        food.foodTags.any { tag ->
+                            tag.contains(selectedCategory, ignoreCase = true)
+                        }
+            }
+        }
+        _uiState.update {
+            it.copy(
+                filterResults = FilterItem(nearestRestaurantList = filterRestaurant)
+            )
+        }
+    }
+
+    private fun getRestaurantAndFood(searchQuery: String? = null) {
         // Preserve the original data for restoration when searchQuery is cleared
         val originalRestaurants = uiState.value.searchResults.restaurantList
         val originalFoods = uiState.value.searchResults.restaurantList.flatMap { it.foodItems }
 
-      if (!searchQuery.isNullOrEmpty()) {
+        if (!searchQuery.isNullOrEmpty()) {
             // Filter and sort restaurants and food based on the search query
             val filteredAndSortedRestaurants = originalRestaurants.filter { restaurant ->
                 restaurant.restaurantName.contains(searchQuery, ignoreCase = true) ||
@@ -140,19 +162,28 @@ class UserHomeScreenViewModel(private val restaurantRepository: RestaurantReposi
                 food.foodType.count { it.contains(mealType, ignoreCase = true) }
             }
 
-          _uiState.update {
-              it.copy(
-                  isLoading = false,
-                  filterResults = FilterItem(
-                      popularRestaurantList = popularRestaurantList,
-                      nearestRestaurantList = nearestRestaurantList,
-                      mealTimeFoodList = mealTimeFoodList
-                  )
-              )
-          }
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    filterResults = FilterItem(
+                        popularRestaurantList = popularRestaurantList,
+                        nearestRestaurantList = nearestRestaurantList,
+                        mealTimeFoodList = mealTimeFoodList
+                    )
+                )
+            }
         }
+    }
 
-        // Update UI state with filtered and sorted data
+    fun setRestaurantList(restaurants: List<Restaurant>) {
+        _uiState.update {
+            it.copy(
+                searchResults = SearchItem(restaurantList = restaurants)
+            )
+        }
+    }
 
+    fun getScreenSize():Pair<Int,Int>{
+        return Pair(screenSize.screenWidth(),screenSize.screenHeight())
     }
 }

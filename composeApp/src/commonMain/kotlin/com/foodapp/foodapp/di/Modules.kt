@@ -12,6 +12,7 @@ import com.foodapp.foodapp.domain.repository.RestaurantRepository
 import com.foodapp.foodapp.domain.repository.UserRepository
 import com.foodapp.foodapp.presentation.RestaurantViewModel
 import com.foodapp.foodapp.presentation.UserViewModel
+import com.foodapp.foodapp.presentation.components.PlatformConfiguration
 import com.foodapp.foodapp.presentation.login.AuthLoginViewModel
 import com.foodapp.foodapp.presentation.register.AuthRegisterViewModel
 import com.foodapp.foodapp.presentation.starter.AuthValidationViewModel
@@ -29,6 +30,8 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 expect val platformModule: Module
 expect fun createTokenStorageModule(): Module
+expect fun getPlatformConfiguration(): Module
+
 
 
 val appModule = module {
@@ -56,7 +59,7 @@ val appModule = module {
     viewModel { AuthLoginViewModel(authRepository = get(), get()) }
     viewModel { AuthValidationViewModel(authRepository = get()) }
     viewModel { UserMainScreenViewModel( ) }
-    viewModel { UserHomeScreenViewModel(get())}
+    viewModel { UserHomeScreenViewModel(get(),get())}
     viewModel { UserViewModel(  get()) }
     viewModel { RestaurantViewModel(  get()) }
 

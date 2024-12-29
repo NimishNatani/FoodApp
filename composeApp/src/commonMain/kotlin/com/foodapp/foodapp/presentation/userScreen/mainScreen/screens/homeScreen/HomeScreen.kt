@@ -1,6 +1,7 @@
 package com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -46,7 +47,8 @@ import org.koin.compose.viewmodel.koinViewModel
 fun UserHomeScreenRoot(
     viewModel: UserHomeScreenViewModel = koinViewModel(),
     onNotificationClick: () -> Unit,
-    onViewAllRestaurantScreen: (List<Restaurant>) -> Unit
+    onViewAllRestaurantScreen: (List<Restaurant>) -> Unit,
+    onViewAllCategoryScreen: (List<Restaurant>) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 //    LaunchedEffect(Unit) {
@@ -57,7 +59,8 @@ fun UserHomeScreenRoot(
         onAction = { action ->
             viewModel.onAction(action)
         },
-        onViewAllRestaurantScreen = { onViewAllRestaurantScreen(it) }
+        onViewAllRestaurantScreen = { onViewAllRestaurantScreen(it) },
+        onViewAllCategoryScreen = {onViewAllCategoryScreen(it)}
     )
 
 }
@@ -66,7 +69,8 @@ fun UserHomeScreenRoot(
 fun UserHomeScreen(
     state: UserHomeScreenState,
     onAction: (UserHomeScreenAction) -> Unit,
-    onViewAllRestaurantScreen: (List<Restaurant>) -> Unit
+    onViewAllRestaurantScreen: (List<Restaurant>) -> Unit,
+    onViewAllCategoryScreen: (List<Restaurant>) -> Unit = {}
 ) {
     val categoryList = listOf(
         Pair(Res.drawable.compose_multiplatform, "Indian"),
@@ -135,7 +139,7 @@ fun UserHomeScreen(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "arrow",
                     tint = GreenShade,
-                    modifier = Modifier.padding(top = 1.dp)
+                    modifier = Modifier.padding(top = 1.dp).clickable { onViewAllCategoryScreen(state.searchResults.restaurantList) }
                 )
 
             }
