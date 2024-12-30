@@ -144,8 +144,10 @@ fun UserHomeScreen(
 
             }
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp).horizontalScroll(
+                    rememberScrollState()
+                ),
+                horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
                 categoryList.forEach {
                     CategoryCard(

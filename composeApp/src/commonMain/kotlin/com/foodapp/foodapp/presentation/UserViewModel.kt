@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.foodapp.core.domain.onError
 import com.foodapp.core.domain.onSuccess
+import com.foodapp.foodapp.domain.models.Food
 import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.domain.models.User
 import com.foodapp.foodapp.domain.repository.AuthRepository
@@ -28,6 +29,9 @@ class UserViewModel(
     private val _restaurant = MutableStateFlow<Restaurant?>(null)
     val restaurant = _restaurant.asStateFlow()
 
+    private val _food = MutableStateFlow<Food?>(null)
+    val food = _food.asStateFlow()
+
     fun setUser(user: User){
         _user.value = user
     }
@@ -50,6 +54,10 @@ class UserViewModel(
 
     fun setRestaurant(restaurant: Restaurant){
         _restaurant.value = restaurant
+    }
+
+fun setFood(food: Food){
+        _food.value = food
     }
 
 

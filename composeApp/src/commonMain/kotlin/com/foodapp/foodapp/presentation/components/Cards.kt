@@ -1,6 +1,5 @@
 package com.foodapp.foodapp.presentation.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,11 +20,14 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
@@ -40,7 +42,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
-import coil3.compose.rememberAsyncImagePainter
 import com.foodapp.core.presentation.Black
 import com.foodapp.core.presentation.DarkGrey
 import com.foodapp.core.presentation.Green
@@ -50,6 +51,7 @@ import com.foodapp.core.presentation.SandYellow
 import com.foodapp.core.presentation.TextSize
 import com.foodapp.core.presentation.White
 import com.foodapp.foodapp.domain.models.Food
+import com.foodapp.foodapp.domain.models.FoodItemDetails
 import com.foodapp.foodapp.domain.models.Restaurant
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -253,7 +255,7 @@ fun PopularRestaurant(
 }
 
 @Composable
-fun RestaurantScreenCard(restaurant: Restaurant){
+fun RestaurantScreenCard(restaurant: Restaurant) {
     Card(
         modifier = Modifier.width(350.dp).padding(horizontal = 16.dp),
         colors = CardDefaults.cardColors(containerColor = White),
@@ -267,22 +269,20 @@ fun RestaurantScreenCard(restaurant: Restaurant){
         ) {
             Text(
                 text = restaurant.restaurantName,
-                modifier = Modifier.padding(vertical = 4.dp)
-                    ,
+                modifier = Modifier.padding(vertical = 4.dp),
                 fontSize = TextSize.large,
                 fontWeight = FontWeight.SemiBold,
                 color = Black
             )
             Text(
                 text = restaurant.restaurantTags.joinToString(),
-                modifier = Modifier.padding(vertical = 4.dp)
-                    ,
+                modifier = Modifier.padding(vertical = 4.dp),
                 fontSize = TextSize.regular,
                 fontWeight = FontWeight.SemiBold,
                 color = DarkGrey
             )
 
-            Row(horizontalArrangement = Arrangement.SpaceEvenly) {
+            Row(horizontalArrangement = Arrangement.SpaceAround) {
                 Column(verticalArrangement = Arrangement.Center) {
                     Text(
                         text = "Distance",
@@ -347,12 +347,17 @@ fun RestaurantScreenCard(restaurant: Restaurant){
 }
 
 @Composable
-fun FoodItemCard(food: Food,isFavorite:Boolean = false,onFavoriteClick:()->Unit) {
+fun FoodItemCard(
+    food: Food,
+    isFavorite: Boolean = false,
+    onFavoriteClick: () -> Unit,
+    onFoodClick: (Food) -> Unit
+) {
     Card(
         modifier = Modifier
             .width(180.dp)
             .height(265.dp)
-            .padding(8.dp),
+            .padding(8.dp).clickable { onFoodClick(food) },
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = White)
@@ -372,33 +377,119 @@ fun FoodItemCard(food: Food,isFavorite:Boolean = false,onFavoriteClick:()->Unit)
                     contentDescription = "Favorite",
                     modifier = Modifier
                         .size(35.dp)
-                        .align(Alignment.TopEnd)
+                        .align(Alignment.Center)
                         .padding(8.dp)
                         .clickable { onFavoriteClick() }
                 )
             }
         }
-            Text(
-                text = food.foodName,
-                color = Black,
-                fontWeight = FontWeight.Bold,
-                fontSize =TextSize.regular,
-                modifier = Modifier.padding(4.dp))
+        Text(
+            text = food.foodName,
+            color = Black,
+            fontWeight = FontWeight.Bold,
+            fontSize = TextSize.regular,
+            modifier = Modifier.padding(4.dp)
+        )
 
+        Text(
+            text = food.foodTags.joinToString(),
+            color = DarkGrey,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = TextSize.small,
+            modifier = Modifier.padding(4.dp)
+        )
+        Text(
+            text = "₹ " + food.foodDetails.minBy { it.foodPrice }.foodPrice.toString(),
+            color = Green,
+            fontWeight = FontWeight.Bold,
+            fontSize = TextSize.regular,
+            modifier = Modifier.padding(4.dp)
+        )
+    }
+}
+
+@Composable
+fun FoodItemRow(
+    foodItemDetails: FoodItemDetails,
+    onAddClick: (FoodItemDetails) -> Unit,
+    onSubClick: (FoodItemDetails) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        // Food Size
+        Text(
+            text = foodItemDetails.foodSize,
+            modifier = Modifier.weight(1f),
+            fontWeight = FontWeight.Bold,
+            fontSize = TextSize.regular,
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+
+        // Food Price
+        Text(
+            text = "₹ ${foodItemDetails.foodPrice}",
+            modifier = Modifier.weight(1f),
+            color = Green,
+            fontWeight = FontWeight.Bold,
+            fontSize = TextSize.regular,
+            textAlign = TextAlign.Center
+        )
+
+        // Quantity Controls
+        Row(
+            modifier = Modifier.weight(1f),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            // Subtract Button
+            IconButton(
+                onClick = {
+                    if (foodItemDetails.quantity > 0) {
+                        onSubClick(foodItemDetails.copy(quantity = foodItemDetails.quantity - 1))
+                    }
+                },
+                modifier = Modifier.clip(RoundedCornerShape(8.dp)).border(1.dp, DarkGrey, RoundedCornerShape(8.dp)).size(24.dp)
+
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Clear,
+                    contentDescription = "Subtract",
+                    modifier = Modifier.size(24.dp),
+                    tint = Green
+                )
+            }
+
+            // Quantity Display
             Text(
-                text = food.foodTags.joinToString(),
-                color = DarkGrey,
-                fontWeight = FontWeight.SemiBold,
-                fontSize =TextSize.small,
-                modifier = Modifier.padding(4.dp))
-            Text(
-                text ="₹ "+food.foodDetails.minBy { it.foodPrice }.foodPrice.toString(),
+                text = foodItemDetails.quantity.toString(),
                 color = Green,
                 fontWeight = FontWeight.Bold,
-                fontSize =TextSize.regular,
-                modifier = Modifier.padding(4.dp))
+                fontSize = TextSize.regular,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+
+            // Add Button
+            IconButton(
+                onClick = {
+                    onAddClick(foodItemDetails.copy(quantity = foodItemDetails.quantity + 1))
+                },
+                modifier = Modifier.clip(RoundedCornerShape(8.dp)).border(1.dp, DarkGrey, RoundedCornerShape(8.dp)).size(24.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add",
+                    tint = Green
+                )
+            }
         }
+    }
 }
+
 
 @Composable
 fun FoodCard(
@@ -531,7 +622,8 @@ fun CategoryCard(
 //            painter = painterResource(image),
                 asyncPainterResource(data = Url("https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg"))
             }, contentDescription = "Category Icon",
-            modifier = Modifier.size(50.dp).clip(CircleShape).border(width = 1.dp,color = if (isSelected) Green else White, shape = CircleShape)
+            modifier = Modifier.size(50.dp).clip(CircleShape)
+                .border(width = 1.dp, color = if (isSelected) Green else White, shape = CircleShape)
         )
         Spacer(modifier = Modifier.width(4.dp))
         Text(

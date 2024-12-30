@@ -27,6 +27,8 @@ import com.foodapp.foodapp.presentation.starter.SplashScreen
 import com.foodapp.foodapp.presentation.starter.UserSelectionScreen
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.UserMainScreenRoot
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.UserMainScreenViewModel
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.foodScreen.ViewFoodScreenRoot
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.foodScreen.ViewFoodScreenViewModel
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen.ViewAllCategoryScreenRoot
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.restaurantScreen.ViewRestaurantScreenRoot
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.restaurantScreen.ViewRestaurantScreenViewModel
@@ -162,7 +164,23 @@ fun App() {
                         it.sharedKoinViewModel<UserViewModel>(navController)
                     val viewModel = koinViewModel<ViewRestaurantScreenViewModel>()
 
-                    sharedUserViewModel.restaurant.value?.let { restaurant -> ViewRestaurantScreenRoot(viewModel = viewModel,restaurant = restaurant) }
+                    sharedUserViewModel.restaurant.value?.let { restaurant ->
+                        ViewRestaurantScreenRoot(viewModel = viewModel, restaurant = restaurant,
+                            onFoodClick = { food ->
+                                sharedUserViewModel.setFood(food)
+                                navController.navigate(Route.ViewFoodScreen)
+                            })
+                    }
+                }
+                composable<Route.ViewFoodScreen> {
+                    val sharedUserViewModel = it.sharedKoinViewModel<UserViewModel>(navController)
+                    val viewModel = koinViewModel<ViewFoodScreenViewModel>()
+                    sharedUserViewModel.food.value?.let { food ->
+                        ViewFoodScreenRoot(
+                            viewModel = viewModel,
+                            food = food
+                        )
+                    }
                 }
             }
             navigation<Route.RestaurantGraph>(

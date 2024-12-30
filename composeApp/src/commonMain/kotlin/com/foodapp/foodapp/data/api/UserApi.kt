@@ -12,7 +12,7 @@ import io.ktor.client.request.post
 import io.ktor.http.HttpHeaders
 
 class UserApi(private val client: HttpClient, private val tokenStorage: TokenStorage) {
-    private val BASE_URL = "http://localhost:8080/api"
+    private val BASE_URL = "http://192.168.214.37:8080/api"
 
 
     suspend fun getUserByJwt(): Result<UserDto, DataError.Remote> {

@@ -1,5 +1,7 @@
 package com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.restaurantScreen
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -16,8 +19,13 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -37,19 +45,28 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.foodapp.core.presentation.DarkGrey
+import com.foodapp.core.presentation.White
+import com.foodapp.foodapp.domain.models.Food
 import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.presentation.components.FoodItemCard
 import com.foodapp.foodapp.presentation.components.RestaurantScreenCard
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import io.ktor.http.Url
+import kotlinproject.composeapp.generated.resources.Res
+import kotlinproject.composeapp.generated.resources.ic__favorite
+import kotlinproject.composeapp.generated.resources.ic_favorite_border
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun ViewRestaurantScreenRoot(
     viewModel: ViewRestaurantScreenViewModel = koinViewModel(),
-    restaurant: Restaurant
-) {
+    restaurant: Restaurant,
+    onFoodClick: (Food) -> Unit ,
+
+    ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     viewModel.setRestaurant(restaurant = restaurant)
 
@@ -58,7 +75,8 @@ fun ViewRestaurantScreenRoot(
 
         ViewRestaurantScreen(restaurant, onAction = { action ->
             viewModel.onAction(action)
-        }, screenSize = screenSize)
+        }, screenSize = screenSize,
+            onFoodClick = {onFoodClick(it)})
 
 
 
@@ -69,8 +87,11 @@ fun ViewRestaurantScreen(
 //    state: ViewRestaurantScreenState?,
     restaurant: Restaurant,
     onAction: (ViewRestaurantScreenAction) -> Unit,
+    onFoodClick: (Food) -> Unit ,
+    isFavorite:Boolean = false,
+    onFavoriteClick: () -> Unit = {},
     maxImageSize: Dp = 400.dp,
-    minImageSize: Dp = 50.dp,
+    minImageSize: Dp = 100.dp,
     screenSize: Pair<Int, Int>
 ) {
     val columns =
@@ -94,22 +115,6 @@ fun ViewRestaurantScreen(
                 imageScale = currentImageSize / maxImageSize
                  return Offset(0f, consumed.value)
             }
-
-            override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
-                return super.onPostFling(consumed, available)
-            }
-
-            override fun onPostScroll(
-                consumed: Offset,
-                available: Offset,
-                source: NestedScrollSource
-            ): Offset {
-                return super.onPostScroll(consumed, available, source)
-            }
-
-            override suspend fun onPreFling(available: Velocity): Velocity {
-                return super.onPreFling(available)
-            }
         }
     }
 
@@ -124,9 +129,28 @@ fun ViewRestaurantScreen(
                     translationY = -(maxImageSize.toPx() - currentImageSize.toPx()) / 2f
                 }, contentScale = ContentScale.FillBounds
         )
+        Box(modifier = Modifier.padding(10.dp).clip(CircleShape).background(White).align(Alignment.TopStart)){
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                tint = DarkGrey,
+                contentDescription = "arrow",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+        Box(modifier = Modifier.padding(10.dp).clip(CircleShape).background(White).align(Alignment.TopEnd)){
+            Icon(
+                painter = painterResource(if (isFavorite) Res.drawable.ic__favorite else Res.drawable.ic_favorite_border), // Replace with your favorite icon
+                contentDescription = "Favorite",
+                modifier = Modifier
+                    .size(35.dp)
+                    .align(Alignment.Center)
+                    .padding(8.dp)
+                    .clickable { onFavoriteClick() }
+            )
+        }
         LazyColumn(
             modifier = Modifier
-                .padding(top = if (currentImageSize > 100.dp) currentImageSize - 100.dp else 50.dp)
+                .padding(top = if (currentImageSize > 100.dp) currentImageSize - 100.dp else 100.dp)
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp), horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -145,7 +169,8 @@ fun ViewRestaurantScreen(
                     rowItems.forEach { food ->
                         FoodItemCard(
                             food = food,
-                            onFavoriteClick = {}
+                            onFavoriteClick = {},
+                            onFoodClick = { onFoodClick(it) }
                         )
                     }
                 }

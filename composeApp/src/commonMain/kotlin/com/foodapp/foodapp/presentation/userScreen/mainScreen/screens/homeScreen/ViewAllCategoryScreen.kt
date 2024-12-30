@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -70,7 +71,7 @@ fun ViewAllCategoryScreen(
     onRestaurantClick: (Restaurant) -> Unit
 ) {
 
-    val columns = if (screenSize.first > 1200) 3 else if (screenSize.first > 600) 2 else 1
+    val columns = if (screenSize.first > 1800) 3 else if (screenSize.first > 1200) 2 else 1
 
     val categoryList = listOf(
         Pair(Res.drawable.compose_multiplatform, "Indian"),
@@ -123,6 +124,7 @@ fun ViewAllCategoryScreen(
                     },
                     isSelected = state.category.second == category.second
                 )
+                Spacer(modifier = Modifier.width(8.dp))
             }
         }
         Spacer(modifier = Modifier.height(10.dp))
