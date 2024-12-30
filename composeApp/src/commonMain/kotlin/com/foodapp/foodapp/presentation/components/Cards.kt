@@ -51,7 +51,7 @@ import com.foodapp.core.presentation.SandYellow
 import com.foodapp.core.presentation.TextSize
 import com.foodapp.core.presentation.White
 import com.foodapp.foodapp.domain.models.Food
-import com.foodapp.foodapp.domain.models.FoodItemDetails
+import com.foodapp.foodapp.domain.models.FoodCartDetail
 import com.foodapp.foodapp.domain.models.Restaurant
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -410,9 +410,9 @@ fun FoodItemCard(
 
 @Composable
 fun FoodItemRow(
-    foodItemDetails: FoodItemDetails,
-    onAddClick: (FoodItemDetails) -> Unit,
-    onSubClick: (FoodItemDetails) -> Unit,
+    foodCartDetail: FoodCartDetail,
+    onAddClick: (FoodCartDetail) -> Unit,
+    onSubClick: (FoodCartDetail) -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -422,7 +422,7 @@ fun FoodItemRow(
     ) {
         // Food Size
         Text(
-            text = foodItemDetails.foodSize,
+            text = foodCartDetail.foodSize,
             modifier = Modifier.weight(1f),
             fontWeight = FontWeight.Bold,
             fontSize = TextSize.regular,
@@ -431,7 +431,7 @@ fun FoodItemRow(
 
         // Food Price
         Text(
-            text = "₹ ${foodItemDetails.foodPrice}",
+            text = "₹ ${foodCartDetail.foodPrice}",
             modifier = Modifier.weight(1f),
             color = Green,
             fontWeight = FontWeight.Bold,
@@ -448,8 +448,8 @@ fun FoodItemRow(
             // Subtract Button
             IconButton(
                 onClick = {
-                    if (foodItemDetails.quantity > 0) {
-                        onSubClick(foodItemDetails.copy(quantity = foodItemDetails.quantity - 1))
+                    if (foodCartDetail.quantity > 0) {
+                        onSubClick(foodCartDetail.copy(quantity = foodCartDetail.quantity - 1))
                     }
                 },
                 modifier = Modifier.clip(RoundedCornerShape(8.dp)).border(1.dp, DarkGrey, RoundedCornerShape(8.dp)).size(24.dp)
@@ -465,7 +465,7 @@ fun FoodItemRow(
 
             // Quantity Display
             Text(
-                text = foodItemDetails.quantity.toString(),
+                text = foodCartDetail.quantity.toString(),
                 color = Green,
                 fontWeight = FontWeight.Bold,
                 fontSize = TextSize.regular,
@@ -476,7 +476,7 @@ fun FoodItemRow(
             // Add Button
             IconButton(
                 onClick = {
-                    onAddClick(foodItemDetails.copy(quantity = foodItemDetails.quantity + 1))
+                    onAddClick(foodCartDetail.copy(quantity = foodCartDetail.quantity + 1))
                 },
                 modifier = Modifier.clip(RoundedCornerShape(8.dp)).border(1.dp, DarkGrey, RoundedCornerShape(8.dp)).size(24.dp)
             ) {

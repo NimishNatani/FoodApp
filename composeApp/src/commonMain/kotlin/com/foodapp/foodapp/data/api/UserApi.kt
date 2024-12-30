@@ -4,11 +4,14 @@ import com.foodapp.core.di.safeCall
 import com.foodapp.core.domain.DataError
 import com.foodapp.core.domain.Result
 import com.foodapp.foodapp.data.dto.UserDto
+import com.foodapp.foodapp.domain.models.FoodCart
 import com.foodapp.foodapp.storage.TokenStorage
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
+import io.ktor.client.request.put
+import io.ktor.client.request.setBody
 import io.ktor.http.HttpHeaders
 
 class UserApi(private val client: HttpClient, private val tokenStorage: TokenStorage) {
@@ -24,6 +27,20 @@ class UserApi(private val client: HttpClient, private val tokenStorage: TokenSto
                         "Bearer ${tokenStorage.getToken().toString()}"
                     )
                 }
+            }
+        }
+    }
+
+    suspend fun addItemToCart(foodCart: FoodCart): Result<String, DataError.Remote> {
+        return safeCall<String> {
+            client.put("$BASE_URL/user/addItemToCart") {
+                headers {
+                    append(
+                        HttpHeaders.Authorization,
+                        "Bearer ${tokenStorage.getToken().toString()}"
+                    )
+                }
+                setBody(foodCart)
             }
         }
     }

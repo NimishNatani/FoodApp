@@ -53,7 +53,8 @@ import com.foodapp.core.presentation.GreenShade
 import com.foodapp.core.presentation.TextSize
 import com.foodapp.core.presentation.White
 import com.foodapp.foodapp.domain.models.Food
-import com.foodapp.foodapp.domain.models.FoodItem
+import com.foodapp.foodapp.domain.models.FoodCart
+import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.presentation.components.CustomButton
 import com.foodapp.foodapp.presentation.components.FoodItemRow
 import io.kamel.image.KamelImage
@@ -66,9 +67,9 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ViewFoodScreenRoot(viewModel: ViewFoodScreenViewModel = koinViewModel(), food: Food) {
+fun ViewFoodScreenRoot(viewModel: ViewFoodScreenViewModel = koinViewModel(), food: Food,restaurantName: String) {
     LaunchedEffect(Unit) {
-        viewModel.updateFoodItem(food)
+        viewModel.updateFoodItem(food,restaurantName)
     }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     state?.let { currentState ->
@@ -80,7 +81,7 @@ fun ViewFoodScreenRoot(viewModel: ViewFoodScreenViewModel = koinViewModel(), foo
 
 @Composable
 fun ViewFoodScreen(
-    state: FoodItem, onAction: (ViewFoodScreenAction) -> Unit, maxImageSize: Dp = 300.dp,
+    state: FoodCart, onAction: (ViewFoodScreenAction) -> Unit, maxImageSize: Dp = 300.dp,
     minImageSize: Dp = 100.dp, isFavorite: Boolean = false, onFavoriteClick: () -> Unit = {}
 ) {
     var currentImageSize by remember {
@@ -202,9 +203,9 @@ fun ViewFoodScreen(
                 modifier = Modifier.padding(top = 10.dp, bottom = 4.dp, start = 4.dp, end = 4.dp)
             )
 
-            state.foodItemDetails.forEach {
+            state.foodCartDetailsList.forEach {
                 FoodItemRow(
-                    foodItemDetails = it,
+                    foodCartDetail = it,
                     onAddClick = { onAction(ViewFoodScreenAction.onAddClick(it)) },
                     onSubClick = {onAction(ViewFoodScreenAction.onSubClick(it))})
                 HorizontalDivider(thickness = 2.dp, color = GreenShade)
@@ -234,7 +235,7 @@ fun ViewFoodScreen(
                         fontSize = TextSize.regular,
                     )
                 }
-                CustomButton(text = "Add to Cart", onClick = {}, buttonColor = Green)
+                CustomButton(text = "Add to Cart", onClick = {onAction(ViewFoodScreenAction.onCartClick(state))}, buttonColor = Green)
             }
         }
     }

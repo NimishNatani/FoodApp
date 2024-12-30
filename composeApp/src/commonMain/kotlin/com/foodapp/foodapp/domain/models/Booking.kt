@@ -7,7 +7,7 @@ data class Booking(
     var isAcceptedByRestaurant: Boolean,
     var isBookingCompleted: Boolean,
     var message: List<Message>,
-    var foodItems: List<FoodItem>,
+    var foodCarts: List<FoodCart>,
     var acceptedTime: Int?,
     var isPaymentDone: Boolean,
     var paymentId: String?,

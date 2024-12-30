@@ -178,7 +178,8 @@ fun App() {
                     sharedUserViewModel.food.value?.let { food ->
                         ViewFoodScreenRoot(
                             viewModel = viewModel,
-                            food = food
+                            food = food,
+                            restaurantName = sharedUserViewModel.restaurant.value!!.restaurantName
                         )
                     }
                 }
