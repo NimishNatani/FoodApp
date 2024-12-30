@@ -25,6 +25,9 @@ class UserViewModel(
     private val _getCityRestaurants = MutableStateFlow<List<Restaurant>>(emptyList())
     val getCityRestaurants = _getCityRestaurants.asStateFlow()
 
+    private val _restaurant = MutableStateFlow<Restaurant?>(null)
+    val restaurant = _restaurant.asStateFlow()
+
     fun setUser(user: User){
         _user.value = user
     }
@@ -43,6 +46,10 @@ class UserViewModel(
 
     fun setListRestaurants(list: List<Restaurant>){
         _getCityRestaurants.value = list
+    }
+
+    fun setRestaurant(restaurant: Restaurant){
+        _restaurant.value = restaurant
     }
 
 

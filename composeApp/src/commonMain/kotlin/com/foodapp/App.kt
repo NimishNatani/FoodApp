@@ -28,6 +28,8 @@ import com.foodapp.foodapp.presentation.starter.UserSelectionScreen
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.UserMainScreenRoot
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.UserMainScreenViewModel
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen.ViewAllCategoryScreenRoot
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.restaurantScreen.ViewRestaurantScreenRoot
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.restaurantScreen.ViewRestaurantScreenViewModel
 import com.foodapp.foodapp.sharedObjects.SharedObject.sharedUser
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -149,7 +151,18 @@ fun App() {
                     val sharedUserViewModel =
                         it.sharedKoinViewModel<UserViewModel>(navController)
 
-                    ViewAllCategoryScreenRoot(restaurants = sharedUserViewModel.getCityRestaurants.value)
+                    ViewAllCategoryScreenRoot(restaurants = sharedUserViewModel.getCityRestaurants.value,
+                        onRestaurantClick = { restaurant ->
+                            sharedUserViewModel.setRestaurant(restaurant)
+                            navController.navigate(Route.ViewRestaurantScreen)
+                        })
+                }
+                composable<Route.ViewRestaurantScreen> {
+                    val sharedUserViewModel =
+                        it.sharedKoinViewModel<UserViewModel>(navController)
+                    val viewModel = koinViewModel<ViewRestaurantScreenViewModel>()
+
+                    sharedUserViewModel.restaurant.value?.let { restaurant -> ViewRestaurantScreenRoot(viewModel = viewModel,restaurant = restaurant) }
                 }
             }
             navigation<Route.RestaurantGraph>(

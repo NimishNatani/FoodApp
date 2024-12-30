@@ -49,6 +49,8 @@ import com.foodapp.core.presentation.Red
 import com.foodapp.core.presentation.SandYellow
 import com.foodapp.core.presentation.TextSize
 import com.foodapp.core.presentation.White
+import com.foodapp.foodapp.domain.models.Food
+import com.foodapp.foodapp.domain.models.Restaurant
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import io.ktor.http.Url
@@ -248,6 +250,154 @@ fun PopularRestaurant(
             fontWeight = FontWeight.SemiBold
         )
     }
+}
+
+@Composable
+fun RestaurantScreenCard(restaurant: Restaurant){
+    Card(
+        modifier = Modifier.width(350.dp).padding(horizontal = 16.dp),
+        colors = CardDefaults.cardColors(containerColor = White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 14.dp),
+        shape = RoundedCornerShape(15.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth(), // Add padding around the content
+            horizontalAlignment = Alignment.CenterHorizontally // Center all children horizontally
+        ) {
+            Text(
+                text = restaurant.restaurantName,
+                modifier = Modifier.padding(vertical = 4.dp)
+                    ,
+                fontSize = TextSize.large,
+                fontWeight = FontWeight.SemiBold,
+                color = Black
+            )
+            Text(
+                text = restaurant.restaurantTags.joinToString(),
+                modifier = Modifier.padding(vertical = 4.dp)
+                    ,
+                fontSize = TextSize.regular,
+                fontWeight = FontWeight.SemiBold,
+                color = DarkGrey
+            )
+
+            Row(horizontalArrangement = Arrangement.SpaceEvenly) {
+                Column(verticalArrangement = Arrangement.Center) {
+                    Text(
+                        text = "Distance",
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        fontSize = TextSize.small,
+                        color = DarkGrey
+                    )
+
+                    Text(
+                        text = "1.5 Km",
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        fontSize = TextSize.small,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Black
+                    )
+                }
+
+                Column(verticalArrangement = Arrangement.Center) {
+                    Text(
+                        text = "Rating",
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        fontSize = TextSize.small,
+                        color = DarkGrey
+                    )
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Star",
+                            tint = SandYellow
+                        )
+                        Text(
+                            text = restaurant.ratings.toString(),
+                            modifier = Modifier.padding(vertical = 4.dp),
+                            fontSize = TextSize.small,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Black
+                        )
+                    }
+                }
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.LocationOn, // Replace with actual icon
+                    contentDescription = "Location Icon",
+                    tint = Green,
+                    modifier = Modifier.size(30.dp).padding(top = 5.dp)
+                )
+                Text(
+                    text = restaurant.address + restaurant.city + restaurant.state,
+                    modifier = Modifier.padding(vertical = 4.dp),
+                    fontSize = TextSize.small,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+
+        }
+    }
+}
+
+@Composable
+fun FoodItemCard(food: Food,isFavorite:Boolean = false,onFavoriteClick:()->Unit) {
+    Card(
+        modifier = Modifier
+            .width(180.dp)
+            .height(265.dp)
+            .padding(8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = White)
+    ) {
+        Box(modifier = Modifier.fillMaxWidth().height(120.dp)) {
+            KamelImage(
+                { asyncPainterResource(data = Url("https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg")) },
+                contentDescription = "Image",
+                contentScale = ContentScale.FillBounds
+            )
+            Box(
+                modifier = Modifier.wrapContentSize().clip(CircleShape)
+                    .align(Alignment.TopStart).padding(2.dp).background(White)
+            ) {
+                Icon(
+                    painter = painterResource(if (isFavorite) Res.drawable.ic__favorite else Res.drawable.ic_favorite_border), // Replace with your favorite icon
+                    contentDescription = "Favorite",
+                    modifier = Modifier
+                        .size(35.dp)
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .clickable { onFavoriteClick() }
+                )
+            }
+        }
+            Text(
+                text = food.foodName,
+                color = Black,
+                fontWeight = FontWeight.Bold,
+                fontSize =TextSize.regular,
+                modifier = Modifier.padding(4.dp))
+
+            Text(
+                text = food.foodTags.joinToString(),
+                color = DarkGrey,
+                fontWeight = FontWeight.SemiBold,
+                fontSize =TextSize.small,
+                modifier = Modifier.padding(4.dp))
+            Text(
+                text ="₹ "+food.foodDetails.minBy { it.foodPrice }.foodPrice.toString(),
+                color = Green,
+                fontWeight = FontWeight.Bold,
+                fontSize =TextSize.regular,
+                modifier = Modifier.padding(4.dp))
+        }
 }
 
 @Composable

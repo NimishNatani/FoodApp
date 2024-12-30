@@ -1,5 +1,12 @@
 package com.foodapp.foodapp.presentation.userScreen.mainScreen
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Down
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Up
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseOut
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,7 +23,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -32,8 +38,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.foodapp.core.presentation.DarkGrey
 import com.foodapp.core.presentation.Green
-import com.foodapp.core.presentation.Red
-import com.foodapp.core.presentation.SandYellow
 import com.foodapp.core.presentation.TextSize
 import com.foodapp.core.presentation.White
 import com.foodapp.foodapp.domain.models.Restaurant
@@ -57,7 +61,7 @@ fun UserMainScreenRoot(
         viewModel.onAction(action)
     },
         onViewAllRestaurantScreen = { onViewAllRestaurantScreen(it) },
-        onViewAllCategoryScreen = {onViewAllCategoryScreen(it)})
+        onViewAllCategoryScreen = { onViewAllCategoryScreen(it) })
 
 }
 
@@ -70,10 +74,10 @@ fun UserMainScreen(
 ) {
     val userHomeScreenViewModel = koinViewModel<UserHomeScreenViewModel>()
     val items = listOf(
-        BottomNavItem(0, Icons.Default.Home,"Home"),
-        BottomNavItem(1, Icons.Default.ShoppingCart,"My Cart"),
-        BottomNavItem(2, Icons.Default.AccountBox,"Orders"),
-        BottomNavItem(3, Icons.Default.Person,"Me")
+        BottomNavItem(0, Icons.Default.Home, "Home"),
+        BottomNavItem(1, Icons.Default.ShoppingCart, "My Cart"),
+        BottomNavItem(2, Icons.Default.AccountBox, "Orders"),
+        BottomNavItem(3, Icons.Default.Person, "Me")
     )
     LaunchedEffect(Unit) {
         userHomeScreenViewModel.onAction(UserHomeScreenAction.OnGettingRestaurants("Jaipur"))
@@ -81,23 +85,36 @@ fun UserMainScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         Box(modifier = Modifier.weight(1f)) {
-            when (state.selectedTabIndex.iconNumber) {
-                0 -> {
-                    UserHomeScreenRoot(userHomeScreenViewModel, onNotificationClick = {},
-                        onViewAllRestaurantScreen = { onViewAllRestaurantScreen(it) },
-                        onViewAllCategoryScreen = {onViewAllCategoryScreen(it)})
-                }
+            AnimatedContent(targetState = state.selectedTabIndex.iconNumber,
+                transitionSpec = {
+                    slideIntoContainer(
+                        animationSpec = tween(durationMillis = 300, easing = EaseIn),
+                        towards = Up
+                    ).togetherWith(
+                        slideOutOfContainer(
+                            animationSpec = tween(300, easing = EaseOut),
+                            towards = Down
+                        )
+                    )
+                }) { targetState ->
+                when (targetState) {
+                    0 -> {
+                        UserHomeScreenRoot(userHomeScreenViewModel, onNotificationClick = {},
+                            onViewAllRestaurantScreen = { onViewAllRestaurantScreen(it) },
+                            onViewAllCategoryScreen = { onViewAllCategoryScreen(it) })
+                    }
 
-                1 -> {
-                    UserBookingScreenRoot()
-                }
+                    1 -> {
+                        UserBookingScreenRoot()
+                    }
 
-                2 -> {
-                    UserFavoriteScreenRoot()
-                }
+                    2 -> {
+                        UserFavoriteScreenRoot()
+                    }
 
-                3 -> {
-                    UserProfileScreenRoot()
+                    3 -> {
+                        UserProfileScreenRoot()
+                    }
                 }
             }
         }
@@ -151,7 +168,11 @@ fun BottomNavItemView(
             modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.height(2.dp))
-        Text(text = item.name, fontSize = TextSize.regular, color = if (isSelected) Green else DarkGrey)
+        Text(
+            text = item.name,
+            fontSize = TextSize.regular,
+            color = if (isSelected) Green else DarkGrey
+        )
 
     }
 }
@@ -159,5 +180,5 @@ fun BottomNavItemView(
 data class BottomNavItem(
     val iconNumber: Int,
     val iconResId: ImageVector,
-    val name :String
+    val name: String
 )
