@@ -12,8 +12,8 @@ fun FoodCartDto.toFoodCart():FoodCart{
         foodImage = foodImage,
         foodTags = foodTags,
         foodDescription = foodDescription,
-        foodCartDetailsList = foodItemDetails.map { it.toFoodCartDetail() },
-        totalPrice = totalPrice,
+        foodCartDetailsList = foodCartDetailsList.map {  it.toFoodCartDetail() },
+        totalPrice = totalPrice?:0.0,
         restaurantId = restaurantId,
         restaurantName = restaurantName
     )
@@ -22,8 +22,8 @@ fun FoodCartDto.toFoodCart():FoodCart{
 fun FoodCartDetailDto.toFoodCartDetail(): FoodCartDetail {
     return   FoodCartDetail(
         foodSize = foodSize,
-        foodPrice = foodPrice,
-        quantity = quantity
+        foodPrice = foodPrice?:0.0,
+        quantity = quantity?:0
     )
 
 }

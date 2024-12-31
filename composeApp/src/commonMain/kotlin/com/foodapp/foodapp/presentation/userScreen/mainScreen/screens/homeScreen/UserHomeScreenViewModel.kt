@@ -8,6 +8,8 @@ import com.foodapp.core.presentation.UiText
 import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.domain.repository.RestaurantRepository
 import com.foodapp.foodapp.presentation.components.PlatformConfiguration
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -65,7 +67,7 @@ class UserHomeScreenViewModel(private val restaurantRepository: RestaurantReposi
         city: String = "Jaipur",
         onComplete: () -> Unit
     ) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             restaurantRepository.getRestaurantsByCity(city).onSuccess { restaurants ->
                 _uiState.update { uiState ->
                     uiState.copy(

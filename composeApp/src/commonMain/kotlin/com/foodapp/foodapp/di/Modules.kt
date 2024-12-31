@@ -17,6 +17,7 @@ import com.foodapp.foodapp.presentation.login.AuthLoginViewModel
 import com.foodapp.foodapp.presentation.register.AuthRegisterViewModel
 import com.foodapp.foodapp.presentation.starter.AuthValidationViewModel
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.UserMainScreenViewModel
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.cartScreen.CartScreenViewModel
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.foodScreen.ViewFoodScreenViewModel
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen.UserHomeScreenViewModel
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.restaurantScreen.ViewRestaurantScreenViewModel
@@ -64,6 +65,7 @@ val appModule = module {
     viewModel { UserHomeScreenViewModel(get(),get())}
     viewModel { ViewRestaurantScreenViewModel(get())}
     viewModel { ViewFoodScreenViewModel(get()) }
+    viewModel { CartScreenViewModel(get()) }
     viewModel { UserViewModel(  get()) }
     viewModel { RestaurantViewModel(  get()) }
 

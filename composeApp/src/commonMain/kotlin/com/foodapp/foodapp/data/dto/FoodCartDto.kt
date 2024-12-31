@@ -10,8 +10,8 @@ data class FoodCartDto(
     val foodImage:String,
     val foodTags : List<String>,
     val foodDescription : String,
-    val foodItemDetails: List<FoodCartDetailDto>,
-    val totalPrice:Double=0.0,
+    val foodCartDetailsList: List<FoodCartDetailDto>,
+    val totalPrice:Double? = 0.0,
     val restaurantId:String,
     val restaurantName:String
 )
@@ -19,6 +19,6 @@ data class FoodCartDto(
 @Serializable
 data class FoodCartDetailDto(
     var foodSize: String,
-    var foodPrice :Double,
-    var quantity :Int=0
+    var foodPrice :Double?,
+    var quantity :Int? = 0
 )

@@ -16,8 +16,8 @@ import com.foodapp.core.presentation.White
 @Composable
 fun CustomButton(
     text: String,
+    buttonColor: Color = DarkGrey ,
     onClick: () -> Unit,
-    buttonColor: Color = DarkGrey
 ) {
     Button(
         onClick = onClick,
@@ -34,6 +34,7 @@ fun CustomButton(
 @Composable
 fun OutlinedCustomButton(
     text:String,
+    shape: RoundedCornerShape = RoundedCornerShape(20.dp),
     onClick: () -> Unit,
 ){
     OutlinedButton(

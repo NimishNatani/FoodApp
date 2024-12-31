@@ -3,6 +3,7 @@ package com.foodapp.foodapp.data.api
 import com.foodapp.core.di.safeCall
 import com.foodapp.core.domain.DataError
 import com.foodapp.core.domain.Result
+import com.foodapp.foodapp.data.dto.FoodCartDto
 import com.foodapp.foodapp.data.dto.UserDto
 import com.foodapp.foodapp.domain.models.FoodCart
 import com.foodapp.foodapp.storage.TokenStorage
@@ -41,6 +42,19 @@ class UserApi(private val client: HttpClient, private val tokenStorage: TokenSto
                     )
                 }
                 setBody(foodCart)
+            }
+        }
+    }
+
+    suspend fun getFoodCart(): Result<List<FoodCartDto>, DataError.Remote> {
+        return safeCall<List<FoodCartDto>> {
+            client.get("$BASE_URL/user/getItemFromCart") {
+                headers {
+                    append(
+                        HttpHeaders.Authorization,
+                        "Bearer ${tokenStorage.getToken().toString()}"
+                    )
+                }
             }
         }
     }

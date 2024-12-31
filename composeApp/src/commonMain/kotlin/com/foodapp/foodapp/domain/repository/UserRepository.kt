@@ -10,4 +10,6 @@ interface UserRepository {
     suspend fun getUserByJwttoken():Result<User,DataError.Remote>
 
     suspend fun addItemToCart(foodCart: FoodCart):Result<String,DataError.Remote>
+
+    suspend fun getFoodCart():Result<List<FoodCart>,DataError.Remote>
 }

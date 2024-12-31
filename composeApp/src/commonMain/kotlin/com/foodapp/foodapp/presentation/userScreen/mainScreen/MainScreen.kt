@@ -42,7 +42,9 @@ import com.foodapp.core.presentation.TextSize
 import com.foodapp.core.presentation.White
 import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.bookingScreen.UserBookingScreenRoot
-import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.favoriteScreen.UserFavoriteScreenRoot
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.cartScreen.CartScreenAction
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.cartScreen.CartScreenRoot
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.cartScreen.CartScreenViewModel
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen.UserHomeScreenAction
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen.UserHomeScreenRoot
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen.UserHomeScreenViewModel
@@ -73,6 +75,7 @@ fun UserMainScreen(
     onViewAllCategoryScreen: (List<Restaurant>) -> Unit
 ) {
     val userHomeScreenViewModel = koinViewModel<UserHomeScreenViewModel>()
+    val cartScreenViewModel = koinViewModel<CartScreenViewModel>()
     val items = listOf(
         BottomNavItem(0, Icons.Default.Home, "Home"),
         BottomNavItem(1, Icons.Default.ShoppingCart, "My Cart"),
@@ -80,7 +83,8 @@ fun UserMainScreen(
         BottomNavItem(3, Icons.Default.Person, "Me")
     )
     LaunchedEffect(Unit) {
-        userHomeScreenViewModel.onAction(UserHomeScreenAction.OnGettingRestaurants("Jaipur"))
+       userHomeScreenViewModel.onAction(UserHomeScreenAction.OnGettingRestaurants("Jaipur"))
+        cartScreenViewModel.onAction(CartScreenAction.GetFoodCartList)
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -105,11 +109,11 @@ fun UserMainScreen(
                     }
 
                     1 -> {
-                        UserBookingScreenRoot()
+                        CartScreenRoot(cartScreenViewModel)
                     }
 
                     2 -> {
-                        UserFavoriteScreenRoot()
+                        UserBookingScreenRoot()
                     }
 
                     3 -> {
