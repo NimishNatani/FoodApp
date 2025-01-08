@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.foodapp.core.domain.onError
 import com.foodapp.core.domain.onSuccess
 import com.foodapp.foodapp.domain.repository.UserRepository
+import com.foodapp.foodapp.presentation.components.PlatformConfiguration
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class CartScreenViewModel(private val userRepository: UserRepository) : ViewModel() {
+class CartScreenViewModel(private val userRepository: UserRepository,private val screenSize: PlatformConfiguration) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CartScreenState())
     val uiState = _uiState.asStateFlow()
@@ -38,5 +39,8 @@ class CartScreenViewModel(private val userRepository: UserRepository) : ViewMode
                 }
             }
         }
+    }
+    fun getScreenSize():Pair<Int,Int>{
+        return Pair(screenSize.screenWidth(),screenSize.screenHeight())
     }
 }

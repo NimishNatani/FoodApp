@@ -65,7 +65,7 @@ val appModule = module {
     viewModel { UserHomeScreenViewModel(get(),get())}
     viewModel { ViewRestaurantScreenViewModel(get())}
     viewModel { ViewFoodScreenViewModel(get()) }
-    viewModel { CartScreenViewModel(get()) }
+    viewModel { CartScreenViewModel(get(),get()) }
     viewModel { UserViewModel(  get()) }
     viewModel { RestaurantViewModel(  get()) }
 

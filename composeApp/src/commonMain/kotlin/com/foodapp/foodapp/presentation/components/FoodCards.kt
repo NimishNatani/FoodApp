@@ -1,10 +1,13 @@
 package com.foodapp.foodapp.presentation.components
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -36,12 +39,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.foodapp.core.presentation.Black
 import com.foodapp.core.presentation.DarkGrey
 import com.foodapp.core.presentation.Green
 import com.foodapp.core.presentation.GreenShade
-import com.foodapp.core.presentation.LightGrey
 import com.foodapp.core.presentation.TextSize
 import com.foodapp.core.presentation.White
 import com.foodapp.foodapp.domain.models.FoodCart
@@ -49,17 +50,24 @@ import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import io.ktor.http.Url
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun FoodCart(foodCartList: List<FoodCart>) {
+fun FoodCart(foodCartList: List<FoodCart>, screenSize: Pair<Int, Int>) {
+    var addToCart by remember {
+        mutableStateOf(false)
+    }
+    val columns =
+        if (screenSize.first > 1200) 4 else if (screenSize.first > 800) 3 else if (screenSize.first > 400) 2 else 1
+
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp, horizontal = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = LightGrey)
+        colors = CardDefaults.cardColors(containerColor = White)
     ) {
-        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 4.dp)) {
+        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 8.dp)) {
             Text(
                 text = foodCartList[0].restaurantName,
                 fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
+                fontSize = TextSize.large,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
@@ -74,15 +82,23 @@ fun FoodCart(foodCartList: List<FoodCart>) {
         }
         HorizontalDivider(thickness = 1.dp, color = GreenShade)
 
-        foodCartList.forEach {
-            FoodCartList(foodCart = it, onDeleteClick = {})
+
+        foodCartList.chunked(columns).forEach { rowItems ->
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                rowItems.forEach { foodCart ->
+                    FoodCartList(foodCart = foodCart, onDeleteClick = {})
+                }
+            }
         }
-        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 4.dp)) {
+        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
             Text(
                 text = "Total Payment",
                 fontWeight = FontWeight.Bold,
                 color = DarkGrey,
-                fontSize = TextSize.large,
+                fontSize = TextSize.regular,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
@@ -94,6 +110,26 @@ fun FoodCart(foodCartList: List<FoodCart>) {
                 fontSize = TextSize.large,
             )
         }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            OutlinedCustomButton(
+                text = if (addToCart) "Cancel" else "Delete", shape = RoundedCornerShape(10.dp)
+            ) {
+                if (addToCart) {
+                    addToCart = false
+                }
+            }
+
+            CustomButton(text = if (addToCart) "Order" else "Check Out", buttonColor = Green) {
+                if (!addToCart) {
+                    addToCart = true
+                }
+            }
+        }
     }
 }
 
@@ -102,14 +138,15 @@ fun FoodCartList(foodCart: FoodCart, onDeleteClick: () -> Unit) {
     var cardExpand by remember { mutableStateOf(false) }
     var editable by remember { mutableStateOf(false) }
     Card(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp, horizontal = 12.dp)
-            .animateContentSize().background(White),
+        modifier = Modifier.width(350.dp).background(White).padding(vertical = 10.dp, horizontal = 12.dp)
+            .animateContentSize(),
         shape = RoundedCornerShape(10.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
-        colors = CardDefaults.cardColors( White,White,White,White)
+        border = BorderStroke(width = 1.dp, color = DarkGrey),
+        elevation = CardDefaults.cardElevation(pressedElevation = 15.dp, hoveredElevation = 15.dp),
+        colors = CardDefaults.cardColors(White, White, White, White)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
                 .padding(8.dp)
         ) {
             // Pizza Image
@@ -146,27 +183,22 @@ fun FoodCartList(foodCart: FoodCart, onDeleteClick: () -> Unit) {
 
                 // Edit and Quantity Counter
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
 
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(
-                            modifier = Modifier.width(100.dp),
-                            onClick = {
-                                editable = !editable
-                            },
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Edit,
-                                contentDescription = "Edit",
-                                tint = DarkGrey
-                            )
-
-
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable {
+                            editable = !editable
                         }
-                        Spacer(modifier = Modifier.width(2.dp))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit",
+                            tint = DarkGrey
+                        )
                         Text(text = "edit", color = DarkGrey, fontSize = TextSize.small)
                     }
                     Text(
@@ -197,7 +229,10 @@ fun FoodCartList(foodCart: FoodCart, onDeleteClick: () -> Unit) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 // Price and Delete Button
-                Row (modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween){
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                     Text(
                         text = "₹ " + foodCart.totalPrice.toString(),
                         color = Green,

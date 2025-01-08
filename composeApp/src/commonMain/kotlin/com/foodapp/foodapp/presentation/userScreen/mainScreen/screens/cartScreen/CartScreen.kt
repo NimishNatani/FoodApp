@@ -30,19 +30,21 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun CartScreenRoot(cartScreenViewModel: CartScreenViewModel = koinViewModel()) {
     val state by cartScreenViewModel.uiState.collectAsStateWithLifecycle()
-    CartScreen(state = state, onBackClick = {})
+    val screenSize = cartScreenViewModel.getScreenSize()
+    CartScreen(state = state, onBackClick = {}, screenSize = screenSize)
 
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CartScreen(state: CartScreenState, onBackClick: () -> Unit) {
+fun CartScreen(state: CartScreenState, onBackClick: () -> Unit,    screenSize: Pair<Int, Int>) {
     if (state.isLoading) {
         Text("Loading")
     } else if (!state.isLoading && state.errorMessage != null) {
         Text(state.errorMessage)
     } else {
-    Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+
+        Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         TopAppBar(
             title = {
                 Text(
@@ -67,7 +69,7 @@ fun CartScreen(state: CartScreenState, onBackClick: () -> Unit) {
         val groupedFoodCarts = state.cartList.groupBy { it.restaurantId }.values.toList()
 
         groupedFoodCarts.forEach { groupedList ->
-            FoodCart(foodCartList = groupedList)
+            FoodCart(foodCartList = groupedList, screenSize = screenSize)
         }
     }
     }
