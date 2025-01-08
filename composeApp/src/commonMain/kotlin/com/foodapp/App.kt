@@ -157,7 +157,7 @@ fun App() {
                         onRestaurantClick = { restaurant ->
                             sharedUserViewModel.setRestaurant(restaurant)
                             navController.navigate(Route.ViewRestaurantScreen)
-                        })
+                        }, onBackClick = {navController.popBackStack()})
                 }
                 composable<Route.ViewRestaurantScreen> {
                     val sharedUserViewModel =
@@ -169,7 +169,7 @@ fun App() {
                             onFoodClick = { food ->
                                 sharedUserViewModel.setFood(food)
                                 navController.navigate(Route.ViewFoodScreen)
-                            })
+                            }, onBackClick = { navController.popBackStack() })
                     }
                 }
                 composable<Route.ViewFoodScreen> {
@@ -179,7 +179,8 @@ fun App() {
                         ViewFoodScreenRoot(
                             viewModel = viewModel,
                             food = food,
-                            restaurantName = sharedUserViewModel.restaurant.value!!.restaurantName
+                            restaurantName = sharedUserViewModel.restaurant.value!!.restaurantName,
+                            onBackClick = { navController.popBackStack() }
                         )
                     }
                 }

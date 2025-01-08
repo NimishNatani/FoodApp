@@ -21,7 +21,7 @@ fun CustomButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = Modifier.width(170.dp)
+        modifier = Modifier.wrapContentWidth()
             .padding(vertical = 8.dp, horizontal = 10.dp),
         colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
         shape = RoundedCornerShape(10.dp)
@@ -38,7 +38,7 @@ fun OutlinedCustomButton(
 ){
     OutlinedButton(
         onClick = onClick,
-        modifier = Modifier.width(170.dp)
+        modifier = Modifier.wrapContentWidth()
             .padding(vertical = 8.dp, horizontal = 16.dp),
         colors = ButtonDefaults.outlinedButtonColors(),
         shape = RoundedCornerShape(20.dp)

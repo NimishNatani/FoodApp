@@ -67,7 +67,8 @@ import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ViewFoodScreenRoot(viewModel: ViewFoodScreenViewModel = koinViewModel(), food: Food,restaurantName: String) {
+fun ViewFoodScreenRoot(viewModel: ViewFoodScreenViewModel = koinViewModel(), food: Food,restaurantName: String,
+    onBackClick:()->Unit) {
     LaunchedEffect(Unit) {
         viewModel.updateFoodItem(food,restaurantName)
     }
@@ -75,14 +76,14 @@ fun ViewFoodScreenRoot(viewModel: ViewFoodScreenViewModel = koinViewModel(), foo
     state?.let { currentState ->
         ViewFoodScreen(state = currentState, onAction = {
             viewModel.onAction(it)
-        })
+        }, onBackClick = {onBackClick()})
     }
 }
 
 @Composable
 fun ViewFoodScreen(
     state: FoodCart, onAction: (ViewFoodScreenAction) -> Unit, maxImageSize: Dp = 300.dp,
-    minImageSize: Dp = 100.dp, isFavorite: Boolean = false, onFavoriteClick: () -> Unit = {}
+    minImageSize: Dp = 100.dp,onBackClick:()->Unit, isFavorite: Boolean = false, onFavoriteClick: () -> Unit = {}
 ) {
     var currentImageSize by remember {
         mutableStateOf(maxImageSize)
@@ -121,7 +122,7 @@ fun ViewFoodScreen(
         )
         Box(
             modifier = Modifier.padding(10.dp).clip(CircleShape).background(White)
-                .align(Alignment.TopStart)
+                .align(Alignment.TopStart).clickable { onBackClick() }
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,

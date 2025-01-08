@@ -43,7 +43,8 @@ import org.koin.compose.viewmodel.koinViewModel
 fun ViewAllCategoryScreenRoot(
     restaurants: List<Restaurant>,
     viewModel: UserHomeScreenViewModel = koinViewModel(),
-    onRestaurantClick: (Restaurant) -> Unit
+    onRestaurantClick: (Restaurant) -> Unit,
+    onBackClick:()->Unit
 ) {
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -52,10 +53,10 @@ fun ViewAllCategoryScreenRoot(
 
     ViewAllCategoryScreen(state, onAction = { action ->
         viewModel.onAction(action)
-    }, onBackClick = {}, screenSize = screenSize,
+    },  screenSize = screenSize,
         onRestaurantClick = { restaurant ->
             onRestaurantClick(restaurant)
-        })
+        }, onBackClick = {onBackClick()})
 
 
 }
@@ -65,10 +66,10 @@ fun ViewAllCategoryScreenRoot(
 fun ViewAllCategoryScreen(
     state: UserHomeScreenState,
     onAction: (UserHomeScreenAction) -> Unit,
-    onBackClick: () -> Unit = {},
+    onBackClick: () -> Unit,
     selectedName: String = "Pizza",
     screenSize: Pair<Int, Int>,
-    onRestaurantClick: (Restaurant) -> Unit
+    onRestaurantClick: (Restaurant) -> Unit,
 ) {
 
     val columns = if (screenSize.first > 1800) 3 else if (screenSize.first > 1200) 2 else 1

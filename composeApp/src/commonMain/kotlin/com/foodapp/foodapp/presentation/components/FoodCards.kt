@@ -138,7 +138,7 @@ fun FoodCartList(foodCart: FoodCart, onDeleteClick: () -> Unit) {
     var cardExpand by remember { mutableStateOf(false) }
     var editable by remember { mutableStateOf(false) }
     Card(
-        modifier = Modifier.width(350.dp).background(White).padding(vertical = 10.dp, horizontal = 12.dp)
+        modifier = Modifier.width(300.dp).background(White).padding(vertical = 10.dp, horizontal = 12.dp)
             .animateContentSize(),
         shape = RoundedCornerShape(10.dp),
         border = BorderStroke(width = 1.dp, color = DarkGrey),
@@ -175,7 +175,7 @@ fun FoodCartList(foodCart: FoodCart, onDeleteClick: () -> Unit) {
                 Text(
                     text = foodCart.foodTags.joinToString(),
                     color = DarkGrey,
-                    maxLines = 2,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
@@ -192,6 +192,7 @@ fun FoodCartList(foodCart: FoodCart, onDeleteClick: () -> Unit) {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.clickable {
                             editable = !editable
+
                         }
                     ) {
                         Icon(
@@ -207,6 +208,7 @@ fun FoodCartList(foodCart: FoodCart, onDeleteClick: () -> Unit) {
                         fontSize = TextSize.small,
                         modifier = Modifier.padding(end = 6.dp).clickable {
                             cardExpand = !cardExpand
+                            editable = !editable
                         }
                     )
                 }
@@ -253,15 +255,17 @@ fun FoodCartList(foodCart: FoodCart, onDeleteClick: () -> Unit) {
         }
 
         if (cardExpand || editable) {
-            foodCart.foodCartDetailsList.forEach {
-                if (it.quantity != 0) {
-                    FoodItemRow(foodCartDetail = it, onSubClick = {
+            foodCart.foodCartDetailsList.forEach {foodCartList->
+                if (foodCartList.quantity != 0) {
+                    FoodItemRow(foodCartDetail = foodCartList, onSubClick = {
                         if (editable) {
-
+                            if (foodCartList.quantity>=1) {
+                                foodCartList.quantity--
+                            }
                         }
                     }, onAddClick = {
                         if (editable) {
-
+                            foodCartList.quantity++
                         }
                     })
                 }
