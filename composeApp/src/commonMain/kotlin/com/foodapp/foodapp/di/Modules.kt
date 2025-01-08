@@ -2,12 +2,14 @@ package com.foodapp.foodapp.di
 
 import com.foodapp.core.di.HttpClientFactory
 import com.foodapp.foodapp.data.api.AuthApi
+import com.foodapp.foodapp.data.api.BookingApi
 import com.foodapp.foodapp.data.api.RestaurantApi
 import com.foodapp.foodapp.data.api.UserApi
 import com.foodapp.foodapp.data.repository.AuthRepositoryImpl
 import com.foodapp.foodapp.data.repository.UserRepositoryImpl
 import com.foodapp.foodapp.data.repository.RestaurantRepositoryImpl
 import com.foodapp.foodapp.domain.repository.AuthRepository
+import com.foodapp.foodapp.domain.repository.BookingRepository
 import com.foodapp.foodapp.domain.repository.RestaurantRepository
 import com.foodapp.foodapp.domain.repository.UserRepository
 import com.foodapp.foodapp.presentation.RestaurantViewModel
@@ -31,6 +33,9 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import com.foodapp.foodapp.data.repository.BookingRepositoryImpl
+
+
 expect val platformModule: Module
 expect fun createTokenStorageModule(): Module
 expect fun getPlatformConfiguration(): Module
@@ -53,10 +58,12 @@ val appModule = module {
     single { AuthApi(get(),get()) }
     single { UserApi(get(),get()) }
     single { RestaurantApi(get(),get()) }
+    single { BookingApi(get(),get()) }
 
     singleOf(::AuthRepositoryImpl).bind<AuthRepository>()
     singleOf(::UserRepositoryImpl).bind<UserRepository>()
     singleOf(::RestaurantRepositoryImpl).bind<RestaurantRepository>()
+    singleOf(::BookingRepositoryImpl).bind<BookingRepository>()
 
     viewModel { AuthRegisterViewModel(authRepository = get(), get()) }
     viewModel { AuthLoginViewModel(authRepository = get(), get()) }
@@ -65,7 +72,7 @@ val appModule = module {
     viewModel { UserHomeScreenViewModel(get(),get())}
     viewModel { ViewRestaurantScreenViewModel(get())}
     viewModel { ViewFoodScreenViewModel(get()) }
-    viewModel { CartScreenViewModel(get(),get()) }
+    viewModel { CartScreenViewModel(get(),get(),get()) }
     viewModel { UserViewModel(  get()) }
     viewModel { RestaurantViewModel(  get()) }
 

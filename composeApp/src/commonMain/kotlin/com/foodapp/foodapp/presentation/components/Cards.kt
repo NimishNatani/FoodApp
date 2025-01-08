@@ -413,6 +413,7 @@ fun FoodItemRow(
     foodCartDetail: FoodCartDetail,
     onAddClick: (FoodCartDetail) -> Unit,
     onSubClick: (FoodCartDetail) -> Unit,
+    editable:Boolean = true
 ) {
     Row(
         modifier = Modifier
@@ -447,6 +448,7 @@ fun FoodItemRow(
         ) {
             // Subtract Button
             IconButton(
+                enabled = editable,
                 onClick = {
                     if (foodCartDetail.quantity > 0) {
                         onSubClick(foodCartDetail.copy(quantity = foodCartDetail.quantity - 1))
@@ -475,6 +477,7 @@ fun FoodItemRow(
 
             // Add Button
             IconButton(
+                enabled = editable,
                 onClick = {
                     onAddClick(foodCartDetail.copy(quantity = foodCartDetail.quantity + 1))
                 },

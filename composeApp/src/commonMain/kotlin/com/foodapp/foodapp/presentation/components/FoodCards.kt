@@ -24,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -52,12 +53,21 @@ import io.ktor.http.Url
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun FoodCart(foodCartList: List<FoodCart>, screenSize: Pair<Int, Int>) {
+fun FoodCart(
+    foodCartList: List<FoodCart>,
+    screenSize: Pair<Int, Int>,
+    onSubClick: (String, String) -> Unit,
+    onAddClick: (String, String) -> Unit,
+    onOrder:(List<FoodCart>) -> Unit
+) {
     var addToCart by remember {
         mutableStateOf(false)
     }
     val columns =
         if (screenSize.first > 1200) 4 else if (screenSize.first > 800) 3 else if (screenSize.first > 400) 2 else 1
+
+    val paymentMethods = listOf("On delivery","upi", "PayPal", "Visa", "Mastercard")
+    var selectedMethod by remember { mutableStateOf(paymentMethods[0]) }
 
     Card(
         modifier = Modifier.fillMaxWidth().padding(vertical = 10.dp, horizontal = 2.dp),
@@ -89,7 +99,10 @@ fun FoodCart(foodCartList: List<FoodCart>, screenSize: Pair<Int, Int>) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 rowItems.forEach { foodCart ->
-                    FoodCartList(foodCart = foodCart, onDeleteClick = {})
+                    FoodCartList(foodCart = foodCart,
+                        onDeleteClick = {},
+                        onSubClick = { foodId, foodSize -> onSubClick(foodId, foodSize) },
+                        onAddClick = { foodId, foodSize -> onAddClick(foodId, foodSize) })
                 }
             }
         }
@@ -110,7 +123,35 @@ fun FoodCart(foodCartList: List<FoodCart>, screenSize: Pair<Int, Int>) {
                 fontSize = TextSize.large,
             )
         }
+        if (addToCart) {
+            Text(
+                text = "Payment method",
+                fontWeight = FontWeight.Bold,
+                color = DarkGrey,
+                fontSize = TextSize.regular,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
+            )
 
+            paymentMethods.forEach { method ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { selectedMethod = method } // Select method on row click
+                        .padding(horizontal = 20.dp,vertical = 2.dp)
+                ) {
+                    RadioButton(
+                        selected = (selectedMethod == method),
+                        onClick = { selectedMethod = method } // Update state on click
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = method ,color = DarkGrey,
+                        fontSize = TextSize.small,)
+                }
+            }
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround,
@@ -128,17 +169,27 @@ fun FoodCart(foodCartList: List<FoodCart>, screenSize: Pair<Int, Int>) {
                 if (!addToCart) {
                     addToCart = true
                 }
+                else{
+                    onOrder(foodCartList)
+                }
             }
         }
     }
 }
 
 @Composable
-fun FoodCartList(foodCart: FoodCart, onDeleteClick: () -> Unit) {
-    var cardExpand by remember { mutableStateOf(false) }
+fun FoodCartList(
+    foodCart: FoodCart,
+    onDeleteClick: () -> Unit,
+    onSubClick: (String, String) -> Unit,
+    onAddClick: (String, String) -> Unit
+) {
+    var viewDetails by remember { mutableStateOf(false) }
     var editable by remember { mutableStateOf(false) }
+
     Card(
-        modifier = Modifier.width(300.dp).background(White).padding(vertical = 10.dp, horizontal = 12.dp)
+        modifier = Modifier.width(300.dp).background(White)
+            .padding(vertical = 10.dp, horizontal = 12.dp)
             .animateContentSize(),
         shape = RoundedCornerShape(10.dp),
         border = BorderStroke(width = 1.dp, color = DarkGrey),
@@ -192,7 +243,7 @@ fun FoodCartList(foodCart: FoodCart, onDeleteClick: () -> Unit) {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.clickable {
                             editable = !editable
-
+                            viewDetails = !viewDetails
                         }
                     ) {
                         Icon(
@@ -207,7 +258,7 @@ fun FoodCartList(foodCart: FoodCart, onDeleteClick: () -> Unit) {
                         color = DarkGrey,
                         fontSize = TextSize.small,
                         modifier = Modifier.padding(end = 6.dp).clickable {
-                            cardExpand = !cardExpand
+                            viewDetails = !viewDetails
                             editable = !editable
                         }
                     )
@@ -254,20 +305,20 @@ fun FoodCartList(foodCart: FoodCart, onDeleteClick: () -> Unit) {
             }
         }
 
-        if (cardExpand || editable) {
-            foodCart.foodCartDetailsList.forEach {foodCartList->
+        if (viewDetails || editable) {
+            foodCart.foodCartDetailsList.forEach { foodCartList ->
                 if (foodCartList.quantity != 0) {
                     FoodItemRow(foodCartDetail = foodCartList, onSubClick = {
                         if (editable) {
-                            if (foodCartList.quantity>=1) {
-                                foodCartList.quantity--
+                            if (foodCartList.quantity >= 1) {
+                                onSubClick(foodCart.foodId, foodCartList.foodSize)
                             }
                         }
                     }, onAddClick = {
                         if (editable) {
-                            foodCartList.quantity++
+                            onAddClick(foodCart.foodId, foodCartList.foodSize)
                         }
-                    })
+                    }, editable = editable)
                 }
             }
 
@@ -282,7 +333,7 @@ fun FoodCartList(foodCart: FoodCart, onDeleteClick: () -> Unit) {
                     if (editable) {
                         editable = false
                     } else {
-                        cardExpand = !cardExpand
+                        viewDetails = !viewDetails
                     }
                 }
 

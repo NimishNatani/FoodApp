@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -31,13 +30,22 @@ import org.koin.compose.viewmodel.koinViewModel
 fun CartScreenRoot(cartScreenViewModel: CartScreenViewModel = koinViewModel()) {
     val state by cartScreenViewModel.uiState.collectAsStateWithLifecycle()
     val screenSize = cartScreenViewModel.getScreenSize()
-    CartScreen(state = state, onBackClick = {}, screenSize = screenSize)
+    CartScreen(state = state, onBackClick = {},
+        onAction = {
+            cartScreenViewModel.onAction(it)
+        }, screenSize = screenSize
+    )
 
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CartScreen(state: CartScreenState, onBackClick: () -> Unit,    screenSize: Pair<Int, Int>) {
+fun CartScreen(
+    state: CartScreenState,
+    onAction: (CartScreenAction) -> Unit,
+    onBackClick: () -> Unit,
+    screenSize: Pair<Int, Int>
+) {
     if (state.isLoading) {
         Text("Loading")
     } else if (!state.isLoading && state.errorMessage != null) {
@@ -45,32 +53,35 @@ fun CartScreen(state: CartScreenState, onBackClick: () -> Unit,    screenSize: P
     } else {
 
         Column(modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-        TopAppBar(
-            title = {
-                Text(
-                    text = "Cart",
-                    color = Black,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = TextSize.large
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Cart",
+                        color = Black,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = TextSize.large
+                    )
+                },
+                navigationIcon = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        tint = DarkGrey,
+                        contentDescription = "arrow",
+                        modifier = Modifier.padding(start = 4.dp).clickable { onBackClick() }
+                    )
+                }, colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = White
                 )
-            },
-            navigationIcon = {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    tint = DarkGrey,
-                    contentDescription = "arrow",
-                    modifier = Modifier.padding(start = 4.dp).clickable { onBackClick() }
-                )
-            }, colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = White
             )
-        )
 
-        val groupedFoodCarts = state.cartList.groupBy { it.restaurantId }.values.toList()
+            val groupedFoodCarts = state.cartList.groupBy { it.restaurantId }.values.toList()
 
-        groupedFoodCarts.forEach { groupedList ->
-            FoodCart(foodCartList = groupedList, screenSize = screenSize)
+            groupedFoodCarts.forEach { groupedList ->
+                FoodCart(foodCartList = groupedList, screenSize = screenSize,
+                    onSubClick = {foodId,foodSize -> onAction(CartScreenAction.OnSubClick(foodId,foodSize)) },
+                    onAddClick = {foodId,foodSize ->onAction(CartScreenAction.OnAddClick(foodId,foodSize)) },
+                    onOrder = {onAction(CartScreenAction.OnOrder(it))})
+            }
         }
-    }
     }
 }
