@@ -33,6 +33,8 @@ import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.restaurantScreen.ViewRestaurantScreenRoot
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.restaurantScreen.ViewRestaurantScreenViewModel
 import com.foodapp.foodapp.sharedObjects.SharedObject.sharedUser
+import kotlinproject.composeapp.generated.resources.Res
+import kotlinproject.composeapp.generated.resources.compose_multiplatform
 import kotlinx.serialization.json.Json
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
@@ -132,7 +134,6 @@ fun App() {
                             }
                         })
                     }
-                    val user by sharedUserViewModel.user.collectAsStateWithLifecycle()
                     UserMainScreenRoot(
                         userMainScreenViewModel,
                         onViewAllRestaurantScreen = { restaurants ->
@@ -142,7 +143,18 @@ fun App() {
                         onViewAllCategoryScreen = { restaurants ->
                             sharedUserViewModel.setListRestaurants(restaurants)
                             navController.navigate(Route.ViewAllCategoryScreen)
-                        })
+                        }, onViewCategoryItem = { string ->
+                            sharedUserViewModel.setCategory(string)
+                            navController.navigate(Route.ViewAllCategoryScreen)
+                        },
+                        onRestaurantClick = { restaurant ->
+                            sharedUserViewModel.setRestaurant(restaurant)
+                            navController.navigate(Route.ViewRestaurantScreen)
+                        },
+                        onFoodSelected = { food ->
+                            sharedUserViewModel.setFood(food)
+                        navController.navigate(Route.ViewFoodScreen)}
+                    )
 
                 }
                 composable<Route.ViewAllRestaurantScreen> {
@@ -154,10 +166,12 @@ fun App() {
                         it.sharedKoinViewModel<UserViewModel>(navController)
 
                     ViewAllCategoryScreenRoot(restaurants = sharedUserViewModel.getCityRestaurants.value,
+                        category = sharedUserViewModel.selectedCategory.value
+                            ?: Pair(Res.drawable.compose_multiplatform, "Indian"),
                         onRestaurantClick = { restaurant ->
                             sharedUserViewModel.setRestaurant(restaurant)
                             navController.navigate(Route.ViewRestaurantScreen)
-                        }, onBackClick = {navController.popBackStack()})
+                        }, onBackClick = { navController.popBackStack() })
                 }
                 composable<Route.ViewRestaurantScreen> {
                     val sharedUserViewModel =

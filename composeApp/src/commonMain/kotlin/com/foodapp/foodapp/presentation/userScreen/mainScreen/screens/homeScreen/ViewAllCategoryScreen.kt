@@ -37,6 +37,7 @@ import com.foodapp.foodapp.presentation.components.CategoryCard
 import com.foodapp.foodapp.presentation.components.NearestRestaurantCard
 import kotlinproject.composeapp.generated.resources.Res
 import kotlinproject.composeapp.generated.resources.compose_multiplatform
+import org.jetbrains.compose.resources.DrawableResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -44,12 +45,14 @@ fun ViewAllCategoryScreenRoot(
     restaurants: List<Restaurant>,
     viewModel: UserHomeScreenViewModel = koinViewModel(),
     onRestaurantClick: (Restaurant) -> Unit,
-    onBackClick:()->Unit
+    onBackClick:()->Unit,
+    category:Pair<DrawableResource,String>
 ) {
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     viewModel.setRestaurantList(restaurants)
     val screenSize = viewModel.getScreenSize()
+    state.category = category
 
     ViewAllCategoryScreen(state, onAction = { action ->
         viewModel.onAction(action)
@@ -67,7 +70,6 @@ fun ViewAllCategoryScreen(
     state: UserHomeScreenState,
     onAction: (UserHomeScreenAction) -> Unit,
     onBackClick: () -> Unit,
-    selectedName: String = "Pizza",
     screenSize: Pair<Int, Int>,
     onRestaurantClick: (Restaurant) -> Unit,
 ) {

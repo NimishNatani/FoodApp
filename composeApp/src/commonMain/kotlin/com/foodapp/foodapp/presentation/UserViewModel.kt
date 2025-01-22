@@ -7,14 +7,11 @@ import com.foodapp.core.domain.onSuccess
 import com.foodapp.foodapp.domain.models.Food
 import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.domain.models.User
-import com.foodapp.foodapp.domain.repository.AuthRepository
 import com.foodapp.foodapp.domain.repository.UserRepository
-import com.foodapp.foodapp.storage.TokenStorage
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.DrawableResource
 
 class UserViewModel(
     private val userRepository: UserRepository,
@@ -32,14 +29,17 @@ class UserViewModel(
     private val _food = MutableStateFlow<Food?>(null)
     val food = _food.asStateFlow()
 
-    fun setUser(user: User){
+    private val _selectedCategory = MutableStateFlow<Pair<DrawableResource,String>?>(null)
+    val selectedCategory = _selectedCategory.asStateFlow()
+
+    fun setUser(user: User) {
         _user.value = user
     }
 
 
     fun getUser(onFailure: () -> Unit) {
         viewModelScope.launch {
-            userRepository.getUserByJwttoken().onSuccess {result ->
+            userRepository.getUserByJwttoken().onSuccess { result ->
                 println("User fetched successfully: $result")
                 _user.value = result
                 println("User: ${user.value}")
@@ -48,15 +48,20 @@ class UserViewModel(
         }
     }
 
-    fun setListRestaurants(list: List<Restaurant>){
+    fun setListRestaurants(list: List<Restaurant>) {
         _getCityRestaurants.value = list
     }
 
-    fun setRestaurant(restaurant: Restaurant){
+    fun setRestaurant(restaurant: Restaurant) {
         _restaurant.value = restaurant
     }
 
-fun setFood(food: Food){
+    fun setCategory(category: Pair<DrawableResource,String>) {
+        _selectedCategory.value = category
+
+    }
+
+    fun setFood(food: Food) {
         _food.value = food
     }
 

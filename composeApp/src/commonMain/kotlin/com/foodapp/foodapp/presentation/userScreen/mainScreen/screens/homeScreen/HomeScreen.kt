@@ -31,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.foodapp.core.presentation.GreenShade
 import com.foodapp.core.presentation.LightGrey
 import com.foodapp.core.presentation.White
+import com.foodapp.foodapp.domain.models.Food
 import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.presentation.components.CategoryCard
 import com.foodapp.foodapp.presentation.components.NearestRestaurantCard
@@ -41,6 +42,7 @@ import kotlinproject.composeapp.generated.resources.compose_multiplatform
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.DrawableResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -48,7 +50,10 @@ fun UserHomeScreenRoot(
     viewModel: UserHomeScreenViewModel = koinViewModel(),
     onNotificationClick: () -> Unit,
     onViewAllRestaurantScreen: (List<Restaurant>) -> Unit,
-    onViewAllCategoryScreen: (List<Restaurant>) -> Unit
+    onViewAllCategoryScreen: (List<Restaurant>) -> Unit,
+    onViewCategoryItem: (Pair<DrawableResource,String>) -> Unit,
+    onRestaurantClick: (Restaurant) -> Unit,
+    onFoodSelected: (Food)->Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 //    LaunchedEffect(Unit) {
@@ -60,7 +65,10 @@ fun UserHomeScreenRoot(
             viewModel.onAction(action)
         },
         onViewAllRestaurantScreen = { onViewAllRestaurantScreen(it) },
-        onViewAllCategoryScreen = {onViewAllCategoryScreen(it)}
+        onViewAllCategoryScreen = {onViewAllCategoryScreen(it)},
+        onViewCategoryItem = {onViewCategoryItem(it)},
+        onRestaurantClick = { onRestaurantClick(it)},
+        onFoodSelected = {onFoodSelected(it)}
     )
 
 }
@@ -70,8 +78,12 @@ fun UserHomeScreen(
     state: UserHomeScreenState,
     onAction: (UserHomeScreenAction) -> Unit,
     onViewAllRestaurantScreen: (List<Restaurant>) -> Unit,
-    onViewAllCategoryScreen: (List<Restaurant>) -> Unit = {}
-) {
+    onViewAllCategoryScreen: (List<Restaurant>) -> Unit,
+    onViewCategoryItem: (Pair<DrawableResource,String>) -> Unit,
+    onRestaurantClick: (Restaurant) -> Unit,
+    onFoodSelected: (Food)->Unit
+
+    ) {
     val categoryList = listOf(
         Pair(Res.drawable.compose_multiplatform, "Indian"),
         Pair(Res.drawable.compose_multiplatform, "Chinese"),
@@ -154,14 +166,7 @@ fun UserHomeScreen(
                         name = it.second,
                         image = it.first,
                         onSelected = {
-                            onAction(
-                                UserHomeScreenAction.OnCategorySelected(
-                                    Pair(
-                                        it.first,
-                                        it.second
-                                    )
-                                )
-                            )
+                            onViewCategoryItem(it)
                         })
                     Spacer(modifier = Modifier.width(8.dp))
 
@@ -194,7 +199,7 @@ fun UserHomeScreen(
                         name = food.foodName,
                         image = Res.drawable.compose_multiplatform,
                         onSelected = {
-
+                            onFoodSelected(food)
                         }
 
                     )
@@ -236,7 +241,7 @@ fun UserHomeScreen(
                         isFavorite = false,
                         onFavoriteClick = {},
                         address = restaurant.address + restaurant.city + restaurant.state,
-                        onClick = {}
+                        onClick = { onRestaurantClick(restaurant)}
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                 }
@@ -270,7 +275,7 @@ fun UserHomeScreen(
                             imageUrl = restaurant.restaurantImage,
                             name = restaurant.restaurantName,
                             rating = restaurant.ratings.toString(),
-                            onClick = {},
+                            onClick = { onRestaurantClick(restaurant)},
                             modifier = Modifier
                         )
                         Spacer(modifier = Modifier.width(8.dp))

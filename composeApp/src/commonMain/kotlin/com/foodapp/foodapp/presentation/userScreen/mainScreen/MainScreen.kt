@@ -31,6 +31,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -40,6 +43,7 @@ import com.foodapp.core.presentation.DarkGrey
 import com.foodapp.core.presentation.Green
 import com.foodapp.core.presentation.TextSize
 import com.foodapp.core.presentation.White
+import com.foodapp.foodapp.domain.models.Food
 import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.bookingScreen.UserBookingScreenRoot
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.cartScreen.CartScreenAction
@@ -49,13 +53,18 @@ import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen.UserHomeScreenRoot
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen.UserHomeScreenViewModel
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.profileScreen.UserProfileScreenRoot
+import org.jetbrains.compose.resources.DrawableResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun UserMainScreenRoot(
     viewModel: UserMainScreenViewModel = koinViewModel(),
     onViewAllRestaurantScreen: (List<Restaurant>) -> Unit,
-    onViewAllCategoryScreen: (List<Restaurant>) -> Unit
+    onViewAllCategoryScreen: (List<Restaurant>) -> Unit,
+    onViewCategoryItem: (Pair<DrawableResource,String>) -> Unit,
+    onRestaurantClick: (Restaurant) -> Unit,
+    onFoodSelected: (Food)->Unit
+
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -63,7 +72,10 @@ fun UserMainScreenRoot(
         viewModel.onAction(action)
     },
         onViewAllRestaurantScreen = { onViewAllRestaurantScreen(it) },
-        onViewAllCategoryScreen = { onViewAllCategoryScreen(it) })
+        onViewAllCategoryScreen = { onViewAllCategoryScreen(it) },
+        onViewCategoryItem = {onViewCategoryItem(it)},
+        onRestaurantClick = { onRestaurantClick(it)},
+        onFoodSelected = {onFoodSelected(it)})
 
 }
 
@@ -72,7 +84,11 @@ fun UserMainScreen(
     state: MainScreenState,
     onAction: (MainScreenAction) -> Unit,
     onViewAllRestaurantScreen: (List<Restaurant>) -> Unit,
-    onViewAllCategoryScreen: (List<Restaurant>) -> Unit
+    onViewAllCategoryScreen: (List<Restaurant>) -> Unit,
+    onViewCategoryItem: (Pair<DrawableResource,String>) -> Unit,
+    onRestaurantClick: (Restaurant) -> Unit,
+    onFoodSelected: (Food)->Unit
+
 ) {
     val userHomeScreenViewModel = koinViewModel<UserHomeScreenViewModel>()
     val cartScreenViewModel = koinViewModel<CartScreenViewModel>()
@@ -83,7 +99,10 @@ fun UserMainScreen(
         BottomNavItem(3, Icons.Default.Person, "Me")
     )
     LaunchedEffect(Unit) {
-       userHomeScreenViewModel.onAction(UserHomeScreenAction.OnGettingRestaurants("Jaipur"))
+        if (state.callingApi==0) {
+            userHomeScreenViewModel.onAction(UserHomeScreenAction.OnGettingRestaurants("Jaipur"))
+            state.callingApi++
+        }
         cartScreenViewModel.onAction(CartScreenAction.GetFoodCartList)
     }
 
@@ -105,7 +124,10 @@ fun UserMainScreen(
                     0 -> {
                         UserHomeScreenRoot(userHomeScreenViewModel, onNotificationClick = {},
                             onViewAllRestaurantScreen = { onViewAllRestaurantScreen(it) },
-                            onViewAllCategoryScreen = { onViewAllCategoryScreen(it) })
+                            onViewAllCategoryScreen = { onViewAllCategoryScreen(it) },
+                            onViewCategoryItem = {onViewCategoryItem(it)},
+                            onRestaurantClick = {onRestaurantClick(it)},
+                            onFoodSelected = {onFoodSelected(it)})
                     }
 
                     1 -> {

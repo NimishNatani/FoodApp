@@ -48,6 +48,7 @@ class UserHomeScreenViewModel(private val restaurantRepository: RestaurantReposi
             }
 
             is UserHomeScreenAction.OnGettingRestaurants -> {
+
                 getRestaurantsByCity(
                     city = action.city,
                     onComplete = { getRestaurantAndFood() }

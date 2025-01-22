@@ -8,6 +8,7 @@ import com.foodapp.foodapp.domain.models.Restaurant
 
 data class MainScreenState (
     var selectedTabIndex: BottomNavItem = BottomNavItem(0,Icons.Default.Home,"Home"),
+    var callingApi :Int  = 0
 )
 
 
