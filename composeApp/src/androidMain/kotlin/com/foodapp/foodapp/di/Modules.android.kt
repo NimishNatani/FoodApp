@@ -1,7 +1,8 @@
 package com.foodapp.foodapp.di
 
-import android.content.Context
+import com.foodapp.foodapp.location.AndroidLocationInterface
 import com.foodapp.foodapp.presentation.components.PlatformConfiguration
+import com.foodapp.foodapp.presentation.location.LocationInterface
 import com.foodapp.foodapp.screensize.ScreenSize
 import com.foodapp.foodapp.storage.AndroidTokenStorage
 import com.foodapp.foodapp.storage.TokenStorage
@@ -22,3 +23,6 @@ actual fun createTokenStorageModule(): Module = module {
 actual fun getPlatformConfiguration(): Module = module {
         single<PlatformConfiguration> { ScreenSize(androidContext()) }
     }
+actual fun getLocationModule():Module = module {
+    single<LocationInterface> { AndroidLocationInterface() }
+}

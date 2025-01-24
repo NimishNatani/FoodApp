@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.foodapp.core.presentation.Red
 import com.foodapp.foodapp.presentation.RestaurantViewModel
 import com.foodapp.foodapp.presentation.UserViewModel
+import com.foodapp.foodapp.presentation.location.LocationInterface
 import com.foodapp.foodapp.presentation.login.AuthLoginViewModel
 import com.foodapp.foodapp.presentation.login.LoginScreenRoot
 import com.foodapp.foodapp.presentation.navigation.Route
@@ -46,8 +47,6 @@ fun App() {
 
     MaterialTheme {
         val navController = rememberNavController()
-
-
         NavHost(
             navController = navController,
             startDestination = Route.AuthGraph

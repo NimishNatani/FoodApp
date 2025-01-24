@@ -39,6 +39,7 @@ import com.foodapp.foodapp.data.repository.BookingRepositoryImpl
 expect val platformModule: Module
 expect fun createTokenStorageModule(): Module
 expect fun getPlatformConfiguration(): Module
+expect fun getLocationModule():Module
 
 
 
@@ -69,7 +70,7 @@ val appModule = module {
     viewModel { AuthLoginViewModel(authRepository = get(), get()) }
     viewModel { AuthValidationViewModel(authRepository = get()) }
     viewModel { UserMainScreenViewModel( ) }
-    viewModel { UserHomeScreenViewModel(get(),get())}
+    viewModel { UserHomeScreenViewModel(get(),get(),get(),get())}
     viewModel { ViewRestaurantScreenViewModel(get())}
     viewModel { ViewFoodScreenViewModel(get()) }
     viewModel { CartScreenViewModel(get(),get(),get()) }

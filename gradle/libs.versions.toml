@@ -29,6 +29,8 @@ sqlite = "2.5.0-alpha12"
 room = "2.7.0-alpha12"
 securityCryptoKtx = "1.0.0"
 uriKmp = "0.0.18"
+compass = "1.2.2"
+
 
 [libraries]
 kamel-image = { module = "media.kamel:kamel-image-default", version.ref = "kamelImage" }
@@ -78,6 +80,15 @@ androidx-room-runtime = { group = "androidx.room", name = "room-runtime", versio
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
 androidx-security-crypto-ktx = { group = "androidx.security", name = "security-crypto-ktx", version.ref = "securityCryptoKtx" }
 uri-kmp = { module = "com.eygraber:uri-kmp", version.ref = "uriKmp" }
+
+compass-geolocation = { module = "dev.jordond.compass:geolocation", version.ref = "compass" }
+compass-geolocation-mobile = { module = "dev.jordond.compass:geolocation-mobile", version.ref = "compass" }
+compass-geocoder = { module = "dev.jordond.compass:geocoder", version.ref = "compass" }
+compass-geocoder-mobile = { module = "dev.jordond.compass:geocoder-mobile", version.ref = "compass" }
+compass-autocomplete = { module = "dev.jordond.compass:autocomplete", version.ref = "compass" }
+compass-autocomplete-mobile = { module = "dev.jordond.compass:autocomplete-mobile", version.ref = "compass" }
+compass-permissions-mobile = { module = "dev.jordond.compass:permissions-mobile", version.ref = "compass" }
+
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

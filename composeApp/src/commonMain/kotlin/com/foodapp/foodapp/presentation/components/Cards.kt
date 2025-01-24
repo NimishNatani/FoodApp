@@ -138,7 +138,7 @@ fun NearestRestaurantCard(
 
                 Spacer(modifier = Modifier.height(2.dp))
 
-                // Delivery Time, Rating, and Location
+                // Delivery Time, Rating, and LocationInterface
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceAround,
@@ -178,7 +178,7 @@ fun NearestRestaurantCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.LocationOn, // Replace with actual icon
-                        contentDescription = "Location Icon",
+                        contentDescription = "LocationInterface Icon",
                         tint = Green,
                         modifier = Modifier.size(30.dp).padding(top = 5.dp)
                     )
@@ -330,7 +330,7 @@ fun RestaurantScreenCard(restaurant: Restaurant) {
             ) {
                 Icon(
                     imageVector = Icons.Default.LocationOn, // Replace with actual icon
-                    contentDescription = "Location Icon",
+                    contentDescription = "LocationInterface Icon",
                     tint = Green,
                     modifier = Modifier.size(30.dp).padding(top = 5.dp)
                 )
@@ -590,7 +590,7 @@ fun FoodCard(
                 ) {
                     Icon(
                         imageVector = Icons.Default.LocationOn, // Replace with actual icon
-                        contentDescription = "Location Icon",
+                        contentDescription = "LocationInterface Icon",
                         tint = Red,
                         modifier = Modifier.size(22.dp).padding(top = 6.dp)
                     )

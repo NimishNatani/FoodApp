@@ -1,6 +1,8 @@
 package com.foodapp.foodapp.di
 
+import com.foodapp.foodapp.location.IOSLocationInterface
 import com.foodapp.foodapp.presentation.components.PlatformConfiguration
+import com.foodapp.foodapp.presentation.location.LocationInterface
 import com.foodapp.foodapp.screensize.IOSScreenSize
 import com.foodapp.foodapp.storage.IOSTokenStorage
 import com.foodapp.foodapp.storage.TokenStorage
@@ -26,3 +28,7 @@ actual fun createTokenStorageModule(): Module = module {
 actual fun getPlatformConfiguration(): Module = module {
         single<PlatformConfiguration> {IOSScreenSize()}
     }
+
+actual fun getLocationModule(): Module = module {
+    single<LocationInterface> {IOSLocationInterface()}
+}

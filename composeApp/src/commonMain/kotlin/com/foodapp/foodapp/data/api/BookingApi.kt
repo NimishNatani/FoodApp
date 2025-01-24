@@ -16,7 +16,7 @@ import io.ktor.http.HttpHeaders
 
 class BookingApi(private val client: HttpClient, private val tokenStorage: TokenStorage) {
 
-    private val BASE_URL = "http://localhost:8080/api"
+    private val BASE_URL = "http://10.14.6.239:8080/api"
 
     suspend fun saveOrder(bookingDetails: Booking): Result<String, DataError.Remote> {
         println("booking : $bookingDetails")

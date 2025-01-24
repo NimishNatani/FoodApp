@@ -39,51 +39,55 @@ kotlin {
     
     sourceSets {
         val desktopMain by getting
-        
-        androidMain.dependencies {
-            implementation(compose.preview)
-            implementation(libs.androidx.activity.compose)
 
-            implementation(libs.koin.android)
-            implementation(libs.koin.androidx.compose)
-            implementation(libs.ktor.client.okhttp)
-            implementation(libs.ktor.client.plugins)
+        val commonMain by getting {
+            dependencies {
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(compose.ui)
+                implementation(compose.components.resources)
+                implementation(compose.components.uiToolingPreview)
+                implementation(libs.androidx.lifecycle.viewmodel)
+                implementation(libs.androidx.lifecycle.runtime.compose)
 
-            implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
-        }
-        commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
-            implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime.compose)
-
-            implementation(libs.androidx.lifecycle.viewmodel)
-            implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation(libs.jetbrains.compose.navigation)
-            implementation(libs.kotlinx.serialization.json)
-            implementation(libs.androidx.room.runtime)
-            implementation(libs.sqlite.bundled)
-            implementation(libs.koin.compose)
-            implementation(libs.koin.compose.viewmodel)
-            api(libs.koin.core)
-            implementation(libs.ktor.client.cio)
+                implementation(libs.androidx.lifecycle.viewmodel)
+                implementation(libs.androidx.lifecycle.runtime.compose)
+                implementation(libs.jetbrains.compose.navigation)
+                implementation(libs.kotlinx.serialization.json)
+                implementation(libs.androidx.room.runtime)
+                implementation(libs.sqlite.bundled)
+                implementation(libs.koin.compose)
+                implementation(libs.koin.compose.viewmodel)
+                api(libs.koin.core)
+                implementation(libs.ktor.client.cio)
 //            implementation(libs.ktor.client.plugins) // Includes HttpTimeout
 
 //            implementation(libs.klogger)
 
-            implementation(libs.uri.kmp)
-            implementation(libs.kotlinx.datetime)
+                implementation(libs.uri.kmp)
+                implementation(libs.kotlinx.datetime)
 
 
 
-            implementation(libs.bundles.ktor)
-            implementation(libs.bundles.coil)
+                implementation(libs.bundles.ktor)
+                implementation(libs.bundles.coil)
 
-            implementation(libs.kamel.image)
+                implementation(libs.kamel.image)
+            }
+        }
+        val mobileMain by creating {
+            dependsOn(commonMain)
+            dependencies {
+                // Dependencies shared between Android and iOS
+                implementation(libs.compass.geolocation)
+                implementation(libs.compass.geolocation.mobile)
+                implementation(libs.compass.geocoder)
+                implementation(libs.compass.geocoder.mobile)
+                implementation(libs.compass.autocomplete)
+                implementation(libs.compass.autocomplete.mobile)
+                implementation(libs.compass.permissions.mobile)
+            }
         }
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
@@ -91,9 +95,28 @@ kotlin {
             implementation(libs.ktor.client.okhttp)
 
         }
-        iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
+        val androidMain by getting {
+            dependsOn(mobileMain)
+            dependencies {
+                implementation(compose.preview)
+                implementation(libs.androidx.activity.compose)
+
+                implementation(libs.koin.android)
+                implementation(libs.koin.androidx.compose)
+                implementation(libs.ktor.client.okhttp)
+                implementation(libs.ktor.client.plugins)
+
+                implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
+            }
         }
+
+        val iosMain by creating {
+            dependsOn(mobileMain)
+            dependencies {
+                implementation(libs.ktor.client.darwin)
+            }
+        }
+
         nativeMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }

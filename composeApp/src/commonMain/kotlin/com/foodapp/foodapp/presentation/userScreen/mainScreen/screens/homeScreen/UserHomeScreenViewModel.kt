@@ -8,6 +8,8 @@ import com.foodapp.core.presentation.UiText
 import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.domain.repository.RestaurantRepository
 import com.foodapp.foodapp.presentation.components.PlatformConfiguration
+import com.foodapp.foodapp.presentation.location.LocationInterface
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +17,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class UserHomeScreenViewModel(private val restaurantRepository: RestaurantRepository,private val screenSize:PlatformConfiguration) :
+class UserHomeScreenViewModel(private val restaurantRepository: RestaurantRepository,
+                              private val screenSize:PlatformConfiguration,
+    private val geoLocation:LocationInterface,private val httpClient: HttpClient) :
     ViewModel() {
 
     private val _uiState = MutableStateFlow(UserHomeScreenState())
@@ -50,7 +54,7 @@ class UserHomeScreenViewModel(private val restaurantRepository: RestaurantReposi
             is UserHomeScreenAction.OnGettingRestaurants -> {
 
                 getRestaurantsByCity(
-                    city = action.city,
+//                    city = action.city,
                     onComplete = { getRestaurantAndFood() }
                 )
             }
@@ -65,11 +69,11 @@ class UserHomeScreenViewModel(private val restaurantRepository: RestaurantReposi
     }
 
     private fun getRestaurantsByCity(
-        city: String = "Jaipur",
+//        city: String = "Jaipur",
         onComplete: () -> Unit
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            restaurantRepository.getRestaurantsByCity(city).onSuccess { restaurants ->
+            restaurantRepository.getRestaurantsByCity(geoLocation.geoLocation(httpClient)).onSuccess { restaurants ->
                 _uiState.update { uiState ->
                     uiState.copy(
                         searchResults = SearchItem(
