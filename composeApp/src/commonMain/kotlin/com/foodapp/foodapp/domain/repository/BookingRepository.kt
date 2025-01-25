@@ -7,4 +7,6 @@ import com.foodapp.foodapp.domain.models.Booking
 interface BookingRepository {
 
     suspend fun saveOrder(booking: Booking): Result<String, DataError.Remote>
+
+    suspend fun getOrders():Result<List<Booking>,DataError.Remote>
 }

@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.foodapp.foodapp.presentation.components.CustomTextField
 import com.foodapp.foodapp.presentation.components.FoodCard
+import com.foodapp.foodapp.presentation.components.OrderCard
 import com.foodapp.foodapp.presentation.login.LoginIntent
 import com.foodapp.foodapp.presentation.login.LoginScreen
 import com.foodapp.foodapp.presentation.login.LoginUiState
@@ -96,3 +97,12 @@ import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen
 //
 //   )
 //}
+
+@Preview(backgroundColor = Color.WHITE.toLong(), showBackground = true)
+@Composable
+fun LoginScreenPreview() {
+   OrderCard(
+
+   )
+}
+

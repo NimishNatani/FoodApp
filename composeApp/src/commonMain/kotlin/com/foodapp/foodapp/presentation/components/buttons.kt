@@ -34,16 +34,18 @@ fun CustomButton(
 fun OutlinedCustomButton(
     text: String,
     shape: RoundedCornerShape = RoundedCornerShape(20.dp),
+    textColor: Color = Black,
+    buttonColor: Color = Black,
     onClick: () -> Unit,
 ) {
     OutlinedButton(
         onClick = onClick,
         modifier = Modifier.wrapContentWidth()
             .padding(vertical = 8.dp, horizontal = 16.dp),
-        colors = ButtonDefaults.outlinedButtonColors(),
+        colors = ButtonDefaults.outlinedButtonColors(buttonColor),
         shape = RoundedCornerShape(20.dp)
     )
     {
-        CustomButtonText(text = text, color = Black)
+        CustomButtonText(text = text, color = textColor)
     }
 }

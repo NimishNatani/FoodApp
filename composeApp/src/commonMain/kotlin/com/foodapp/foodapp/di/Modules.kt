@@ -34,6 +34,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import com.foodapp.foodapp.data.repository.BookingRepositoryImpl
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.bookingScreen.BookingScreenViewModel
 
 
 expect val platformModule: Module
@@ -74,6 +75,7 @@ val appModule = module {
     viewModel { ViewRestaurantScreenViewModel(get())}
     viewModel { ViewFoodScreenViewModel(get()) }
     viewModel { CartScreenViewModel(get(),get(),get()) }
+    viewModel { BookingScreenViewModel(get(),get())}
     viewModel { UserViewModel(  get()) }
     viewModel { RestaurantViewModel(  get()) }
 

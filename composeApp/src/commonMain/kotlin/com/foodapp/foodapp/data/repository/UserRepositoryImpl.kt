@@ -23,8 +23,6 @@ class UserRepositoryImpl(private val userApi: UserApi):UserRepository {
 
     override suspend fun getFoodCart(): Result<List<FoodCart>, DataError.Remote> {
         val apiResponse = userApi.getFoodCart()
-        apiResponse.onSuccess { println("food :$it") }
-        apiResponse.onError { println("Error :$it") }
         return apiResponse.map { dto -> dto.map { it.toFoodCart() }}
     }
 }

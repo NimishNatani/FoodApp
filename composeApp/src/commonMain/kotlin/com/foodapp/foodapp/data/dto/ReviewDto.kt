@@ -4,7 +4,7 @@ data class ReviewDto(
     val reviewId: String,
     val userId: String,
     val restaurantId: String,
-    val ratings: Int,
+    val ratings: Double?,
     val message: String,
     val reviewTime: String
 )
