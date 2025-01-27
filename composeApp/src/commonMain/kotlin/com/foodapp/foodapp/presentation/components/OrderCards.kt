@@ -1,12 +1,17 @@
 package com.foodapp.foodapp.presentation.components
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -38,13 +43,19 @@ import io.kamel.image.asyncPainterResource
 import io.ktor.http.Url
 
 @Composable
-fun OrderCard(booking: Booking, page: Int) {
+fun OrderCard(booking: Booking, page: Int,modifier: Modifier = Modifier) {
     val foodImages = booking.getFoodImages()
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .height(150.dp)
-            .width(if (page==0||page==1){350.dp}else{250.dp})
+            .height(135.dp)
+            .width(
+                if (page == 0 || page == 1) {
+                    330.dp
+                } else {
+                    250.dp
+                }
+            )
             .clickable { },
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = White),
@@ -60,17 +71,17 @@ fun OrderCard(booking: Booking, page: Int) {
                 contentDescription = "Image",
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier
-                    .width(100.dp)
-                    .height(150.dp)
+                    .width(120.dp)
+                    .fillMaxHeight()
             )
 
 
             // Details Section
             Column(
-                modifier = Modifier.padding(horizontal = 2.dp).fillMaxWidth()
+                modifier = Modifier.padding(horizontal = 5.dp).fillMaxWidth()
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 2.dp, top = 4.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
@@ -88,20 +99,24 @@ fun OrderCard(booking: Booking, page: Int) {
                 }
                 Row(
                     horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth()
+                    modifier = Modifier.padding(top = 1.dp, bottom = 4.dp).fillMaxWidth()
                 ) {
                     Text(
-                        text = "${booking.getTotalQuantity()} Items",
+                        text = "${booking.getTotalQuantity()} Items  ",
                         fontSize = TextSize.regular,
                         color = DarkGrey,
-                        modifier = Modifier.height(15.dp)
+                        modifier = Modifier.height(20.dp)
                     )
-                    VerticalDivider(thickness = 1.dp, color = LightGrey)
+                    VerticalDivider(
+                        thickness = 2.dp,
+                        color = LightGrey,
+                        modifier = Modifier.height(20.dp).align(Alignment.CenterVertically)
+                    )
                     Text(
-                        text = "1.4km",
+                        text = "  1.4km",
                         fontSize = TextSize.regular,
                         color = DarkGrey,
-                        modifier = Modifier.padding(start = 4.dp).height(15.dp)
+                        modifier = Modifier.padding(start = 4.dp).height(20.dp)
                     )
                 }
 
@@ -110,16 +125,18 @@ fun OrderCard(booking: Booking, page: Int) {
                     modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
                 ) {
                     // Show up to 3 images with overlap
-                    foodImages.take(3).forEachIndexed { index, imageRes ->
-                        KamelImage(
-                            { asyncPainterResource(data = Url("https://t3.ftcdn.net/jpg/03/24/73/92/360_F_324739203_keeq8udvv0P2h1MLYJ0GLSlTBagoXS48.jpg")) },
-                            contentDescription = "Item $index",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier
-                                .size(30.dp)
-                                .clip(CircleShape)
-                                .padding(start = if (index > 0) (-10).dp else 0.dp,end = 8.dp) // Overlap effect
-                        )
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        foodImages.take(3).forEachIndexed { index, imageRes ->
+                            KamelImage(
+                                { asyncPainterResource(data = Url("https://t3.ftcdn.net/jpg/03/24/73/92/360_F_324739203_keeq8udvv0P2h1MLYJ0GLSlTBagoXS48.jpg")) },
+                                contentDescription = "Item $index",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.padding(start = 20.dp)
+                                    .size(30.dp)
+                                    .clip(CircleShape)
+                                    .offset(x = (index * 20).dp) // Adjust position for overlap
+                            )
+                        }
                     }
 
                     // "+n items" text if additional items exist
@@ -135,7 +152,8 @@ fun OrderCard(booking: Booking, page: Int) {
                 if (page == 0 || page == 1) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceAround
                     ) {
                         Text(
                             text = "₹ ${booking.amount}",
@@ -144,16 +162,18 @@ fun OrderCard(booking: Booking, page: Int) {
                             color = Green,
                             modifier = Modifier.height(25.dp)
                         )
-                        OutlinedCustomButton(
+                        Text(
                             text = if (page == 0) {
                                 "Track Order"
                             } else {
                                 "Reorder"
                             },
-                            shape = RoundedCornerShape(8.dp),
-                            onClick = {},
-                            textColor = Green,
-                            buttonColor = Green
+                            color = Green,
+                            modifier = Modifier.border(
+                                border = BorderStroke(1.dp, color = Green),
+                                shape = RoundedCornerShape(6.dp)
+                            ).padding( horizontal = 8.dp, vertical = 1.dp)
+                                .clickable { }, fontWeight = FontWeight.SemiBold, fontSize = TextSize.regular
                         )
                     }
                 }

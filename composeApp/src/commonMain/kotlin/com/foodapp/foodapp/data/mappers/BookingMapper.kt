@@ -12,12 +12,12 @@ fun BookingDto.toBooking(): Booking {
         bookingId = bookingId,
         userId = userId,
         restaurantId = restaurantId,
-        isAcceptedByRestaurant = isAcceptedByRestaurant,
-        isBookingCompleted = isBookingCompleted,
+        isAcceptedByRestaurant = acceptedByRestaurant,
+        isBookingCompleted = bookingCompleted,
         message = message.map { it.toMessage() },
         foodCarts = foodCarts.map { it.toFoodCart() },
         acceptedTime = acceptedTime,
-        isPaymentDone = isPaymentDone,
+        isPaymentDone = paymentDone,
         paymentId = paymentId,
         reviewList = reviewList.map { it.toReview() },
         amount = amount
@@ -28,7 +28,7 @@ fun MessageDto.toMessage():Message{
     return Message(
         sender = sender,
         content = content,
-        createdTimestamp = timeStamp
+        createdTimestamp = createdTimestamp
 
     )
 }

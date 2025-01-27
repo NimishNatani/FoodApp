@@ -45,6 +45,8 @@ import com.foodapp.core.presentation.TextSize
 import com.foodapp.core.presentation.White
 import com.foodapp.foodapp.domain.models.Food
 import com.foodapp.foodapp.domain.models.Restaurant
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.bookingScreen.BookingScreenAction
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.bookingScreen.BookingScreenViewModel
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.bookingScreen.UserBookingScreenRoot
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.cartScreen.CartScreenAction
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.cartScreen.CartScreenRoot
@@ -92,6 +94,7 @@ fun UserMainScreen(
 ) {
     val userHomeScreenViewModel = koinViewModel<UserHomeScreenViewModel>()
     val cartScreenViewModel = koinViewModel<CartScreenViewModel>()
+    val bookingScreenViewModel = koinViewModel<BookingScreenViewModel>()
     val items = listOf(
         BottomNavItem(0, Icons.Default.Home, "Home"),
         BottomNavItem(1, Icons.Default.ShoppingCart, "My Cart"),
@@ -135,7 +138,7 @@ fun UserMainScreen(
                     }
 
                     2 -> {
-                        UserBookingScreenRoot()
+                        UserBookingScreenRoot(bookingScreenViewModel)
                     }
 
                     3 -> {

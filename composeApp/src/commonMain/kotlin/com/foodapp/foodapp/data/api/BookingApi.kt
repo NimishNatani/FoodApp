@@ -42,7 +42,7 @@ class BookingApi(private val client: HttpClient, private val tokenStorage: Token
     suspend fun getOrders():Result<List<BookingDto>,DataError.Remote>{
         return safeCall<List<BookingDto>> {
             try {
-                client.put("$BASE_URL/booking/userOrders"){
+                client.get("$BASE_URL/booking/userOrders"){
                     headers {
                         append(
                             HttpHeaders.Authorization,
