@@ -189,12 +189,12 @@ fun App() {
                     val sharedUserViewModel = it.sharedKoinViewModel<UserViewModel>(navController)
                     val viewModel = koinViewModel<ViewFoodScreenViewModel>()
                     sharedUserViewModel.food.value?.let { food ->
-                        ViewFoodScreenRoot(
-                            viewModel = viewModel,
-                            food = food,
-                            restaurantName = sharedUserViewModel.restaurant.value!!.restaurantName,
-                            onBackClick = { navController.popBackStack() }
-                        )
+//                        ViewFoodScreenRoot(
+//                            viewModel = viewModel,
+//                            food = food,
+//                            restaurantName = sharedUserViewModel.restaurant.value!!.restaurantName,
+//                            onBackClick = { navController.popBackStack() }
+//                        )
                     }
                 }
             }

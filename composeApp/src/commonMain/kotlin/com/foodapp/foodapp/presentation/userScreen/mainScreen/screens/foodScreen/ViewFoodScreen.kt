@@ -1,5 +1,8 @@
 package com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.foodScreen
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
@@ -54,7 +57,6 @@ import com.foodapp.core.presentation.TextSize
 import com.foodapp.core.presentation.White
 import com.foodapp.foodapp.domain.models.Food
 import com.foodapp.foodapp.domain.models.FoodCart
-import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.presentation.components.CustomButton
 import com.foodapp.foodapp.presentation.components.FoodItemRow
 import io.kamel.image.KamelImage
@@ -66,24 +68,39 @@ import kotlinproject.composeapp.generated.resources.ic_favorite_border
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun ViewFoodScreenRoot(viewModel: ViewFoodScreenViewModel = koinViewModel(), food: Food,restaurantName: String,
-    onBackClick:()->Unit) {
+fun ViewFoodScreenRoot(
+    viewModel: ViewFoodScreenViewModel = koinViewModel(), food: Food, restaurantName: String,
+    onBackClick: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
+) {
     LaunchedEffect(Unit) {
-        viewModel.updateFoodItem(food,restaurantName)
+        viewModel.updateFoodItem(food, restaurantName)
     }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     state?.let { currentState ->
         ViewFoodScreen(state = currentState, onAction = {
             viewModel.onAction(it)
-        }, onBackClick = {onBackClick()})
+        }, onBackClick = { onBackClick() },
+            animatedVisibilityScope = animatedVisibilityScope,
+            sharedTransitionScope = sharedTransitionScope)
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ViewFoodScreen(
-    state: FoodCart, onAction: (ViewFoodScreenAction) -> Unit, maxImageSize: Dp = 300.dp,
-    minImageSize: Dp = 100.dp,onBackClick:()->Unit, isFavorite: Boolean = false, onFavoriteClick: () -> Unit = {}
+    state: FoodCart,
+    onAction: (ViewFoodScreenAction) -> Unit,
+    maxImageSize: Dp = 300.dp,
+    minImageSize: Dp = 100.dp,
+    onBackClick: () -> Unit,
+    isFavorite: Boolean = false,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope,
+    onFavoriteClick: () -> Unit = {}
 ) {
     var currentImageSize by remember {
         mutableStateOf(maxImageSize)
@@ -109,134 +126,163 @@ fun ViewFoodScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize().nestedScroll(nestedScrollConnection).padding(top = 10.dp)) {
-        KamelImage(
-            { asyncPainterResource(data = Url("https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg")) },
-            contentDescription = "Image",
-            modifier = Modifier.size(maxImageSize).clip(RoundedCornerShape(15.dp))
-                .align(Alignment.TopCenter).graphicsLayer {
-                    scaleX = imageScale
-                    scaleY = imageScale
-                    translationY = -(maxImageSize.toPx() - currentImageSize.toPx()) / 2f
-                }, contentScale = ContentScale.FillBounds
-        )
-        Box(
-            modifier = Modifier.padding(10.dp).clip(CircleShape).background(White)
-                .align(Alignment.TopStart).clickable { onBackClick() }
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                tint = DarkGrey,
-                contentDescription = "arrow",
-                modifier = Modifier.align(Alignment.Center)
+    Box(
+        modifier = Modifier.fillMaxSize().nestedScroll(nestedScrollConnection).padding(top = 10.dp)
+    ) {
+        with(sharedTransitionScope) {
+            KamelImage(
+                { asyncPainterResource(data = Url("https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg")) },
+                contentDescription = "Image",
+                modifier = Modifier.size(maxImageSize).clip(RoundedCornerShape(15.dp)).sharedElement(
+                    rememberSharedContentState(key = "restaurantToFoodImage${state.foodId}"),
+                    animatedVisibilityScope = animatedVisibilityScope
+                )
+                    .align(Alignment.TopCenter).graphicsLayer {
+                        scaleX = imageScale
+                        scaleY = imageScale
+                        translationY = -(maxImageSize.toPx() - currentImageSize.toPx()) / 2f
+                    }, contentScale = ContentScale.FillBounds
             )
-        }
-        Box(
-            modifier = Modifier.padding(10.dp).clip(CircleShape).background(White)
-                .align(Alignment.TopEnd)
-        ) {
-            Icon(
-                painter = painterResource(if (isFavorite) Res.drawable.ic__favorite else Res.drawable.ic_favorite_border), // Replace with your favorite icon
-                contentDescription = "Favorite",
-                modifier = Modifier
-                    .size(35.dp)
-                    .align(Alignment.Center)
-                    .padding(8.dp)
-                    .clickable { onFavoriteClick() }
-            )
-        }
-
-        Column(
-            modifier = Modifier.padding(
-                top = currentImageSize + 15.dp,
-                start = 10.dp,
-                end = 10.dp,
-            ).verticalScroll(
-                rememberScrollState()
-            )
-        ) {
-            Text(
-                text = state.foodName,
-                color = Black,
-                fontWeight = FontWeight.Bold,
-                fontSize = TextSize.regular,
-                modifier = Modifier.padding(4.dp)
-            )
-
-            Text(
-                text = state.foodTags.joinToString(),
-                color = DarkGrey,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = TextSize.small,
-                modifier = Modifier.padding(4.dp)
-            )
-            HorizontalDivider(thickness = 2.dp, color = GreenShade)
-
-            Text(
-                text = "Description",
-                color = Black,
-                fontWeight = FontWeight.Bold,
-                fontSize = TextSize.regular,
-                modifier = Modifier.padding(top = 10.dp, bottom = 4.dp, start = 4.dp, end = 4.dp)
-            )
-
-            Text(
-                text = state.foodDescription,
-                color = DarkGrey,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = TextSize.small,
-                modifier = Modifier.padding(4.dp).animateContentSize(
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioLowBouncy,
-                        stiffness = Spring.StiffnessLow
-                    )
-                ).clickable {
-                    textExpand = !textExpand
-                }, maxLines = if (textExpand) 10 else 2
-            )
-            HorizontalDivider(thickness = 2.dp, color = GreenShade)
-
-            Text(
-                text = "Add food",
-                color = Black,
-                fontWeight = FontWeight.Bold,
-                fontSize = TextSize.regular,
-                modifier = Modifier.padding(top = 10.dp, bottom = 4.dp, start = 4.dp, end = 4.dp)
-            )
-
-            state.foodCartDetailsList.forEach {
-                FoodItemRow(
-                    foodCartDetail = it,
-                    onAddClick = { onAction(ViewFoodScreenAction.onAddClick(it)) },
-                    onSubClick = {onAction(ViewFoodScreenAction.onSubClick(it))})
-                HorizontalDivider(thickness = 2.dp, color = GreenShade)
-            }
-            Spacer(modifier = Modifier.height(30.dp))
-
-        }
-        Card(modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
-            colors = CardDefaults.cardColors(containerColor = White),) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
+            Box(
+                modifier = Modifier.padding(10.dp).clip(CircleShape).background(White)
+                    .align(Alignment.TopStart).clickable { onBackClick() }
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "Total Price",
-                        color = DarkGrey,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = TextSize.regular,
-                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
-                    )
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    tint = DarkGrey,
+                    contentDescription = "arrow",
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+            Box(
+                modifier = Modifier.padding(10.dp).clip(CircleShape).background(White)
+                    .align(Alignment.TopEnd)
+            ) {
+                Icon(
+                    painter = painterResource(if (isFavorite) Res.drawable.ic__favorite else Res.drawable.ic_favorite_border), // Replace with your favorite icon
+                    contentDescription = "Favorite",
+                    modifier = Modifier
+                        .size(35.dp)
+                        .align(Alignment.Center)
+                        .padding(8.dp)
+                        .clickable { onFavoriteClick() }
+                )
+            }
 
-                    Text(
-                        text = state.totalPrice.toString(),
-                        color = Green,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = TextSize.regular,
+            Column(
+                modifier = Modifier.padding(
+                    top = currentImageSize + 15.dp,
+                    start = 10.dp,
+                    end = 10.dp,
+                ).verticalScroll(
+                    rememberScrollState()
+                )
+            ) {
+                Text(
+                    text = state.foodName,
+                    color = Black,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = TextSize.regular,
+                    modifier = Modifier.padding(4.dp).sharedBounds(
+                        rememberSharedContentState(key = "restaurantToFoodName${state.foodId}"),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+                )
+
+                Text(
+                    text = state.foodTags.joinToString(),
+                    color = DarkGrey,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = TextSize.small,
+                    modifier = Modifier.padding(4.dp).sharedBounds(
+                        rememberSharedContentState(key = "restaurantToFoodTags${state.foodId}"),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
+                )
+                HorizontalDivider(thickness = 2.dp, color = GreenShade)
+
+                Text(
+                    text = "Description",
+                    color = Black,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = TextSize.regular,
+                    modifier = Modifier.padding(
+                        top = 10.dp,
+                        bottom = 4.dp,
+                        start = 4.dp,
+                        end = 4.dp
+                    )
+                )
+
+                Text(
+                    text = state.foodDescription,
+                    color = DarkGrey,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = TextSize.small,
+                    modifier = Modifier.padding(4.dp).animateContentSize(
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioLowBouncy,
+                            stiffness = Spring.StiffnessLow
+                        )
+                    ).clickable {
+                        textExpand = !textExpand
+                    }, maxLines = if (textExpand) 10 else 2
+                )
+                HorizontalDivider(thickness = 2.dp, color = GreenShade)
+
+                Text(
+                    text = "Add food",
+                    color = Black,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = TextSize.regular,
+                    modifier = Modifier.padding(
+                        top = 10.dp,
+                        bottom = 4.dp,
+                        start = 4.dp,
+                        end = 4.dp
+                    )
+                )
+
+                state.foodCartDetailsList.forEach {
+                    FoodItemRow(
+                        foodCartDetail = it,
+                        onAddClick = { onAction(ViewFoodScreenAction.onAddClick(it)) },
+                        onSubClick = { onAction(ViewFoodScreenAction.onSubClick(it)) })
+                    HorizontalDivider(thickness = 2.dp, color = GreenShade)
+                }
+                Spacer(modifier = Modifier.height(30.dp))
+
+            }
+            Card(
+                modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
+                colors = CardDefaults.cardColors(containerColor = White),
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = "Total Price",
+                            color = DarkGrey,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = TextSize.regular,
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 4.dp)
+                        )
+
+                        Text(
+                            text = state.totalPrice.toString(),
+                            color = Green,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = TextSize.regular,
+                        )
+                    }
+                    CustomButton(
+                        text = "Add to Cart",
+                        onClick = { onAction(ViewFoodScreenAction.onCartClick(state)) },
+                        buttonColor = Green
                     )
                 }
-                CustomButton(text = "Add to Cart", onClick = {onAction(ViewFoodScreenAction.onCartClick(state))}, buttonColor = Green)
             }
         }
     }

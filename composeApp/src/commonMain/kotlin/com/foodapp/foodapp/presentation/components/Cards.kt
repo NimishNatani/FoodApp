@@ -1,5 +1,8 @@
 package com.foodapp.foodapp.presentation.components
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -346,65 +349,81 @@ fun RestaurantScreenCard(restaurant: Restaurant) {
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun FoodItemCard(
     food: Food,
     isFavorite: Boolean = false,
     onFavoriteClick: () -> Unit,
-    onFoodClick: (Food) -> Unit
+    onFoodClick: (Food) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
-    Card(
-        modifier = Modifier
-            .width(180.dp)
-            .height(265.dp)
-            .padding(8.dp).clickable { onFoodClick(food) },
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = White)
-    ) {
-        Box(modifier = Modifier.fillMaxWidth().height(120.dp)) {
-            KamelImage(
-                { asyncPainterResource(data = Url("https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg")) },
-                contentDescription = "Image",
-                contentScale = ContentScale.FillBounds
-            )
-            Box(
-                modifier = Modifier.wrapContentSize().clip(CircleShape)
-                    .align(Alignment.TopStart).padding(2.dp).background(White)
-            ) {
-                Icon(
-                    painter = painterResource(if (isFavorite) Res.drawable.ic__favorite else Res.drawable.ic_favorite_border), // Replace with your favorite icon
-                    contentDescription = "Favorite",
+        Card(
+            modifier = Modifier
+                .width(180.dp)
+                .height(265.dp)
+                .padding(8.dp).clickable { onFoodClick(food) },
+            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = White)
+        ) {
+            with(sharedTransitionScope) {
+            Box(modifier = Modifier.fillMaxWidth().height(120.dp)) {
+                KamelImage(
+                    { asyncPainterResource(data = Url("https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg")) },
+                    contentDescription = "Image",
+                    contentScale = ContentScale.FillBounds,
                     modifier = Modifier
-                        .size(35.dp)
-                        .align(Alignment.Center)
-                        .padding(8.dp)
-                        .clickable { onFavoriteClick() }
+                        .sharedElement(
+                            rememberSharedContentState(key = "restaurantToFoodImage${food.foodId}"),
+                            animatedVisibilityScope = animatedVisibilityScope
+                        )
                 )
+                Box(
+                    modifier = Modifier.wrapContentSize().clip(CircleShape)
+                        .align(Alignment.TopStart).padding(2.dp).background(White)
+                ) {
+                    Icon(
+                        painter = painterResource(if (isFavorite) Res.drawable.ic__favorite else Res.drawable.ic_favorite_border), // Replace with your favorite icon
+                        contentDescription = "Favorite",
+                        modifier = Modifier
+                            .size(35.dp)
+                            .align(Alignment.Center)
+                            .padding(8.dp)
+                            .clickable { onFavoriteClick() }
+                    )
+                }
             }
-        }
-        Text(
-            text = food.foodName,
-            color = Black,
-            fontWeight = FontWeight.Bold,
-            fontSize = TextSize.regular,
-            modifier = Modifier.padding(4.dp)
-        )
+            Text(
+                text = food.foodName,
+                color = Black,
+                fontWeight = FontWeight.Bold,
+                fontSize = TextSize.regular,
+                modifier = Modifier.padding(4.dp).sharedBounds(
+                    rememberSharedContentState(key = "restaurantToFoodName${food.foodId}"),
+                    animatedVisibilityScope = animatedVisibilityScope
+                )
+            )
 
-        Text(
-            text = food.foodTags.joinToString(),
-            color = DarkGrey,
-            fontWeight = FontWeight.SemiBold,
-            fontSize = TextSize.small,
-            modifier = Modifier.padding(4.dp)
-        )
-        Text(
-            text = "₹ " + food.foodDetails.minBy { it.foodPrice }.foodPrice.toString(),
-            color = Green,
-            fontWeight = FontWeight.Bold,
-            fontSize = TextSize.regular,
-            modifier = Modifier.padding(4.dp)
-        )
+            Text(
+                text = food.foodTags.joinToString(),
+                color = DarkGrey,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = TextSize.small,
+                modifier = Modifier.padding(4.dp).sharedBounds(
+                    rememberSharedContentState(key = "restaurantToFoodTags${food.foodId}"),
+                    animatedVisibilityScope = animatedVisibilityScope
+                )
+            )
+            Text(
+                text = "₹ " + food.foodDetails.minBy { it.foodPrice }.foodPrice.toString(),
+                color = Green,
+                fontWeight = FontWeight.Bold,
+                fontSize = TextSize.regular,
+                modifier = Modifier.padding(4.dp)
+            )
+        }
     }
 }
 
@@ -413,7 +432,7 @@ fun FoodItemRow(
     foodCartDetail: FoodCartDetail,
     onAddClick: (FoodCartDetail) -> Unit,
     onSubClick: (FoodCartDetail) -> Unit,
-    editable:Boolean = true
+    editable: Boolean = true
 ) {
     Row(
         modifier = Modifier
@@ -454,7 +473,8 @@ fun FoodItemRow(
                         onSubClick(foodCartDetail.copy(quantity = foodCartDetail.quantity - 1))
                     }
                 },
-                modifier = Modifier.clip(RoundedCornerShape(8.dp)).border(1.dp, DarkGrey, RoundedCornerShape(8.dp)).size(24.dp)
+                modifier = Modifier.clip(RoundedCornerShape(8.dp))
+                    .border(1.dp, DarkGrey, RoundedCornerShape(8.dp)).size(24.dp)
 
             ) {
                 Icon(
@@ -481,7 +501,8 @@ fun FoodItemRow(
                 onClick = {
                     onAddClick(foodCartDetail.copy(quantity = foodCartDetail.quantity + 1))
                 },
-                modifier = Modifier.clip(RoundedCornerShape(8.dp)).border(1.dp, DarkGrey, RoundedCornerShape(8.dp)).size(24.dp)
+                modifier = Modifier.clip(RoundedCornerShape(8.dp))
+                    .border(1.dp, DarkGrey, RoundedCornerShape(8.dp)).size(24.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,

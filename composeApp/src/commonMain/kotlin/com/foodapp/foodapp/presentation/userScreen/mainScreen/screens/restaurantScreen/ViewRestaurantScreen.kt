@@ -1,5 +1,8 @@
 package com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.restaurantScreen
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -42,6 +45,8 @@ import com.foodapp.foodapp.domain.models.Food
 import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.presentation.components.FoodItemCard
 import com.foodapp.foodapp.presentation.components.RestaurantScreenCard
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.foodScreen.ViewFoodScreenRoot
+import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.foodScreen.ViewFoodScreenViewModel
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import io.ktor.http.Url
@@ -72,6 +77,7 @@ fun ViewRestaurantScreenRoot(
 
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ViewRestaurantScreen(
 //    state: ViewRestaurantScreenState?,
@@ -87,6 +93,10 @@ fun ViewRestaurantScreen(
 ) {
     val columns =
         if (screenSize.first > 1200) 4 else if (screenSize.first > 800) 3 else if (screenSize.first > 400) 2 else 1
+
+    var foodScreenVisible by remember {
+        mutableStateOf(Pair(false, emptyList<Food>()))
+    }
 
     var currentImageSize by remember {
         mutableStateOf(maxImageSize)
@@ -109,72 +119,101 @@ fun ViewRestaurantScreen(
         }
     }
 
-    Box(modifier = Modifier.nestedScroll(nestedScrollConnection)) {
-        KamelImage(
-            { asyncPainterResource(data = Url("https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg")) },
-            contentDescription = "Image",
-            modifier = Modifier.fillMaxWidth().height(maxImageSize)
-                .clip(RoundedCornerShape(bottomEnd = 80.dp, bottomStart = 80.dp))
-                .align(Alignment.TopCenter).graphicsLayer {
-                    scaleX = imageScale
-                    scaleY = imageScale
-                    translationY = -(maxImageSize.toPx() - currentImageSize.toPx()) / 2f
-                }, contentScale = ContentScale.FillBounds
-        )
-        Box(
-            modifier = Modifier.padding(10.dp).clip(CircleShape).background(White)
-                .align(Alignment.TopStart).clickable { onBackClick() }) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                tint = DarkGrey,
-                contentDescription = "arrow",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-        Box(
-            modifier = Modifier.padding(10.dp).clip(CircleShape).background(White)
-                .align(Alignment.TopEnd)
-        ) {
-            Icon(
-                painter = painterResource(if (isFavorite) Res.drawable.ic__favorite else Res.drawable.ic_favorite_border), // Replace with your favorite icon
-                contentDescription = "Favorite",
-                modifier = Modifier
-                    .size(35.dp)
-                    .align(Alignment.Center)
-                    .padding(8.dp)
-                    .clickable { onFavoriteClick() }
-            )
-        }
-        LazyColumn(
-            modifier = Modifier
-                .padding(top = if (currentImageSize > 100.dp) currentImageSize - 100.dp else 100.dp)
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Restaurant Header
-            item {
-                RestaurantScreenCard(restaurant = restaurant)
-                Spacer(modifier = Modifier.height(20.dp))
-            }
-
-//            lazyGrid(columns,restaurant)
-            items(restaurant.foodItems.chunked(columns)) { rowItems ->
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    rowItems.forEach { food ->
-                        FoodItemCard(
-                            food = food,
-                            onFavoriteClick = {},
-                            onFoodClick = { onFoodClick(it) }
+    SharedTransitionLayout {
+        AnimatedContent(
+            foodScreenVisible.first,
+            label = "basic_transition"
+        ) { targetState ->
+            if (!targetState) {
+                Box(modifier = Modifier.nestedScroll(nestedScrollConnection)) {
+                    KamelImage(
+                        { asyncPainterResource(data = Url("https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg")) },
+                        contentDescription = "Image",
+                        modifier = Modifier.fillMaxWidth().height(maxImageSize)
+                            .clip(RoundedCornerShape(bottomEnd = 80.dp, bottomStart = 80.dp))
+                            .align(Alignment.TopCenter).graphicsLayer {
+                                scaleX = imageScale
+                                scaleY = imageScale
+                                translationY = -(maxImageSize.toPx() - currentImageSize.toPx()) / 2f
+                            }, contentScale = ContentScale.FillBounds
+                    )
+                    Box(
+                        modifier = Modifier.padding(10.dp).clip(CircleShape).background(White)
+                            .align(Alignment.TopStart).clickable { onBackClick() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            tint = DarkGrey,
+                            contentDescription = "arrow",
+                            modifier = Modifier.align(Alignment.Center)
                         )
                     }
-                }
-            }
-            // Food Items Grid
-        }
+                    Box(
+                        modifier = Modifier.padding(10.dp).clip(CircleShape).background(White)
+                            .align(Alignment.TopEnd)
+                    ) {
+                        Icon(
+                            painter = painterResource(if (isFavorite) Res.drawable.ic__favorite else Res.drawable.ic_favorite_border), // Replace with your favorite icon
+                            contentDescription = "Favorite",
+                            modifier = Modifier
+                                .size(35.dp)
+                                .align(Alignment.Center)
+                                .padding(8.dp)
+                                .clickable { onFavoriteClick() }
+                        )
+                    }
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(top = if (currentImageSize > 100.dp) currentImageSize - 100.dp else 100.dp)
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Restaurant Header
+                        item {
+                            RestaurantScreenCard(restaurant = restaurant)
+                            Spacer(modifier = Modifier.height(20.dp))
+                        }
 
+//            lazyGrid(columns,restaurant)
+                        items(restaurant.foodItems.chunked(columns)) { rowItems ->
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                rowItems.forEach { food ->
+                                    FoodItemCard(
+                                        food = food,
+                                        onFavoriteClick = {},
+                                        onFoodClick = {
+                                            foodScreenVisible = Pair(true, listOf(food))
+                                            //onFoodClick(it)
+                                        },
+                                        animatedVisibilityScope = this@AnimatedContent,
+                                        sharedTransitionScope = this@SharedTransitionLayout
+                                    )
+                                }
+                            }
+                        }
+                        // Food Items Grid
+                    }
+                }
+            } else {
+                val viewModel: ViewFoodScreenViewModel = koinViewModel()
+                ViewFoodScreenRoot(
+                    viewModel,
+                    food = foodScreenVisible.second.first(),
+                    restaurantName = restaurant.restaurantName,
+                    onBackClick = {
+                        foodScreenVisible = Pair(
+                            false,
+                            listOf( foodScreenVisible.second.first())
+                        )
+                    },
+                    animatedVisibilityScope = this@AnimatedContent,
+                    sharedTransitionScope = this@SharedTransitionLayout
+                )
+
+            }
+        }
     }
 }
