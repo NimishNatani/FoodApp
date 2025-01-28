@@ -6,5 +6,6 @@ import com.foodapp.foodapp.domain.models.FoodCart
 data class BookingScreenState (
     val orderList: List<Booking> = emptyList(),
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val apiCalling:Int = 0
 )

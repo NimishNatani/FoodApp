@@ -26,6 +26,9 @@ class BookingScreenViewModel(private val screenSize: PlatformConfiguration,
                 _uiState.value = _uiState.value.copy(isLoading = true)
                 getOrderList()
             }
+            BookingScreenAction.ApiCalling -> {
+                _uiState.value = _uiState.value.copy(apiCalling = _uiState.value.apiCalling + 1)
+            }
         }
     }
 

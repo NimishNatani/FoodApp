@@ -16,8 +16,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class CartScreenViewModel(private val userRepository: UserRepository,private val screenSize: PlatformConfiguration,
-    private val bookingRepository: BookingRepository) : ViewModel() {
+class CartScreenViewModel(
+    private val userRepository: UserRepository, private val screenSize: PlatformConfiguration,
+    private val bookingRepository: BookingRepository
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CartScreenState())
     val uiState = _uiState.asStateFlow()
@@ -28,13 +30,17 @@ class CartScreenViewModel(private val userRepository: UserRepository,private val
                 _uiState.update { it.copy(isLoading = true) }
                 getFoodCartList()
             }
+
             is CartScreenAction.OnSubClick -> {
                 updateFoodCart(action.foodId, action.foodSize, decrement = true)
             }
+
             is CartScreenAction.OnAddClick -> {
                 updateFoodCart(action.foodId, action.foodSize, decrement = false)
             }
+
             is CartScreenAction.OnOrder -> {
+                _uiState.update { it.copy(isLoading = true) }
                 orderFood(action.foodCartList)
             }
         }
@@ -46,7 +52,7 @@ class CartScreenViewModel(private val userRepository: UserRepository,private val
                 _uiState.update {
                     it.copy(isLoading = false, cartList = foodCartList)
                 }
-            }.onError { error->
+            }.onError { error ->
                 _uiState.update {
                     it.copy(isLoading = false, errorMessage = error.toString())
                 }
@@ -61,7 +67,9 @@ class CartScreenViewModel(private val userRepository: UserRepository,private val
                     val updatedDetails = foodCart.foodCartDetailsList.map { detail ->
                         if (detail.foodSize == foodSize) {
                             detail.copy(
-                                quantity = (detail.quantity + if (decrement) -1 else 1).coerceAtLeast(0)
+                                quantity = (detail.quantity + if (decrement) -1 else 1).coerceAtLeast(
+                                    0
+                                )
                             )
                         } else {
                             detail
@@ -94,11 +102,35 @@ class CartScreenViewModel(private val userRepository: UserRepository,private val
                 paymentId = "null",
                 reviewList = emptyList(),
                 amount = foodCartList.sumOf { it.totalPrice }
-            ))
+            )).onSuccess {
+                userRepository.deleteItemFromCart(foodCartList).onSuccess {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            cartList = uiState.value.cartList.filterNot { cart ->
+                                foodCartList.any {foodCart ->  foodCart.foodId == cart.foodId }
+                            })
+                    }
+                }.onError { error ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = error.toString()
+                        )
+                    }
+                }
+            }.onError { error ->
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = error.toString()
+                    )
+                }
+            }
         }
     }
 
-    fun getScreenSize():Pair<Int,Int>{
-        return Pair(screenSize.screenWidth(),screenSize.screenHeight())
+    fun getScreenSize(): Pair<Int, Int> {
+        return Pair(screenSize.screenWidth(), screenSize.screenHeight())
     }
 }

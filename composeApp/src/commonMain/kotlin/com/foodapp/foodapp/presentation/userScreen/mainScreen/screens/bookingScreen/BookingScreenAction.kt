@@ -5,5 +5,6 @@ import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.cartScreen
 sealed interface BookingScreenAction {
 
     data object GetOrderList : BookingScreenAction
+    data object ApiCalling : BookingScreenAction
 
 }

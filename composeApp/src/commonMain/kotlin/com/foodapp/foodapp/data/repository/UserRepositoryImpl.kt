@@ -20,6 +20,9 @@ class UserRepositoryImpl(private val userApi: UserApi):UserRepository {
     override suspend fun addItemToCart(foodCart: FoodCart): Result<String, DataError.Remote> {
        return userApi.addItemToCart(foodCart)
     }
+    override suspend fun deleteItemFromCart(foodCartList: List<FoodCart>): Result<String, DataError.Remote> {
+       return userApi.deleteItemFromFoodCart(foodCartList)
+    }
 
     override suspend fun getFoodCart(): Result<List<FoodCart>, DataError.Remote> {
         val apiResponse = userApi.getFoodCart()

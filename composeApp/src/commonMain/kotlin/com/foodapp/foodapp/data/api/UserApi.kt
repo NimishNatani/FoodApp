@@ -45,6 +45,19 @@ class UserApi(private val client: HttpClient, private val tokenStorage: TokenSto
             }
         }
     }
+ suspend fun deleteItemFromFoodCart(foodCartList: List<FoodCart>): Result<String, DataError.Remote> {
+        return safeCall<String> {
+            client.put("$BASE_URL/user/deleteItemFromCart") {
+                headers {
+                    append(
+                        HttpHeaders.Authorization,
+                        "Bearer ${tokenStorage.getToken().toString()}"
+                    )
+                }
+                setBody(foodCartList)
+            }
+        }
+    }
 
     suspend fun getFoodCart(): Result<List<FoodCartDto>, DataError.Remote> {
         return safeCall<List<FoodCartDto>> {

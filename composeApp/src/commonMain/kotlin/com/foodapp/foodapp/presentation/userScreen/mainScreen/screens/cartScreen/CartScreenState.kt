@@ -3,7 +3,7 @@ package com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.cartScree
 import com.foodapp.foodapp.domain.models.FoodCart
 
 data class CartScreenState(
-    val cartList: List<FoodCart> = emptyList(),
+    var cartList: List<FoodCart> = emptyList(),
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 

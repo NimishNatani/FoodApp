@@ -1,7 +1,6 @@
 package com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.bookingScreen
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +10,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -19,7 +17,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.currentComposer
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +32,7 @@ import com.foodapp.core.presentation.Green
 import com.foodapp.core.presentation.GreenShade
 import com.foodapp.core.presentation.TextSize
 import com.foodapp.core.presentation.White
+import com.foodapp.foodapp.domain.models.Booking
 import com.foodapp.foodapp.presentation.components.OrderCard
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -42,10 +40,14 @@ import org.koin.compose.viewmodel.koinViewModel
 fun UserBookingScreenRoot(
     viewModel: BookingScreenViewModel = koinViewModel(),
 ) {
-    LaunchedEffect(Unit){
-        viewModel.onAction(BookingScreenAction.GetOrderList)
-    }
+
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    LaunchedEffect(Unit) {
+        if(state.apiCalling<1) {
+            viewModel.onAction(BookingScreenAction.GetOrderList)
+        }
+
+    }
     val screenSize = viewModel.getScreenSize()
 
     UserBookingScreen(
@@ -65,12 +67,17 @@ fun UserBookingScreen(
         if (screenSize.first > 1500) 4 else if (screenSize.first > 1100) 3 else if (screenSize.first > 700) 2 else 1
     val headings = listOf(Pair("InProgress", 0), Pair("Completed", 1), Pair("Cancelled", 2))
     val pagerState = rememberPagerState(pageCount = { 3 }, initialPage = 0)
-    var changePageState = remember { mutableStateOf(
-            Pair(false, 0)) }
+    var changePageState = remember {
+        mutableStateOf(
+            Pair(false, 0)
+        )
+    }
+    val bookingStatus = groupBookings(state.orderList)
+
     LaunchedEffect(changePageState.value.first) {
         if (changePageState.value.first) {
             pagerState.animateScrollToPage(changePageState.value.second)
-            changePageState.value = Pair(false,pagerState.currentPage)
+            changePageState.value = Pair(false, pagerState.currentPage)
         }
     }
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -103,7 +110,7 @@ fun UserBookingScreen(
                         Green
                     } else DarkGrey,
                     modifier = Modifier.clickable {
-                        changePageState.value = Pair(true,heading.second)
+                        changePageState.value = Pair(true, heading.second)
                     }
                 )
             }
@@ -119,18 +126,23 @@ fun UserBookingScreen(
             } else if (!state.isLoading && state.errorMessage != null) {
                 Text(state.errorMessage)
             } else {
-                LazyColumn(modifier = Modifier.fillMaxWidth(),
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    state.orderList.so
-                    items(state.orderList.chunked(columns)) { rowItems ->
+                    val bookingList =  when (page) {
+                        0 -> bookingStatus["Accepted"] ?: emptyList()
+                        1 -> bookingStatus["Completed"] ?: emptyList()
+                        else -> bookingStatus["Not Accepted"] ?: emptyList()
+                    }
+                    items(bookingList.chunked(columns)) { rowItems ->
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             rowItems.forEach { booking ->
                                 OrderCard(
-                                    booking, page,
+                                    booking =booking, page,
                                     modifier = Modifier
                                         .weight(1f) // Distribute items equally in the row
                                         .padding(4.dp)
@@ -142,4 +154,15 @@ fun UserBookingScreen(
             }
         }
     }
+}
+
+fun groupBookings(bookings: List<Booking>): Map<String, List<Booking>> {
+    val (completedBookings, remainingBookings) = bookings.partition { it.isBookingCompleted }
+    val (acceptedBookings, notAcceptedBookings) = remainingBookings.partition { it.isAcceptedByRestaurant }
+
+    return mapOf(
+        "Completed" to completedBookings,
+        "Accepted" to acceptedBookings,
+        "Not Accepted" to notAcceptedBookings
+    )
 }
