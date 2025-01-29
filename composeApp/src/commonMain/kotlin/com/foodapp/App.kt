@@ -1,13 +1,14 @@
+@file:OptIn(ExperimentalSharedTransitionApi::class)
+
 package com.foodapp
 
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -17,7 +18,6 @@ import androidx.navigation.compose.rememberNavController
 import com.foodapp.core.presentation.Red
 import com.foodapp.foodapp.presentation.RestaurantViewModel
 import com.foodapp.foodapp.presentation.UserViewModel
-import com.foodapp.foodapp.presentation.location.LocationInterface
 import com.foodapp.foodapp.presentation.login.AuthLoginViewModel
 import com.foodapp.foodapp.presentation.login.LoginScreenRoot
 import com.foodapp.foodapp.presentation.navigation.Route
@@ -41,11 +41,12 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 
+//@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 @Preview
 fun App() {
 
-    MaterialTheme {
+    SharedTransitionLayout {
         val navController = rememberNavController()
         NavHost(
             navController = navController,
@@ -150,9 +151,13 @@ fun App() {
                             sharedUserViewModel.setRestaurant(restaurant)
                             navController.navigate(Route.ViewRestaurantScreen)
                         },
-                        onFoodSelected = { food ->
+                        onFoodSelected = { food ,restaurant->
                             sharedUserViewModel.setFood(food)
-                        navController.navigate(Route.ViewFoodScreen)}
+                            sharedUserViewModel.setRestaurant(restaurant)
+                            navController.navigate(Route.ViewFoodScreen)
+                        },
+                        sharedTransitionScope = this@SharedTransitionLayout,
+                        animatedContentScope = this@composable,
                     )
 
                 }
@@ -170,31 +175,41 @@ fun App() {
                         onRestaurantClick = { restaurant ->
                             sharedUserViewModel.setRestaurant(restaurant)
                             navController.navigate(Route.ViewRestaurantScreen)
-                        }, onBackClick = { navController.popBackStack() })
+                        }, sharedTransitionScope = this@SharedTransitionLayout, animatedContentScope = this@composable, onBackClick = { navController.popBackStack() })
                 }
                 composable<Route.ViewRestaurantScreen> {
                     val sharedUserViewModel =
                         it.sharedKoinViewModel<UserViewModel>(navController)
                     val viewModel = koinViewModel<ViewRestaurantScreenViewModel>()
+                        sharedUserViewModel.restaurant.value?.let { restaurant ->
+                            ViewRestaurantScreenRoot(viewModel = viewModel,
+                                restaurant = restaurant,
+                                onFoodClick = { food ->
+                                    sharedUserViewModel.setFood(food)
+                                    navController.navigate(Route.ViewFoodScreen)
+                                },
+                                sharedTransitionScope = this@SharedTransitionLayout,
+                                animatedContentScope = this@composable,
+                                onBackClick = { navController.popBackStack() })
+                        }
 
-                    sharedUserViewModel.restaurant.value?.let { restaurant ->
-                        ViewRestaurantScreenRoot(viewModel = viewModel, restaurant = restaurant,
-                            onFoodClick = { food ->
-                                sharedUserViewModel.setFood(food)
-                                navController.navigate(Route.ViewFoodScreen)
-                            }, onBackClick = { navController.popBackStack() })
-                    }
                 }
                 composable<Route.ViewFoodScreen> {
                     val sharedUserViewModel = it.sharedKoinViewModel<UserViewModel>(navController)
                     val viewModel = koinViewModel<ViewFoodScreenViewModel>()
                     sharedUserViewModel.food.value?.let { food ->
-//                        ViewFoodScreenRoot(
-//                            viewModel = viewModel,
-//                            food = food,
-//                            restaurantName = sharedUserViewModel.restaurant.value!!.restaurantName,
-//                            onBackClick = { navController.popBackStack() }
-//                        )
+                        sharedUserViewModel.restaurant.value?.let { restaurant ->
+                            println("Food: ${sharedUserViewModel.food.value}")
+                            println("Restaurant: ${sharedUserViewModel.restaurant}")
+                            ViewFoodScreenRoot(
+                                viewModel = viewModel,
+                                food = food,
+                                restaurantName = restaurant.restaurantName,
+                                onBackClick = { navController.popBackStack() },
+                                sharedTransitionScope = this@SharedTransitionLayout,
+                                animatedContentScope = this@composable,
+                            )
+                        }
                     }
                 }
             }

@@ -82,7 +82,7 @@ fun ViewFoodScreenRoot(
     viewModel: ViewFoodScreenViewModel = koinViewModel(), food: Food, restaurantName: String,
     onBackClick: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope
+    animatedContentScope: AnimatedVisibilityScope
 ) {
     LaunchedEffect(Unit) {
         viewModel.updateFoodItem(food, restaurantName)
@@ -92,7 +92,7 @@ fun ViewFoodScreenRoot(
         ViewFoodScreen(state = currentState, onAction = {
             viewModel.onAction(it)
         }, onBackClick = { onBackClick() },
-            animatedVisibilityScope = animatedVisibilityScope,
+            animatedVisibilityScope = animatedContentScope,
             sharedTransitionScope = sharedTransitionScope
         )
     }

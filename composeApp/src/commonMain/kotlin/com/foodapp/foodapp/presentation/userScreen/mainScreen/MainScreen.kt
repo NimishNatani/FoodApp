@@ -1,8 +1,13 @@
+@file:OptIn(ExperimentalSharedTransitionApi::class)
+
 package com.foodapp.foodapp.presentation.userScreen.mainScreen
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Down
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Up
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.tween
@@ -61,11 +66,13 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun UserMainScreenRoot(
     viewModel: UserMainScreenViewModel = koinViewModel(),
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedVisibilityScope,
     onViewAllRestaurantScreen: (List<Restaurant>) -> Unit,
     onViewAllCategoryScreen: (List<Restaurant>) -> Unit,
     onViewCategoryItem: (Pair<DrawableResource,String>) -> Unit,
     onRestaurantClick: (Restaurant) -> Unit,
-    onFoodSelected: (Food)->Unit
+    onFoodSelected: (Food,Restaurant)->Unit
 
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -77,19 +84,23 @@ fun UserMainScreenRoot(
         onViewAllCategoryScreen = { onViewAllCategoryScreen(it) },
         onViewCategoryItem = {onViewCategoryItem(it)},
         onRestaurantClick = { onRestaurantClick(it)},
-        onFoodSelected = {onFoodSelected(it)})
+        onFoodSelected = {food,restaurant -> onFoodSelected(food,restaurant,) },
+        sharedTransitionScope = sharedTransitionScope,
+        animatedContentScope = animatedContentScope)
 
 }
 
 @Composable
 fun UserMainScreen(
     state: MainScreenState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedVisibilityScope,
     onAction: (MainScreenAction) -> Unit,
     onViewAllRestaurantScreen: (List<Restaurant>) -> Unit,
     onViewAllCategoryScreen: (List<Restaurant>) -> Unit,
     onViewCategoryItem: (Pair<DrawableResource,String>) -> Unit,
     onRestaurantClick: (Restaurant) -> Unit,
-    onFoodSelected: (Food)->Unit
+    onFoodSelected: (Food,Restaurant)->Unit
 
 ) {
     val userHomeScreenViewModel = koinViewModel<UserHomeScreenViewModel>()
@@ -130,7 +141,9 @@ fun UserMainScreen(
                             onViewAllCategoryScreen = { onViewAllCategoryScreen(it) },
                             onViewCategoryItem = {onViewCategoryItem(it)},
                             onRestaurantClick = {onRestaurantClick(it)},
-                            onFoodSelected = {onFoodSelected(it)})
+                            onFoodSelected = {food,restaurant -> onFoodSelected(food,restaurant,) },
+                            sharedTransitionScope = sharedTransitionScope,
+                            animatedContentScope = animatedContentScope)
                     }
 
                     1 -> {

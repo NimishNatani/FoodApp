@@ -1,5 +1,10 @@
+@file:OptIn(ExperimentalSharedTransitionApi::class)
+
 package com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -43,6 +48,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ViewAllCategoryScreenRoot(
     restaurants: List<Restaurant>,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedVisibilityScope,
     viewModel: UserHomeScreenViewModel = koinViewModel(),
     onRestaurantClick: (Restaurant) -> Unit,
     onBackClick:()->Unit,
@@ -57,6 +64,8 @@ fun ViewAllCategoryScreenRoot(
     ViewAllCategoryScreen(state, onAction = { action ->
         viewModel.onAction(action)
     },  screenSize = screenSize,
+        sharedTransitionScope = sharedTransitionScope,
+        animatedContentScope = animatedContentScope,
         onRestaurantClick = { restaurant ->
             onRestaurantClick(restaurant)
         }, onBackClick = {onBackClick()})
@@ -68,9 +77,11 @@ fun ViewAllCategoryScreenRoot(
 @Composable
 fun ViewAllCategoryScreen(
     state: UserHomeScreenState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedVisibilityScope,
     onAction: (UserHomeScreenAction) -> Unit,
     onBackClick: () -> Unit,
-    screenSize: Pair<Int, Int>,
+    screenSize: Pair<Float, Float>,
     onRestaurantClick: (Restaurant) -> Unit,
 ) {
 
@@ -142,6 +153,7 @@ fun ViewAllCategoryScreen(
         ) {
             items(state.filterResults.nearestRestaurantList) { restaurant ->
                 NearestRestaurantCard(
+                    restaurantId = restaurant.restaurantId,
                     imageUrl = restaurant.restaurantImage,
                     tags = restaurant.restaurantTags,
                     name = restaurant.restaurantName,
@@ -151,7 +163,9 @@ fun ViewAllCategoryScreen(
                     onClick = { onRestaurantClick(restaurant) },
                     onFavoriteClick = {},
                     totalReviews = restaurant.totalReviews,
-                    distance = "1.5"
+                    distance = "1.5",
+                    sharedTransitionScope = sharedTransitionScope,
+                    animatedContentScope = animatedContentScope
                 )
             }
         }

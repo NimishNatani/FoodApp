@@ -8,12 +8,12 @@ import platform.UIKit.UIScreen
 
 class IOSScreenSize:PlatformConfiguration {
     @OptIn(ExperimentalForeignApi::class)
-    override fun screenWidth(): Int {
-        return CGRectGetWidth(UIScreen.mainScreen.bounds).toInt()
+    override fun screenWidth(): Float {
+        return CGRectGetWidth(UIScreen.mainScreen.bounds)
     }
 
     @OptIn(ExperimentalForeignApi::class)
-    override fun screenHeight(): Int {
-        return CGRectGetHeight(UIScreen.mainScreen.bounds).toInt()
+    override fun screenHeight(): Float {
+        return CGRectGetHeight(UIScreen.mainScreen.bounds)
     }
 }

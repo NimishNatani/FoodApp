@@ -15,7 +15,7 @@ import io.ktor.http.HttpHeaders
 
 class RestaurantApi(private val client: HttpClient, private val tokenStorage: TokenStorage) {
 
-    private val BASE_URL = "http://localhost:8080/api"
+    private val BASE_URL = "http://10.14.4.228:8080/api"
 
     suspend fun getRestaurantByJwt(): Result<RestaurantDto, DataError.Remote> {
         return safeCall<RestaurantDto> {
@@ -32,16 +32,20 @@ class RestaurantApi(private val client: HttpClient, private val tokenStorage: To
 
     suspend fun getRestaurantsByCity(city:String): Result<List<RestaurantDto>, DataError.Remote> {
         return safeCall<List<RestaurantDto>> {
-            client.get("$BASE_URL/user/restaurant/search/byCity") {
-                headers {
-                    append(
-                        HttpHeaders.Authorization,
-                        "Bearer ${tokenStorage.getToken().toString()}"
-                    )
+            try {
+                client.get("$BASE_URL/user/restaurant/search/byCity") {
+                    headers {
+                        append(
+                            HttpHeaders.Authorization,
+                            "Bearer ${tokenStorage.getToken().toString()}"
+                        )
+                    }
+                    parameter("city", city)
                 }
-                parameter("city", city)
+            } catch (e: Exception) {
+                println("Error occurred: ${e.message}")
+                throw e
             }
         }
     }
-
 }

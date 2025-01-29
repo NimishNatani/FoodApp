@@ -1,15 +1,10 @@
+@file:OptIn(ExperimentalSharedTransitionApi::class)
+
 package com.foodapp.foodapp.presentation.components
 
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.BoundsTransform
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.ArcMode
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.keyframes
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -63,11 +58,8 @@ import com.foodapp.core.presentation.White
 import com.foodapp.foodapp.domain.models.Food
 import com.foodapp.foodapp.domain.models.FoodCartDetail
 import com.foodapp.foodapp.domain.models.Restaurant
-import com.foodapp.foodapp.presentation.SnackSharedElementKey
 import com.foodapp.foodapp.presentation.SnackSharedElementType
 import com.foodapp.foodapp.sharedObjects.SharedObject.boundsTransform
-import com.foodapp.foodapp.sharedObjects.SharedObject.fadeInObject
-import com.foodapp.foodapp.sharedObjects.SharedObject.fadeOutObject
 import com.foodapp.foodapp.sharedObjects.SharedObject.textBoundsTransform
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
@@ -80,6 +72,7 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun NearestRestaurantCard(
+    restaurantId: String,
     imageUrl: String?,
     name: String,
     tags: List<String>,
@@ -89,120 +82,183 @@ fun NearestRestaurantCard(
     address: String,
     isFavorite: Boolean = false,
     onClick: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedVisibilityScope,
     onFavoriteClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier
-            .padding(8.dp)
-            .width(250.dp)
-            .height(120.dp)
-            .clickable { onClick() },
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = White),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Row(modifier = Modifier.fillMaxSize()) {
-            // Image Section
-            Box(modifier = Modifier.wrapContentSize().background(Green)) {
-                KamelImage(
-                    { asyncPainterResource(data = Url("https://t3.ftcdn.net/jpg/03/24/73/92/360_F_324739203_keeq8udvv0P2h1MLYJ0GLSlTBagoXS48.jpg")) },
-                    contentDescription = "Image",
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier
-                        .width(100.dp)
-                        .height(150.dp)
+    with(sharedTransitionScope) {
+        Card(
+            modifier = modifier
+                .padding(8.dp)
+                .width(250.dp)
+                .height(120.dp)
+                .applySharedBounds(
+                    restaurantId,
+                    SnackSharedElementType.Bounds,
+                    animatedContentScope,
+                    sharedTransitionScope,
+                    boundsTransform
                 )
-                // Favorite Icon
-                Box(
-                    modifier = Modifier.wrapContentSize().clip(CircleShape)
-                        .align(Alignment.TopStart).padding(2.dp).background(White)
-                ) {
-                    Icon(
-                        painter = painterResource(if (isFavorite) Res.drawable.ic__favorite else Res.drawable.ic_favorite_border), // Replace with your favorite icon
-                        contentDescription = "Favorite",
+                .clickable { onClick() },
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = White),
+            elevation = CardDefaults.cardElevation(4.dp)
+        ) {
+            Row(modifier = Modifier.fillMaxSize()) {
+                // Image Section
+                Box(modifier = Modifier.wrapContentSize().background(Green)) {
+                    KamelImage(
+                        { asyncPainterResource(data = Url("https://t3.ftcdn.net/jpg/03/24/73/92/360_F_324739203_keeq8udvv0P2h1MLYJ0GLSlTBagoXS48.jpg")) },
+                        contentDescription = "Image",
+                        contentScale = ContentScale.FillBounds,
                         modifier = Modifier
-                            .size(35.dp)
-                            .align(Alignment.TopEnd)
-                            .padding(8.dp)
-                            .clickable { onFavoriteClick() }
+                            .width(100.dp)
+                            .height(150.dp).applySharedElement(
+                                restaurantId,
+                                SnackSharedElementType.Image,
+                                animatedContentScope,
+                                sharedTransitionScope,
+                                boundsTransform
+                            )
                     )
-                }
-            }
-
-            // Content Section
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-            ) {
-                Text(
-                    text = name,
-                    fontSize = TextSize.large,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.height(25.dp)
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-
-                Text(
-                    text = tags.joinToString(" | "),
-                    fontSize = TextSize.small,
-                    color = DarkGrey,
-                    modifier = Modifier.height(23.dp)
-
-                )
-
-                Spacer(modifier = Modifier.height(2.dp))
-
-                // Delivery Time, Rating, and LocationInterface
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    modifier = Modifier.fillMaxWidth().height(20.dp)
-                ) {
-
-                    Text(
-                        text = distance + "Km",
-                        fontSize = TextSize.regular,
-                        color = DarkGrey
-                    )
-
-                    VerticalDivider(thickness = 1.dp, color = LightGrey)
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Favorite Icon
+                    Box(
+                        modifier = Modifier.wrapContentSize().clip(CircleShape)
+                            .align(Alignment.TopStart).padding(2.dp).background(White)
+                    ) {
                         Icon(
-                            imageVector = Icons.Default.Star, // Replace with your star icon
-                            contentDescription = "Rating",
-                            tint = SandYellow,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = "$rating($totalReviews)",
-                            color = SandYellow,
-                            fontSize = TextSize.small
+                            painter = painterResource(if (isFavorite) Res.drawable.ic__favorite else Res.drawable.ic_favorite_border), // Replace with your favorite icon
+                            contentDescription = "Favorite",
+                            modifier = Modifier
+                                .size(35.dp)
+                                .align(Alignment.TopEnd)
+                                .padding(8.dp).applySharedBounds(
+                                    restaurantId,
+                                    SnackSharedElementType.Icon,
+                                    animatedContentScope,
+                                    sharedTransitionScope,
+                                    boundsTransform
+                                )
+                                .clickable { onFavoriteClick() }
                         )
                     }
-
                 }
-                Spacer(modifier = Modifier.height(6.dp))
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.height(20.dp)
-
+                // Content Section
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.LocationOn, // Replace with actual icon
-                        contentDescription = "LocationInterface Icon",
-                        tint = Green,
-                        modifier = Modifier.size(30.dp).padding(top = 5.dp)
-                    )
                     Text(
-                        text = address,
-                        color = DarkGrey,
-                        fontSize = TextSize.small
+                        text = name,
+                        fontSize = TextSize.large,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.height(25.dp).applySharedBounds(
+                            restaurantId,
+                            SnackSharedElementType.Title,
+                            animatedContentScope,
+                            sharedTransitionScope,
+                            textBoundsTransform
+                        )
                     )
+                    Spacer(modifier = Modifier.height(2.dp))
+
+                    Text(
+                        text = tags.joinToString(" | "),
+                        fontSize = TextSize.small,
+                        color = DarkGrey,
+                        modifier = Modifier.height(23.dp).applySharedBounds(
+                            restaurantId,
+                            SnackSharedElementType.Tagline,
+                            animatedContentScope,
+                            sharedTransitionScope,
+                            textBoundsTransform
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+
+                    )
+
+                    Spacer(modifier = Modifier.height(2.dp))
+
+                    // Delivery Time, Rating, and LocationInterface
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        modifier = Modifier.fillMaxWidth().height(20.dp)
+                    ) {
+
+                        Text(
+                            text = distance + "Km",
+                            fontSize = TextSize.regular,
+                            color = DarkGrey,
+                            modifier = Modifier.applySharedBounds(
+                                restaurantId,
+                                SnackSharedElementType.Distance,
+                                animatedContentScope,
+                                sharedTransitionScope,
+                                textBoundsTransform
+                            )
+
+                        )
+
+                        VerticalDivider(thickness = 1.dp, color = LightGrey)
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Star, // Replace with your star icon
+                                contentDescription = "Rating",
+                                tint = SandYellow,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "$rating($totalReviews)",
+                                color = SandYellow,
+                                fontSize = TextSize.small,
+                                modifier = Modifier.applySharedBounds(
+                                    restaurantId,
+                                    SnackSharedElementType.Rating,
+                                    animatedContentScope,
+                                    sharedTransitionScope,
+                                    textBoundsTransform
+                                )
+
+                            )
+                        }
+
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.height(20.dp),
+                        horizontalArrangement = Arrangement.Start
+
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.LocationOn, // Replace with actual icon
+                            contentDescription = "LocationInterface Icon",
+                            tint = Green,
+                            modifier = Modifier.size(20.dp).padding(top = 5.dp)
+                        )
+                        Text(
+                            text = address,
+                            color = DarkGrey,
+                            fontSize = TextSize.small,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.applySharedBounds(
+                                restaurantId,
+                                SnackSharedElementType.Address,
+                                animatedContentScope,
+                                sharedTransitionScope,
+                                textBoundsTransform
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -271,98 +327,137 @@ fun PopularRestaurant(
 }
 
 @Composable
-fun RestaurantScreenCard(restaurant: Restaurant) {
-    Card(
-        modifier = Modifier.width(350.dp).padding(horizontal = 16.dp),
-        colors = CardDefaults.cardColors(containerColor = White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 14.dp),
-        shape = RoundedCornerShape(15.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(), // Add padding around the content
-            horizontalAlignment = Alignment.CenterHorizontally // Center all children horizontally
+fun RestaurantScreenCard(
+    restaurant: Restaurant,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedVisibilityScope
+) {
+    with(sharedTransitionScope) {
+        Card(
+            modifier = Modifier.width(350.dp).padding(horizontal = 16.dp).applySharedBounds(restaurant.restaurantId,
+                SnackSharedElementType.Bounds,animatedContentScope,sharedTransitionScope,
+                boundsTransform
+            ),
+            colors = CardDefaults.cardColors(containerColor = White),
+            elevation = CardDefaults.cardElevation(defaultElevation = 14.dp),
+            shape = RoundedCornerShape(15.dp)
         ) {
-            Text(
-                text = restaurant.restaurantName,
-                modifier = Modifier.padding(vertical = 4.dp),
-                fontSize = TextSize.large,
-                fontWeight = FontWeight.SemiBold,
-                color = Black
-            )
-            Text(
-                text = restaurant.restaurantTags.joinToString(),
-                modifier = Modifier.padding(vertical = 4.dp),
-                fontSize = TextSize.regular,
-                fontWeight = FontWeight.SemiBold,
-                color = DarkGrey
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(), // Add padding around the content
+                horizontalAlignment = Alignment.CenterHorizontally // Center all children horizontally
+            ) {
+                Text(
+                    text = restaurant.restaurantName,
+                    modifier = Modifier.padding(vertical = 4.dp).applySharedBounds(
+                        restaurant.restaurantId,
+                        SnackSharedElementType.Title,
+                        animatedContentScope,
+                        sharedTransitionScope,
+                        textBoundsTransform
+                    ),
+                    fontSize = TextSize.large,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Black
+                )
+                Text(
+                    text = restaurant.restaurantTags.joinToString(),
+                    modifier = Modifier.padding(vertical = 4.dp).applySharedBounds(
+                        restaurant.restaurantId,
+                        SnackSharedElementType.Tagline,
+                        animatedContentScope,
+                        sharedTransitionScope,
+                        textBoundsTransform
+                    ),
+                    fontSize = TextSize.regular,
+                    fontWeight = FontWeight.SemiBold,
+                    color = DarkGrey
+                )
 
-            Row(horizontalArrangement = Arrangement.SpaceAround) {
-                Column(verticalArrangement = Arrangement.Center) {
-                    Text(
-                        text = "Distance",
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        fontSize = TextSize.small,
-                        color = DarkGrey
-                    )
-
-                    Text(
-                        text = "1.5 Km",
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        fontSize = TextSize.small,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Black
-                    )
-                }
-
-                Column(verticalArrangement = Arrangement.Center) {
-                    Text(
-                        text = "Rating",
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        fontSize = TextSize.small,
-                        color = DarkGrey
-                    )
-
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = "Star",
-                            tint = SandYellow
-                        )
+                Row(horizontalArrangement = Arrangement.SpaceAround) {
+                    Column(verticalArrangement = Arrangement.Center) {
                         Text(
-                            text = restaurant.ratings.toString(),
+                            text = "Distance",
                             modifier = Modifier.padding(vertical = 4.dp),
+                            fontSize = TextSize.small,
+                            color = DarkGrey
+                        )
+
+                        Text(
+                            text = "1.5 Km",
+                            modifier = Modifier.padding(vertical = 4.dp).applySharedBounds(
+                                restaurant.restaurantId,
+                                SnackSharedElementType.Distance,
+                                animatedContentScope,
+                                sharedTransitionScope,
+                                textBoundsTransform
+                            ),
                             fontSize = TextSize.small,
                             fontWeight = FontWeight.SemiBold,
                             color = Black
                         )
                     }
+
+                    Column(verticalArrangement = Arrangement.Center) {
+                        Text(
+                            text = "Rating",
+                            modifier = Modifier.padding(vertical = 4.dp),
+                            fontSize = TextSize.small,
+                            color = DarkGrey
+                        )
+
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = "Star",
+                                tint = SandYellow
+                            )
+                            Text(
+                                text = "${restaurant.ratings.toString()}(${restaurant.totalReviews})",
+                                modifier = Modifier.padding(vertical = 4.dp).applySharedBounds(
+                                    restaurant.restaurantId,
+                                    SnackSharedElementType.Rating,
+                                    animatedContentScope,
+                                    sharedTransitionScope,
+                                    textBoundsTransform
+                                ),
+                                fontSize = TextSize.small,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Black,
+
+                                )
+                        }
+                    }
                 }
-            }
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Icon(
-                    imageVector = Icons.Default.LocationOn, // Replace with actual icon
-                    contentDescription = "LocationInterface Icon",
-                    tint = Green,
-                    modifier = Modifier.size(30.dp).padding(top = 5.dp)
-                )
-                Text(
-                    text = restaurant.address + restaurant.city + restaurant.state,
-                    modifier = Modifier.padding(vertical = 4.dp),
-                    fontSize = TextSize.small,
-                    fontWeight = FontWeight.SemiBold,
-                )
-            }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn, // Replace with actual icon
+                        contentDescription = "LocationInterface Icon",
+                        tint = Green,
+                        modifier = Modifier.size(30.dp).padding(top = 5.dp)
+                    )
+                    Text(
+                        text = restaurant.address + restaurant.city + restaurant.state,
+                        modifier = Modifier.padding(vertical = 4.dp).applySharedBounds(
+                            restaurant.restaurantId,
+                            SnackSharedElementType.Address,
+                            animatedContentScope,
+                            sharedTransitionScope,
+                            textBoundsTransform
+                        ),
+                        fontSize = TextSize.small,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
 
+            }
         }
     }
 }
 
-@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun FoodItemCard(
     food: Food,
@@ -378,7 +473,11 @@ fun FoodItemCard(
                 .width(180.dp)
                 .height(265.dp)
                 .padding(8.dp).clickable { onFoodClick(food) }
-                .applySharedBounds(food.foodId,SnackSharedElementType.Bounds,animatedVisibilityScope,sharedTransitionScope,
+                .applySharedBounds(
+                    food.foodId,
+                    SnackSharedElementType.Bounds,
+                    animatedVisibilityScope,
+                    sharedTransitionScope,
                     boundsTransform
                 ),
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
@@ -391,7 +490,11 @@ fun FoodItemCard(
                     contentDescription = "Image",
                     contentScale = ContentScale.FillBounds,
                     modifier = Modifier
-                        .applySharedElement(food.foodId,SnackSharedElementType.Image,animatedVisibilityScope,sharedTransitionScope,
+                        .applySharedElement(
+                            food.foodId,
+                            SnackSharedElementType.Image,
+                            animatedVisibilityScope,
+                            sharedTransitionScope,
                             boundsTransform
                         )
                 )
@@ -405,7 +508,11 @@ fun FoodItemCard(
                         modifier = Modifier
                             .size(35.dp)
                             .align(Alignment.Center)
-                            .padding(8.dp).applySharedBounds(food.foodId,SnackSharedElementType.Icon,animatedVisibilityScope,sharedTransitionScope,
+                            .padding(8.dp).applySharedBounds(
+                                food.foodId,
+                                SnackSharedElementType.Icon,
+                                animatedVisibilityScope,
+                                sharedTransitionScope,
                                 boundsTransform
                             )
                             .clickable { onFavoriteClick() }
@@ -417,7 +524,11 @@ fun FoodItemCard(
                 color = Black,
                 fontWeight = FontWeight.Bold,
                 fontSize = TextSize.regular,
-                modifier = Modifier.padding(4.dp).applySharedBounds(food.foodId,SnackSharedElementType.Title,animatedVisibilityScope,sharedTransitionScope,
+                modifier = Modifier.padding(4.dp).applySharedBounds(
+                    food.foodId,
+                    SnackSharedElementType.Title,
+                    animatedVisibilityScope,
+                    sharedTransitionScope,
                     textBoundsTransform
                 ).skipToLookaheadSize()
             )
@@ -428,7 +539,11 @@ fun FoodItemCard(
                 color = DarkGrey,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = TextSize.small,
-                modifier = Modifier.padding(4.dp).applySharedBounds(food.foodId,SnackSharedElementType.Tagline,animatedVisibilityScope,sharedTransitionScope,
+                modifier = Modifier.padding(4.dp).applySharedBounds(
+                    food.foodId,
+                    SnackSharedElementType.Tagline,
+                    animatedVisibilityScope,
+                    sharedTransitionScope,
                     textBoundsTransform
                 ).skipToLookaheadSize()
             )
@@ -669,5 +784,70 @@ fun CategoryCard(
             modifier = Modifier.wrapContentWidth() // Dynamically adjust width based on text
         )
 
+    }
+}
+
+
+@Composable
+fun FoodCategoryCard(
+    foodId: String,
+    name: String,
+    image: DrawableResource, // Drawable resource ID
+    onSelected: () -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedVisibilityScope,
+    isSelected: Boolean = false
+) {
+    with(sharedTransitionScope) {
+        Column(
+            modifier = Modifier
+                .wrapContentHeight()
+                .wrapContentWidth().applySharedBounds(
+                    foodId,
+                    SnackSharedElementType.Bounds,
+                    animatedContentScope,
+                    sharedTransitionScope,
+                    boundsTransform
+                ) // Allow width to adjust dynamically
+                .clickable { onSelected() },
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            KamelImage(
+                {
+//            painter = painterResource(image),
+                    asyncPainterResource(data = Url("https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg"))
+                }, contentDescription = "Category Icon",
+                modifier = Modifier.size(50.dp).clip(CircleShape)
+                    .border(
+                        width = 1.dp,
+                        color = if (isSelected) Green else White,
+                        shape = CircleShape
+                    ).applySharedElement(
+                        foodId,
+                        SnackSharedElementType.Image,
+                        animatedContentScope,
+                        sharedTransitionScope,
+                        boundsTransform
+                    )
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = name,
+                fontSize = TextSize.small,
+                color = if (isSelected) Green else Black,
+                textAlign = TextAlign.Center,
+                maxLines = 1, // Ensure single line
+                overflow = TextOverflow.Ellipsis, // Add ellipsis for truncated text
+                modifier = Modifier.wrapContentWidth().applySharedBounds(
+                    foodId,
+                    SnackSharedElementType.Title,
+                    animatedContentScope,
+                    sharedTransitionScope,
+                    boundsTransform
+                ) // Dynamically adjust width based on text
+            )
+
+        }
     }
 }

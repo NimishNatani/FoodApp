@@ -1,5 +1,10 @@
+@file:OptIn(ExperimentalSharedTransitionApi::class)
+
 package com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -34,6 +39,7 @@ import com.foodapp.core.presentation.White
 import com.foodapp.foodapp.domain.models.Food
 import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.presentation.components.CategoryCard
+import com.foodapp.foodapp.presentation.components.FoodCategoryCard
 import com.foodapp.foodapp.presentation.components.NearestRestaurantCard
 import com.foodapp.foodapp.presentation.components.PopularRestaurant
 import com.foodapp.foodapp.presentation.components.SearchBar
@@ -48,12 +54,14 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun UserHomeScreenRoot(
     viewModel: UserHomeScreenViewModel = koinViewModel(),
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedVisibilityScope,
     onNotificationClick: () -> Unit,
     onViewAllRestaurantScreen: (List<Restaurant>) -> Unit,
     onViewAllCategoryScreen: (List<Restaurant>) -> Unit,
-    onViewCategoryItem: (Pair<DrawableResource,String>) -> Unit,
+    onViewCategoryItem: (Pair<DrawableResource, String>) -> Unit,
     onRestaurantClick: (Restaurant) -> Unit,
-    onFoodSelected: (Food)->Unit
+    onFoodSelected: (Food,Restaurant) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 //    LaunchedEffect(Unit) {
@@ -65,10 +73,12 @@ fun UserHomeScreenRoot(
             viewModel.onAction(action)
         },
         onViewAllRestaurantScreen = { onViewAllRestaurantScreen(it) },
-        onViewAllCategoryScreen = {onViewAllCategoryScreen(it)},
-        onViewCategoryItem = {onViewCategoryItem(it)},
-        onRestaurantClick = { onRestaurantClick(it)},
-        onFoodSelected = {onFoodSelected(it)}
+        onViewAllCategoryScreen = { onViewAllCategoryScreen(it) },
+        onViewCategoryItem = { onViewCategoryItem(it) },
+        onRestaurantClick = { onRestaurantClick(it) },
+        onFoodSelected = {food,restaurant -> onFoodSelected(food,restaurant,) },
+        sharedTransitionScope = sharedTransitionScope,
+        animatedContentScope = animatedContentScope
     )
 
 }
@@ -76,14 +86,16 @@ fun UserHomeScreenRoot(
 @Composable
 fun UserHomeScreen(
     state: UserHomeScreenState,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedContentScope: AnimatedVisibilityScope,
     onAction: (UserHomeScreenAction) -> Unit,
     onViewAllRestaurantScreen: (List<Restaurant>) -> Unit,
     onViewAllCategoryScreen: (List<Restaurant>) -> Unit,
-    onViewCategoryItem: (Pair<DrawableResource,String>) -> Unit,
+    onViewCategoryItem: (Pair<DrawableResource, String>) -> Unit,
     onRestaurantClick: (Restaurant) -> Unit,
-    onFoodSelected: (Food)->Unit
+    onFoodSelected: (Food,Restaurant) -> Unit
 
-    ) {
+) {
     val categoryList = listOf(
         Pair(Res.drawable.compose_multiplatform, "Indian"),
         Pair(Res.drawable.compose_multiplatform, "Chinese"),
@@ -151,14 +163,16 @@ fun UserHomeScreen(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "arrow",
                     tint = GreenShade,
-                    modifier = Modifier.padding(top = 1.dp).clickable { onViewAllCategoryScreen(state.searchResults.restaurantList) }
+                    modifier = Modifier.padding(top = 1.dp)
+                        .clickable { onViewAllCategoryScreen(state.searchResults.restaurantList) }
                 )
 
             }
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp).horizontalScroll(
-                    rememberScrollState()
-                ),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp)
+                    .horizontalScroll(
+                        rememberScrollState()
+                    ),
                 horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
                 categoryList.forEach {
@@ -192,16 +206,20 @@ fun UserHomeScreen(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp)
                     .horizontalScroll(
                         rememberScrollState()
-                    ),horizontalArrangement = Arrangement.SpaceEvenly
+                    ), horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 state.filterResults.mealTimeFoodList.take(6).forEach { food ->
-                    CategoryCard(
+                    FoodCategoryCard(
+                        foodId = food.foodId,
                         name = food.foodName,
                         image = Res.drawable.compose_multiplatform,
                         onSelected = {
-                            onFoodSelected(food)
-                        }
 
+                            state.searchResults.restaurantList.find { it.restaurantId == food.restaurantId }
+                                ?.let { onFoodSelected(food, it) }
+                        },
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedContentScope = animatedContentScope
                     )
                     Spacer(modifier = Modifier.width(8.dp))
 
@@ -232,6 +250,7 @@ fun UserHomeScreen(
             ) {
                 state.filterResults.nearestRestaurantList.take(6).forEach { restaurant ->
                     NearestRestaurantCard(
+                        restaurantId = restaurant.restaurantId,
                         imageUrl = restaurant.restaurantImage,
                         name = restaurant.restaurantName,
                         tags = restaurant.restaurantTags,
@@ -241,7 +260,9 @@ fun UserHomeScreen(
                         isFavorite = false,
                         onFavoriteClick = {},
                         address = restaurant.address + restaurant.city + restaurant.state,
-                        onClick = { onRestaurantClick(restaurant)}
+                        onClick = { onRestaurantClick(restaurant) },
+                        sharedTransitionScope = sharedTransitionScope,
+                        animatedContentScope = animatedContentScope
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                 }
@@ -275,7 +296,7 @@ fun UserHomeScreen(
                             imageUrl = restaurant.restaurantImage,
                             name = restaurant.restaurantName,
                             rating = restaurant.ratings.toString(),
-                            onClick = { onRestaurantClick(restaurant)},
+                            onClick = { onRestaurantClick(restaurant) },
                             modifier = Modifier
                         )
                         Spacer(modifier = Modifier.width(8.dp))

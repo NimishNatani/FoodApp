@@ -32,6 +32,7 @@ class AndroidLocationInterface : LocationInterface {
                 if (!locality.isNullOrEmpty()) {
                     locality // Return the actual city name
                 } else {
+                    println("Locality not found for coordinates: $coordinates")
                     "Jaipur" // Fallback if geocoder fails
                 }
             }

@@ -13,5 +13,8 @@ enum class SnackSharedElementType {
     Tagline,
     FoodPrice,
     Icon,
+    Distance,
+    Rating,
+    Address,
     Background
 }

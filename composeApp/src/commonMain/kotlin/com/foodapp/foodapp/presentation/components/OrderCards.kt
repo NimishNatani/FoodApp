@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.foodapp.core.presentation.DarkGrey
 import com.foodapp.core.presentation.Green
@@ -88,7 +89,8 @@ fun OrderCard(booking: Booking, page: Int,modifier: Modifier = Modifier) {
                         text = booking.foodCarts[0].restaurantName,
                         fontSize = TextSize.large,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.height(25.dp)
+                        modifier = Modifier.height(25.dp).width(150.dp),
+                        overflow = TextOverflow.Ellipsis
                     )
                     Icon(
                         imageVector = Icons.Default.Delete,
@@ -126,15 +128,16 @@ fun OrderCard(booking: Booking, page: Int,modifier: Modifier = Modifier) {
                 ) {
                     // Show up to 3 images with overlap
                     Box(modifier = Modifier.fillMaxWidth()) {
+                        println("FoodImages: ${foodImages.size}")
                         foodImages.take(3).forEachIndexed { index, imageRes ->
                             KamelImage(
                                 { asyncPainterResource(data = Url("https://t3.ftcdn.net/jpg/03/24/73/92/360_F_324739203_keeq8udvv0P2h1MLYJ0GLSlTBagoXS48.jpg")) },
                                 contentDescription = "Item $index",
                                 contentScale = ContentScale.Crop,
-                                modifier = Modifier.padding(start = 20.dp)
+                                modifier = Modifier.padding(start = 20.dp+(index * 20).dp)
                                     .size(30.dp)
                                     .clip(CircleShape)
-                                    .offset(x = (index * 20).dp) // Adjust position for overlap
+//                                    .offset(x = (index * 20).dp) // Adjust position for overlap
                             )
                         }
                     }

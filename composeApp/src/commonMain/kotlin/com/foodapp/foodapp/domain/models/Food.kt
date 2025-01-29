@@ -16,7 +16,8 @@ data class Food(
     var foodType: List<String>,
     var rating: Double?,
     var totalReviews: Int?,
-    var restaurantId: String
+    var restaurantId: String,
+    var restaurantName: String = "",
 )
 
 @Serializable

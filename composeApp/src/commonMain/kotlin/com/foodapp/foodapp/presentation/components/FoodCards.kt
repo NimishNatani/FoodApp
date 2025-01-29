@@ -55,7 +55,7 @@ import io.ktor.http.Url
 @Composable
 fun FoodCart(
     foodCartList: List<FoodCart>,
-    screenSize: Pair<Int, Int>,
+    screenSize: Pair<Float, Float>,
     onSubClick: (String, String) -> Unit,
     onAddClick: (String, String) -> Unit,
     onOrder:(List<FoodCart>) -> Unit

@@ -35,6 +35,7 @@ fun Modifier.applySharedBounds(
             boundsTransform = boundsTransform,
             enter = fadeInObject,
                     exit = fadeOutObject,
+            placeHolderSize = SharedTransitionScope.PlaceHolderSize.animatedSize
         )
     }
 }

@@ -44,7 +44,7 @@ fun CartScreen(
     state: CartScreenState,
     onAction: (CartScreenAction) -> Unit,
     onBackClick: () -> Unit,
-    screenSize: Pair<Int, Int>
+    screenSize: Pair<Float, Float>
 ) {
     if (state.isLoading) {
         Text("Loading")

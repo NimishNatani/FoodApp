@@ -2,6 +2,6 @@ package com.foodapp.foodapp.presentation.components
 
 
 interface PlatformConfiguration {
-    fun screenWidth(): Int
-    fun screenHeight(): Int
+    fun screenWidth(): Float
+    fun screenHeight(): Float
 }

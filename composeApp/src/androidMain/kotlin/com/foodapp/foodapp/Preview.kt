@@ -98,11 +98,11 @@ import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen
 //   )
 //}
 
-@Preview(backgroundColor = Color.WHITE.toLong(), showBackground = true)
-@Composable
-fun LoginScreenPreview() {
-   OrderCard(
-
-   )
-}
+//@Preview(backgroundColor = Color.WHITE.toLong(), showBackground = true)
+//@Composable
+//fun LoginScreenPreview() {
+//   OrderCard(
+//
+//   )
+//}
 

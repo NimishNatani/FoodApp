@@ -190,7 +190,7 @@ class UserHomeScreenViewModel(private val restaurantRepository: RestaurantReposi
         }
     }
 
-    fun getScreenSize():Pair<Int,Int>{
+    fun getScreenSize():Pair<Float,Float>{
         return Pair(screenSize.screenWidth(),screenSize.screenHeight())
     }
 }

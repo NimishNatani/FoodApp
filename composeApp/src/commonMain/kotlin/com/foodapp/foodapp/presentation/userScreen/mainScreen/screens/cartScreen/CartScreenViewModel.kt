@@ -130,7 +130,7 @@ class CartScreenViewModel(
         }
     }
 
-    fun getScreenSize(): Pair<Int, Int> {
+    fun getScreenSize(): Pair<Float, Float> {
         return Pair(screenSize.screenWidth(), screenSize.screenHeight())
     }
 }
