@@ -1,8 +1,15 @@
 package com.foodapp.foodapp.presentation.components
 
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.BoundsTransform
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.core.ArcMode
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.keyframes
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -56,6 +63,12 @@ import com.foodapp.core.presentation.White
 import com.foodapp.foodapp.domain.models.Food
 import com.foodapp.foodapp.domain.models.FoodCartDetail
 import com.foodapp.foodapp.domain.models.Restaurant
+import com.foodapp.foodapp.presentation.SnackSharedElementKey
+import com.foodapp.foodapp.presentation.SnackSharedElementType
+import com.foodapp.foodapp.sharedObjects.SharedObject.boundsTransform
+import com.foodapp.foodapp.sharedObjects.SharedObject.fadeInObject
+import com.foodapp.foodapp.sharedObjects.SharedObject.fadeOutObject
+import com.foodapp.foodapp.sharedObjects.SharedObject.textBoundsTransform
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import io.ktor.http.Url
@@ -359,25 +372,27 @@ fun FoodItemCard(
     sharedTransitionScope: SharedTransitionScope,
     animatedVisibilityScope: AnimatedVisibilityScope
 ) {
+    with(sharedTransitionScope) {
         Card(
             modifier = Modifier
                 .width(180.dp)
                 .height(265.dp)
-                .padding(8.dp).clickable { onFoodClick(food) },
+                .padding(8.dp).clickable { onFoodClick(food) }
+                .applySharedBounds(food.foodId,SnackSharedElementType.Bounds,animatedVisibilityScope,sharedTransitionScope,
+                    boundsTransform
+                ),
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(containerColor = White)
         ) {
-            with(sharedTransitionScope) {
             Box(modifier = Modifier.fillMaxWidth().height(120.dp)) {
                 KamelImage(
                     { asyncPainterResource(data = Url("https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg")) },
                     contentDescription = "Image",
                     contentScale = ContentScale.FillBounds,
                     modifier = Modifier
-                        .sharedElement(
-                            rememberSharedContentState(key = "restaurantToFoodImage${food.foodId}"),
-                            animatedVisibilityScope = animatedVisibilityScope
+                        .applySharedElement(food.foodId,SnackSharedElementType.Image,animatedVisibilityScope,sharedTransitionScope,
+                            boundsTransform
                         )
                 )
                 Box(
@@ -390,7 +405,9 @@ fun FoodItemCard(
                         modifier = Modifier
                             .size(35.dp)
                             .align(Alignment.Center)
-                            .padding(8.dp)
+                            .padding(8.dp).applySharedBounds(food.foodId,SnackSharedElementType.Icon,animatedVisibilityScope,sharedTransitionScope,
+                                boundsTransform
+                            )
                             .clickable { onFavoriteClick() }
                     )
                 }
@@ -400,28 +417,20 @@ fun FoodItemCard(
                 color = Black,
                 fontWeight = FontWeight.Bold,
                 fontSize = TextSize.regular,
-                modifier = Modifier.padding(4.dp).sharedBounds(
-                    rememberSharedContentState(key = "restaurantToFoodName${food.foodId}"),
-                    animatedVisibilityScope = animatedVisibilityScope
-                )
+                modifier = Modifier.padding(4.dp).applySharedBounds(food.foodId,SnackSharedElementType.Title,animatedVisibilityScope,sharedTransitionScope,
+                    textBoundsTransform
+                ).skipToLookaheadSize()
             )
+
 
             Text(
                 text = food.foodTags.joinToString(),
                 color = DarkGrey,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = TextSize.small,
-                modifier = Modifier.padding(4.dp).sharedBounds(
-                    rememberSharedContentState(key = "restaurantToFoodTags${food.foodId}"),
-                    animatedVisibilityScope = animatedVisibilityScope
-                )
-            )
-            Text(
-                text = "₹ " + food.foodDetails.minBy { it.foodPrice }.foodPrice.toString(),
-                color = Green,
-                fontWeight = FontWeight.Bold,
-                fontSize = TextSize.regular,
-                modifier = Modifier.padding(4.dp)
+                modifier = Modifier.padding(4.dp).applySharedBounds(food.foodId,SnackSharedElementType.Tagline,animatedVisibilityScope,sharedTransitionScope,
+                    textBoundsTransform
+                ).skipToLookaheadSize()
             )
         }
     }

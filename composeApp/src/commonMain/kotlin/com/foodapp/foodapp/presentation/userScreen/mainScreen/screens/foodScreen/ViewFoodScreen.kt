@@ -57,8 +57,16 @@ import com.foodapp.core.presentation.TextSize
 import com.foodapp.core.presentation.White
 import com.foodapp.foodapp.domain.models.Food
 import com.foodapp.foodapp.domain.models.FoodCart
+import com.foodapp.foodapp.presentation.SnackSharedElementKey
+import com.foodapp.foodapp.presentation.SnackSharedElementType
 import com.foodapp.foodapp.presentation.components.CustomButton
 import com.foodapp.foodapp.presentation.components.FoodItemRow
+import com.foodapp.foodapp.presentation.components.applySharedBounds
+import com.foodapp.foodapp.presentation.components.applySharedElement
+import com.foodapp.foodapp.sharedObjects.SharedObject.boundsTransform
+import com.foodapp.foodapp.sharedObjects.SharedObject.fadeInObject
+import com.foodapp.foodapp.sharedObjects.SharedObject.fadeOutObject
+import com.foodapp.foodapp.sharedObjects.SharedObject.textBoundsTransform
 import io.kamel.image.KamelImage
 import io.kamel.image.asyncPainterResource
 import io.ktor.http.Url
@@ -85,7 +93,8 @@ fun ViewFoodScreenRoot(
             viewModel.onAction(it)
         }, onBackClick = { onBackClick() },
             animatedVisibilityScope = animatedVisibilityScope,
-            sharedTransitionScope = sharedTransitionScope)
+            sharedTransitionScope = sharedTransitionScope
+        )
     }
 }
 
@@ -125,18 +134,20 @@ fun ViewFoodScreen(
             }
         }
     }
-
-    Box(
-        modifier = Modifier.fillMaxSize().nestedScroll(nestedScrollConnection).padding(top = 10.dp)
-    ) {
-        with(sharedTransitionScope) {
+    with(sharedTransitionScope) {
+        Box(
+            modifier = Modifier.fillMaxSize().nestedScroll(nestedScrollConnection)
+                .padding(top = 10.dp)
+                .applySharedBounds(state.foodId,SnackSharedElementType.Bounds,animatedVisibilityScope,sharedTransitionScope,
+                    boundsTransform
+                )
+        ) {
             KamelImage(
                 { asyncPainterResource(data = Url("https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg")) },
                 contentDescription = "Image",
-                modifier = Modifier.size(maxImageSize).clip(RoundedCornerShape(15.dp)).sharedElement(
-                    rememberSharedContentState(key = "restaurantToFoodImage${state.foodId}"),
-                    animatedVisibilityScope = animatedVisibilityScope
-                )
+                modifier = Modifier.applySharedElement(state.foodId,SnackSharedElementType.Image,animatedVisibilityScope,sharedTransitionScope,
+                    boundsTransform
+                ).size(maxImageSize).clip(RoundedCornerShape(15.dp))
                     .align(Alignment.TopCenter).graphicsLayer {
                         scaleX = imageScale
                         scaleY = imageScale
@@ -164,7 +175,9 @@ fun ViewFoodScreen(
                     modifier = Modifier
                         .size(35.dp)
                         .align(Alignment.Center)
-                        .padding(8.dp)
+                        .padding(8.dp).applySharedBounds(state.foodId,SnackSharedElementType.Icon,animatedVisibilityScope,sharedTransitionScope,
+                            boundsTransform
+                        )
                         .clickable { onFavoriteClick() }
                 )
             }
@@ -183,10 +196,9 @@ fun ViewFoodScreen(
                     color = Black,
                     fontWeight = FontWeight.Bold,
                     fontSize = TextSize.regular,
-                    modifier = Modifier.padding(4.dp).sharedBounds(
-                        rememberSharedContentState(key = "restaurantToFoodName${state.foodId}"),
-                        animatedVisibilityScope = animatedVisibilityScope
-                    )
+                    modifier = Modifier.padding(4.dp).applySharedBounds(state.foodId,SnackSharedElementType.Title,animatedVisibilityScope,sharedTransitionScope,
+                        textBoundsTransform
+                    ).skipToLookaheadSize()
                 )
 
                 Text(
@@ -194,10 +206,9 @@ fun ViewFoodScreen(
                     color = DarkGrey,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = TextSize.small,
-                    modifier = Modifier.padding(4.dp).sharedBounds(
-                        rememberSharedContentState(key = "restaurantToFoodTags${state.foodId}"),
-                        animatedVisibilityScope = animatedVisibilityScope
-                    )
+                    modifier = Modifier.padding(4.dp).applySharedBounds(state.foodId,SnackSharedElementType.Tagline,animatedVisibilityScope,sharedTransitionScope,
+                        textBoundsTransform
+                    ).skipToLookaheadSize()
                 )
                 HorizontalDivider(thickness = 2.dp, color = GreenShade)
 
