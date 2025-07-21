@@ -18,6 +18,7 @@ data class Food(
     var totalReviews: Int?,
     var restaurantId: String,
     var restaurantName: String = "",
+    var transitionTag: String = ""
 )
 
 @Serializable

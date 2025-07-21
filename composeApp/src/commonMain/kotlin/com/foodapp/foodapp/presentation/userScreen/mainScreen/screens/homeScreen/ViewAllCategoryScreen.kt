@@ -160,12 +160,15 @@ fun ViewAllCategoryScreen(
                     address = "${restaurant.address}, ${restaurant.city}, ${restaurant.state}",
                     rating = restaurant.ratings.toString(),
                     isFavorite = false,
-                    onClick = { onRestaurantClick(restaurant) },
+                    onClick = {
+                        restaurant.transitionTag = "${restaurant.restaurantId}All_Category"
+                        onRestaurantClick(restaurant) },
                     onFavoriteClick = {},
                     totalReviews = restaurant.totalReviews,
                     distance = "1.5",
                     sharedTransitionScope = sharedTransitionScope,
-                    animatedContentScope = animatedContentScope
+                    animatedContentScope = animatedContentScope,
+                    transitionTag = "${restaurant.restaurantId}All_Category"
                 )
             }
         }

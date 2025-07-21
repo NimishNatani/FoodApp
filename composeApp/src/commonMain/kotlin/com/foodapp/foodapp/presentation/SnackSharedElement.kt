@@ -16,5 +16,6 @@ enum class SnackSharedElementType {
     Distance,
     Rating,
     Address,
+    Cards,
     Background
 }

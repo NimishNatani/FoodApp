@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -40,6 +41,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.foodapp.core.presentation.DarkGrey
 import com.foodapp.core.presentation.White
@@ -128,79 +130,79 @@ fun ViewRestaurantScreen(
         }
     }
 
-    with(sharedTransitionScope) {
-        Box(modifier = Modifier.nestedScroll(nestedScrollConnection)) {
-            KamelImage(
-                { asyncPainterResource(data = Url("https://t3.ftcdn.net/jpg/03/24/73/92/360_F_324739203_keeq8udvv0P2h1MLYJ0GLSlTBagoXS48.jpg")) },
-                contentDescription = "Image",
-                modifier = Modifier.fillMaxWidth().height(maxImageSize)
-                    .clip(RoundedCornerShape(bottomEnd = 80.dp, bottomStart = 80.dp))
-                    .align(Alignment.TopCenter).graphicsLayer {
-                        scaleX = imageScale
-                        scaleY = imageScale
-                        translationY = -(maxImageSize.toPx() - currentImageSize.toPx()) / 2f
-                    }.applySharedElement(restaurant.restaurantId,SnackSharedElementType.Image,animatedContentScope,sharedTransitionScope,
-                        boundsTransform
-                    ), contentScale = ContentScale.FillBounds
+    Box(modifier = Modifier.nestedScroll(nestedScrollConnection).applySharedBounds(restaurant.restaurantId,
+        SnackSharedElementType.Bounds,animatedContentScope,sharedTransitionScope,
+        boundsTransform
+    )) {
+        KamelImage(
+            { asyncPainterResource(data = Url("https://t3.ftcdn.net/jpg/03/24/73/92/360_F_324739203_keeq8udvv0P2h1MLYJ0GLSlTBagoXS48.jpg")) },
+            contentDescription = "Image",
+            modifier = Modifier.background(Color.White).fillMaxWidth().height(maxImageSize)
+                .align(Alignment.TopCenter).graphicsLayer {
+                    scaleX = imageScale
+                    scaleY = imageScale
+                    translationY = -(maxImageSize.toPx() - currentImageSize.toPx()) / 2f
+                }.applySharedElement(restaurant.transitionTag,SnackSharedElementType.Image,animatedContentScope,sharedTransitionScope,
+                    boundsTransform
+                ).clip(RoundedCornerShape(bottomEnd = 80.dp, bottomStart = 80.dp)), contentScale = ContentScale.FillBounds
+        )
+        Box(
+            modifier = Modifier.padding(10.dp).clip(CircleShape).background(White)
+                .align(Alignment.TopStart).clickable { onBackClick() }) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                tint = DarkGrey,
+                contentDescription = "arrow",
+                modifier = Modifier.align(Alignment.Center)
             )
-            Box(
-                modifier = Modifier.padding(10.dp).clip(CircleShape).background(White)
-                    .align(Alignment.TopStart).clickable { onBackClick() }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    tint = DarkGrey,
-                    contentDescription = "arrow",
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-            Box(
-                modifier = Modifier.padding(10.dp).clip(CircleShape).background(White)
-                    .align(Alignment.TopEnd)
-            ) {
-                Icon(
-                    painter = painterResource(if (isFavorite) Res.drawable.ic__favorite else Res.drawable.ic_favorite_border), // Replace with your favorite icon
-                    contentDescription = "Favorite",
-                    modifier = Modifier
-                        .size(35.dp)
-                        .align(Alignment.Center)
-                        .padding(8.dp)
-                        .applySharedBounds(restaurant.restaurantId,SnackSharedElementType.Icon,animatedContentScope,sharedTransitionScope,
-                            boundsTransform
-                        )
-                        .clickable { onFavoriteClick() }
-                )
-            }
-            LazyColumn(
+        }
+        Box(
+            modifier = Modifier.padding(10.dp).clip(CircleShape).background(White)
+                .align(Alignment.TopEnd)
+        ) {
+            Icon(
+                painter = painterResource(if (isFavorite) Res.drawable.ic__favorite else Res.drawable.ic_favorite_border), // Replace with your favorite icon
+                contentDescription = "Favorite",
                 modifier = Modifier
-                    .padding(top = if (currentImageSize > 100.dp) currentImageSize - 100.dp else 100.dp)
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // Restaurant Header
-                item {
-                    RestaurantScreenCard(restaurant = restaurant, animatedContentScope = animatedContentScope,
-                        sharedTransitionScope = sharedTransitionScope)
-                    Spacer(modifier = Modifier.height(20.dp))
-                }
+                    .size(35.dp)
+                    .align(Alignment.Center)
+                    .padding(8.dp)
+                    .applySharedBounds(restaurant.transitionTag,SnackSharedElementType.Icon,animatedContentScope,sharedTransitionScope,
+                        boundsTransform
+                    )
+                    .clickable { onFavoriteClick() }
+            )
+        }
+        LazyColumn(
+            modifier = Modifier
+                .padding(top = if (currentImageSize > 100.dp) currentImageSize - 100.dp else 100.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // Restaurant Header
+            item {
+                RestaurantScreenCard(restaurant = restaurant, animatedContentScope = animatedContentScope,
+                    sharedTransitionScope = sharedTransitionScope,modifier = Modifier.zIndex(1f))
+                Spacer(modifier = Modifier.height(20.dp))
+            }
 
 //            lazyGrid(columns,restaurant)
-                items(restaurant.foodItems.chunked(columns)) { rowItems ->
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        rowItems.forEach { food ->
-                            FoodItemCard(
-                                food = food,
-                                onFavoriteClick = {},
-                                onFoodClick = {
-                                    onFoodClick(it)
-                                },
-                                animatedVisibilityScope = animatedContentScope,
-                                sharedTransitionScope = sharedTransitionScope
-                            )
-                        }
+            items(restaurant.foodItems.chunked(columns)) { rowItems ->
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    rowItems.forEach { food ->
+                        FoodItemCard(
+                            food = food,
+                            onFavoriteClick = {},
+                            onFoodClick = {
+                                onFoodClick(it)
+                            },
+                            animatedVisibilityScope = animatedContentScope,
+                            sharedTransitionScope = sharedTransitionScope
+                        )
                     }
                 }
             }

@@ -12,7 +12,8 @@ data class FoodCart(
     val foodCartDetailsList: List<FoodCartDetail>,
     val totalPrice:Double=0.0,
     val restaurantId:String,
-    val restaurantName:String
+    val restaurantName:String,
+    var transitionTag:String = ""
 )
 
 

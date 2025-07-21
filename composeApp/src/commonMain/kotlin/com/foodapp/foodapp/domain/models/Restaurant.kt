@@ -17,6 +17,7 @@ data class Restaurant(
     var totalReviews: Int = 0,
     val restaurantTags: List<String>,
     var ratings: Double? = null,
+    var transitionTag: String = "Near",
     var bookingIds: List<String> = emptyList(),
     var paymentIds: List<String> = emptyList(),
     var foodItems: List<Food> = emptyList(),

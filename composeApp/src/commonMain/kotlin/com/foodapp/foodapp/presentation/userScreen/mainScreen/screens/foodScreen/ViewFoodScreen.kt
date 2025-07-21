@@ -138,14 +138,14 @@ fun ViewFoodScreen(
         Box(
             modifier = Modifier.fillMaxSize().nestedScroll(nestedScrollConnection)
                 .padding(top = 10.dp)
-                .applySharedBounds(state.foodId,SnackSharedElementType.Bounds,animatedVisibilityScope,sharedTransitionScope,
+                .applySharedBounds(state.transitionTag,SnackSharedElementType.Bounds,animatedVisibilityScope,sharedTransitionScope,
                     boundsTransform
                 )
         ) {
             KamelImage(
                 { asyncPainterResource(data = Url("https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg")) },
                 contentDescription = "Image",
-                modifier = Modifier.applySharedElement(state.foodId,SnackSharedElementType.Image,animatedVisibilityScope,sharedTransitionScope,
+                modifier = Modifier.applySharedElement(state.transitionTag,SnackSharedElementType.Image,animatedVisibilityScope,sharedTransitionScope,
                     boundsTransform
                 ).size(maxImageSize).clip(RoundedCornerShape(15.dp))
                     .align(Alignment.TopCenter).graphicsLayer {
@@ -175,7 +175,7 @@ fun ViewFoodScreen(
                     modifier = Modifier
                         .size(35.dp)
                         .align(Alignment.Center)
-                        .padding(8.dp).applySharedBounds(state.foodId,SnackSharedElementType.Icon,animatedVisibilityScope,sharedTransitionScope,
+                        .padding(8.dp).applySharedBounds(state.transitionTag,SnackSharedElementType.Icon,animatedVisibilityScope,sharedTransitionScope,
                             boundsTransform
                         )
                         .clickable { onFavoriteClick() }

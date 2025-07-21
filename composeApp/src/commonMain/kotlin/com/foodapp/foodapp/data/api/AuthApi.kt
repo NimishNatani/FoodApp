@@ -19,7 +19,7 @@ import io.ktor.http.HttpHeaders
 
 class AuthApi(private val client: HttpClient,private val tokenStorage: TokenStorage) {
 //192.168.214.37
-    private val BASE_URL = "http://10.14.4.228:8080/api"
+    private val BASE_URL = "http://10.219.151.37:8080/api"
 
     suspend fun loginUser(request: UserAuthRequest): Result<AuthResponse, DataError.Remote> {
         return safeCall<AuthResponse> {

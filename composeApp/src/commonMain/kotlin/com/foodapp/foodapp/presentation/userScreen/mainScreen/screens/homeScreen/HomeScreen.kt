@@ -206,7 +206,7 @@ fun UserHomeScreen(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 10.dp)
                     .horizontalScroll(
                         rememberScrollState()
-                    ), horizontalArrangement = Arrangement.SpaceEvenly
+                    ), horizontalArrangement = Arrangement.Start
             ) {
                 state.filterResults.mealTimeFoodList.take(6).forEach { food ->
                     FoodCategoryCard(
@@ -216,8 +216,11 @@ fun UserHomeScreen(
                         onSelected = {
 
                             state.searchResults.restaurantList.find { it.restaurantId == food.restaurantId }
-                                ?.let { onFoodSelected(food, it) }
+                                ?.let {
+                                    food.transitionTag = "${food.foodId}Food_Time"
+                                    onFoodSelected(food, it) }
                         },
+                        transitionTag = "${food.foodId}Food_Time",
                         sharedTransitionScope = sharedTransitionScope,
                         animatedContentScope = animatedContentScope
                     )
@@ -260,7 +263,10 @@ fun UserHomeScreen(
                         isFavorite = false,
                         onFavoriteClick = {},
                         address = restaurant.address + restaurant.city + restaurant.state,
-                        onClick = { onRestaurantClick(restaurant) },
+                        transitionTag ="${restaurant.restaurantId}Near" ,
+                        onClick = {
+                            restaurant.transitionTag = "${restaurant.restaurantId}Near"
+                            onRestaurantClick(restaurant) },
                         sharedTransitionScope = sharedTransitionScope,
                         animatedContentScope = animatedContentScope
                     )
@@ -296,7 +302,9 @@ fun UserHomeScreen(
                             imageUrl = restaurant.restaurantImage,
                             name = restaurant.restaurantName,
                             rating = restaurant.ratings.toString(),
-                            onClick = { onRestaurantClick(restaurant) },
+                            onClick = {
+                                restaurant.transitionTag = "${restaurant.restaurantId}Popular"
+                                onRestaurantClick(restaurant) },
                             modifier = Modifier
                         )
                         Spacer(modifier = Modifier.width(8.dp))

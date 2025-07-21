@@ -5,6 +5,11 @@ package com.foodapp.foodapp.presentation.components
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -81,184 +86,188 @@ fun NearestRestaurantCard(
     distance: String,
     address: String,
     isFavorite: Boolean = false,
+    transitionTag: String = "",
     onClick: () -> Unit,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedVisibilityScope,
     onFavoriteClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    with(sharedTransitionScope) {
-        Card(
-            modifier = modifier
-                .padding(8.dp)
-                .width(250.dp)
-                .height(120.dp)
-                .applySharedBounds(
-                    restaurantId,
-                    SnackSharedElementType.Bounds,
-                    animatedContentScope,
-                    sharedTransitionScope,
-                    boundsTransform
+    Card(
+        modifier = modifier
+            .applySharedBounds(
+                transitionTag,
+                SnackSharedElementType.Bounds,
+                animatedContentScope,
+                sharedTransitionScope,
+                boundsTransform
+            ).padding(8.dp)
+            .width(250.dp)
+            .height(120.dp)
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = White),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            // Image Section
+            Box(modifier = Modifier.wrapContentSize().background(Green)) {
+                KamelImage(
+                    { asyncPainterResource(data = Url("https://t3.ftcdn.net/jpg/03/24/73/92/360_F_324739203_keeq8udvv0P2h1MLYJ0GLSlTBagoXS48.jpg")) },
+                    contentDescription = "Image",
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier.background(LightGrey)
+                        .width(100.dp)
+                        .height(150.dp).applySharedElement(
+                            transitionTag,
+                            SnackSharedElementType.Image,
+                            animatedContentScope,
+                            sharedTransitionScope,
+                            boundsTransform
+                        )
                 )
-                .clickable { onClick() },
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = White),
-            elevation = CardDefaults.cardElevation(4.dp)
-        ) {
-            Row(modifier = Modifier.fillMaxSize()) {
-                // Image Section
-                Box(modifier = Modifier.wrapContentSize().background(Green)) {
-                    KamelImage(
-                        { asyncPainterResource(data = Url("https://t3.ftcdn.net/jpg/03/24/73/92/360_F_324739203_keeq8udvv0P2h1MLYJ0GLSlTBagoXS48.jpg")) },
-                        contentDescription = "Image",
-                        contentScale = ContentScale.FillBounds,
+                // Favorite Icon
+                Box(
+                    modifier = Modifier.wrapContentSize().clip(CircleShape)
+                        .align(Alignment.TopStart).padding(2.dp).background(White)
+                ) {
+                    Icon(
+                        painter = painterResource(if (isFavorite) Res.drawable.ic__favorite else Res.drawable.ic_favorite_border), // Replace with your favorite icon
+                        contentDescription = "Favorite",
                         modifier = Modifier
-                            .width(100.dp)
-                            .height(150.dp).applySharedElement(
-                                restaurantId,
-                                SnackSharedElementType.Image,
+                            .size(35.dp)
+                            .align(Alignment.TopEnd)
+                            .padding(8.dp).applySharedBounds(
+                                transitionTag,
+                                SnackSharedElementType.Icon,
                                 animatedContentScope,
                                 sharedTransitionScope,
                                 boundsTransform
                             )
+                            .clickable { onFavoriteClick() }
                     )
-                    // Favorite Icon
-                    Box(
-                        modifier = Modifier.wrapContentSize().clip(CircleShape)
-                            .align(Alignment.TopStart).padding(2.dp).background(White)
-                    ) {
-                        Icon(
-                            painter = painterResource(if (isFavorite) Res.drawable.ic__favorite else Res.drawable.ic_favorite_border), // Replace with your favorite icon
-                            contentDescription = "Favorite",
-                            modifier = Modifier
-                                .size(35.dp)
-                                .align(Alignment.TopEnd)
-                                .padding(8.dp).applySharedBounds(
-                                    restaurantId,
-                                    SnackSharedElementType.Icon,
-                                    animatedContentScope,
-                                    sharedTransitionScope,
-                                    boundsTransform
-                                )
-                                .clickable { onFavoriteClick() }
-                        )
-                    }
                 }
+            }
 
-                // Content Section
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
+            // Content Section
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 4.dp).applySharedBounds(
+                        transitionTag,
+                        SnackSharedElementType.Cards,
+                        animatedContentScope,
+                        sharedTransitionScope,
+                        boundsTransform
+                    )
+            ) {
+                Text(
+                    text = name,
+                    fontSize = TextSize.large,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.height(25.dp).applySharedBounds(
+                        transitionTag,
+                        SnackSharedElementType.Title,
+                        animatedContentScope,
+                        sharedTransitionScope,
+                        textBoundsTransform
+                    )
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+
+                Text(
+                    text = tags.joinToString(" | "),
+                    fontSize = TextSize.small,
+                    color = DarkGrey,
+                    modifier = Modifier.height(23.dp).applySharedBounds(
+                        transitionTag,
+                        SnackSharedElementType.Tagline,
+                        animatedContentScope,
+                        sharedTransitionScope,
+                        textBoundsTransform
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+
+                )
+
+                Spacer(modifier = Modifier.height(2.dp))
+
+                // Delivery Time, Rating, and LocationInterface
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    modifier = Modifier.fillMaxWidth().height(20.dp)
                 ) {
-                    Text(
-                        text = name,
-                        fontSize = TextSize.large,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.height(25.dp).applySharedBounds(
-                            restaurantId,
-                            SnackSharedElementType.Title,
-                            animatedContentScope,
-                            sharedTransitionScope,
-                            textBoundsTransform
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
 
                     Text(
-                        text = tags.joinToString(" | "),
-                        fontSize = TextSize.small,
+                        text = distance + "Km",
+                        fontSize = TextSize.regular,
                         color = DarkGrey,
-                        modifier = Modifier.height(23.dp).applySharedBounds(
-                            restaurantId,
-                            SnackSharedElementType.Tagline,
+                        modifier = Modifier.applySharedBounds(
+                            transitionTag,
+                            SnackSharedElementType.Distance,
                             animatedContentScope,
                             sharedTransitionScope,
                             textBoundsTransform
-                        ),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        )
 
                     )
 
-                    Spacer(modifier = Modifier.height(2.dp))
+                    VerticalDivider(thickness = 1.dp, color = LightGrey)
 
-                    // Delivery Time, Rating, and LocationInterface
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        modifier = Modifier.fillMaxWidth().height(20.dp)
-                    ) {
-
-                        Text(
-                            text = distance + "Km",
-                            fontSize = TextSize.regular,
-                            color = DarkGrey,
-                            modifier = Modifier.applySharedBounds(
-                                restaurantId,
-                                SnackSharedElementType.Distance,
-                                animatedContentScope,
-                                sharedTransitionScope,
-                                textBoundsTransform
-                            )
-
-                        )
-
-                        VerticalDivider(thickness = 1.dp, color = LightGrey)
-
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Star, // Replace with your star icon
-                                contentDescription = "Rating",
-                                tint = SandYellow,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = "$rating($totalReviews)",
-                                color = SandYellow,
-                                fontSize = TextSize.small,
-                                modifier = Modifier.applySharedBounds(
-                                    restaurantId,
-                                    SnackSharedElementType.Rating,
-                                    animatedContentScope,
-                                    sharedTransitionScope,
-                                    textBoundsTransform
-                                )
-
-                            )
-                        }
-
-                    }
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.height(20.dp),
-                        horizontalArrangement = Arrangement.Start
-
-                    ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
-                            imageVector = Icons.Default.LocationOn, // Replace with actual icon
-                            contentDescription = "LocationInterface Icon",
-                            tint = Green,
-                            modifier = Modifier.size(20.dp).padding(top = 5.dp)
+                            imageVector = Icons.Default.Star, // Replace with your star icon
+                            contentDescription = "Rating",
+                            tint = SandYellow,
+                            modifier = Modifier.size(16.dp)
                         )
+                        Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = address,
-                            color = DarkGrey,
+                            text = "$rating($totalReviews)",
+                            color = SandYellow,
                             fontSize = TextSize.small,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
                             modifier = Modifier.applySharedBounds(
-                                restaurantId,
-                                SnackSharedElementType.Address,
+                                transitionTag,
+                                SnackSharedElementType.Rating,
                                 animatedContentScope,
                                 sharedTransitionScope,
                                 textBoundsTransform
                             )
+
                         )
                     }
+
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.height(20.dp),
+                    horizontalArrangement = Arrangement.Start
+
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn, // Replace with actual icon
+                        contentDescription = "LocationInterface Icon",
+                        tint = Green,
+                        modifier = Modifier.size(20.dp).padding(top = 5.dp)
+                    )
+                    Text(
+                        text = address,
+                        color = DarkGrey,
+                        fontSize = TextSize.small,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.applySharedBounds(
+                            transitionTag,
+                            SnackSharedElementType.Address,
+                            animatedContentScope,
+                            sharedTransitionScope,
+                            textBoundsTransform
+                        )
+                    )
                 }
             }
         }
@@ -330,130 +339,132 @@ fun PopularRestaurant(
 fun RestaurantScreenCard(
     restaurant: Restaurant,
     sharedTransitionScope: SharedTransitionScope,
-    animatedContentScope: AnimatedVisibilityScope
+    animatedContentScope: AnimatedVisibilityScope,
+    modifier: Modifier
 ) {
-    with(sharedTransitionScope) {
-        Card(
-            modifier = Modifier.width(350.dp).padding(horizontal = 16.dp).applySharedBounds(restaurant.restaurantId,
-                SnackSharedElementType.Bounds,animatedContentScope,sharedTransitionScope,
-                boundsTransform
-            ),
-            colors = CardDefaults.cardColors(containerColor = White),
-            elevation = CardDefaults.cardElevation(defaultElevation = 14.dp),
-            shape = RoundedCornerShape(15.dp)
+    Card(
+        modifier = modifier.width(350.dp).padding(horizontal = 16.dp).applySharedBounds(
+            restaurant.transitionTag,
+            SnackSharedElementType.Cards,
+            animatedContentScope,
+            sharedTransitionScope,
+            boundsTransform
+        ),
+        colors = CardDefaults.cardColors(containerColor = White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 14.dp),
+        shape = RoundedCornerShape(15.dp)
+    ) {
+        Column(
+            modifier = modifier
+                .fillMaxWidth(), // Add padding around the content
+            horizontalAlignment = Alignment.CenterHorizontally // Center all children horizontally
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(), // Add padding around the content
-                horizontalAlignment = Alignment.CenterHorizontally // Center all children horizontally
-            ) {
-                Text(
-                    text = restaurant.restaurantName,
-                    modifier = Modifier.padding(vertical = 4.dp).applySharedBounds(
-                        restaurant.restaurantId,
-                        SnackSharedElementType.Title,
-                        animatedContentScope,
-                        sharedTransitionScope,
-                        textBoundsTransform
-                    ),
-                    fontSize = TextSize.large,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Black
-                )
-                Text(
-                    text = restaurant.restaurantTags.joinToString(),
-                    modifier = Modifier.padding(vertical = 4.dp).applySharedBounds(
-                        restaurant.restaurantId,
-                        SnackSharedElementType.Tagline,
-                        animatedContentScope,
-                        sharedTransitionScope,
-                        textBoundsTransform
-                    ),
-                    fontSize = TextSize.regular,
-                    fontWeight = FontWeight.SemiBold,
-                    color = DarkGrey
-                )
+            Text(
+                text = restaurant.restaurantName,
+                modifier = modifier.padding(vertical = 4.dp).applySharedBounds(
+                    restaurant.transitionTag,
+                    SnackSharedElementType.Title,
+                    animatedContentScope,
+                    sharedTransitionScope,
+                    textBoundsTransform
+                ),
+                fontSize = TextSize.large,
+                fontWeight = FontWeight.SemiBold,
+                color = Black
+            )
+            Text(
+                text = restaurant.restaurantTags.joinToString(),
+                modifier = modifier.padding(vertical = 4.dp).applySharedBounds(
+                    restaurant.transitionTag,
+                    SnackSharedElementType.Tagline,
+                    animatedContentScope,
+                    sharedTransitionScope,
+                    textBoundsTransform
+                ),
+                fontSize = TextSize.regular,
+                fontWeight = FontWeight.SemiBold,
+                color = DarkGrey
+            )
 
-                Row(horizontalArrangement = Arrangement.SpaceAround) {
-                    Column(verticalArrangement = Arrangement.Center) {
-                        Text(
-                            text = "Distance",
-                            modifier = Modifier.padding(vertical = 4.dp),
-                            fontSize = TextSize.small,
-                            color = DarkGrey
-                        )
-
-                        Text(
-                            text = "1.5 Km",
-                            modifier = Modifier.padding(vertical = 4.dp).applySharedBounds(
-                                restaurant.restaurantId,
-                                SnackSharedElementType.Distance,
-                                animatedContentScope,
-                                sharedTransitionScope,
-                                textBoundsTransform
-                            ),
-                            fontSize = TextSize.small,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Black
-                        )
-                    }
-
-                    Column(verticalArrangement = Arrangement.Center) {
-                        Text(
-                            text = "Rating",
-                            modifier = Modifier.padding(vertical = 4.dp),
-                            fontSize = TextSize.small,
-                            color = DarkGrey
-                        )
-
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Star,
-                                contentDescription = "Star",
-                                tint = SandYellow
-                            )
-                            Text(
-                                text = "${restaurant.ratings.toString()}(${restaurant.totalReviews})",
-                                modifier = Modifier.padding(vertical = 4.dp).applySharedBounds(
-                                    restaurant.restaurantId,
-                                    SnackSharedElementType.Rating,
-                                    animatedContentScope,
-                                    sharedTransitionScope,
-                                    textBoundsTransform
-                                ),
-                                fontSize = TextSize.small,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Black,
-
-                                )
-                        }
-                    }
-                }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.LocationOn, // Replace with actual icon
-                        contentDescription = "LocationInterface Icon",
-                        tint = Green,
-                        modifier = Modifier.size(30.dp).padding(top = 5.dp)
-                    )
+            Row(horizontalArrangement = Arrangement.SpaceAround) {
+                Column(verticalArrangement = Arrangement.Center) {
                     Text(
-                        text = restaurant.address + restaurant.city + restaurant.state,
-                        modifier = Modifier.padding(vertical = 4.dp).applySharedBounds(
-                            restaurant.restaurantId,
-                            SnackSharedElementType.Address,
+                        text = "Distance",
+                        modifier = modifier.padding(vertical = 4.dp),
+                        fontSize = TextSize.small,
+                        color = DarkGrey
+                    )
+
+                    Text(
+                        text = "1.5 Km",
+                        modifier = modifier.padding(vertical = 4.dp).applySharedBounds(
+                            restaurant.transitionTag,
+                            SnackSharedElementType.Distance,
                             animatedContentScope,
                             sharedTransitionScope,
                             textBoundsTransform
                         ),
                         fontSize = TextSize.small,
                         fontWeight = FontWeight.SemiBold,
+                        color = Black
                     )
                 }
 
+                Column(verticalArrangement = Arrangement.Center) {
+                    Text(
+                        text = "Rating",
+                        modifier = modifier.padding(vertical = 4.dp),
+                        fontSize = TextSize.small,
+                        color = DarkGrey
+                    )
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Star",
+                            tint = SandYellow
+                        )
+                        Text(
+                            text = "${restaurant.ratings.toString()}(${restaurant.totalReviews})",
+                            modifier = modifier.padding(vertical = 4.dp).applySharedBounds(
+                                restaurant.transitionTag,
+                                SnackSharedElementType.Rating,
+                                animatedContentScope,
+                                sharedTransitionScope,
+                                textBoundsTransform
+                            ),
+                            fontSize = TextSize.small,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Black,
+
+                            )
+                    }
+                }
             }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.LocationOn, // Replace with actual icon
+                    contentDescription = "LocationInterface Icon",
+                    tint = Green,
+                    modifier = Modifier.size(30.dp).padding(top = 5.dp)
+                )
+                Text(
+                    text = restaurant.address + restaurant.city + restaurant.state,
+                    modifier = modifier.padding(vertical = 4.dp).applySharedBounds(
+                        restaurant.transitionTag,
+                        SnackSharedElementType.Address,
+                        animatedContentScope,
+                        sharedTransitionScope,
+                        textBoundsTransform
+                    ),
+                    fontSize = TextSize.small,
+                    fontWeight = FontWeight.SemiBold,
+                )
+            }
+
         }
     }
 }
@@ -470,18 +481,17 @@ fun FoodItemCard(
     with(sharedTransitionScope) {
         Card(
             modifier = Modifier
-                .width(180.dp)
-                .height(265.dp)
-                .padding(8.dp).clickable { onFoodClick(food) }
+                .clickable { onFoodClick(food) }
                 .applySharedBounds(
-                    food.foodId,
+                    food.foodId+"food",
                     SnackSharedElementType.Bounds,
                     animatedVisibilityScope,
                     sharedTransitionScope,
                     boundsTransform
-                ),
+                ).width(180.dp)
+                .height(265.dp)
+                .padding(8.dp).clip(RoundedCornerShape(12.dp)),
             elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-            shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(containerColor = White)
         ) {
             Box(modifier = Modifier.fillMaxWidth().height(120.dp)) {
@@ -794,60 +804,59 @@ fun FoodCategoryCard(
     name: String,
     image: DrawableResource, // Drawable resource ID
     onSelected: () -> Unit,
+    transitionTag: String,
     sharedTransitionScope: SharedTransitionScope,
     animatedContentScope: AnimatedVisibilityScope,
     isSelected: Boolean = false
 ) {
-    with(sharedTransitionScope) {
-        Column(
-            modifier = Modifier
-                .wrapContentHeight()
-                .wrapContentWidth().applySharedBounds(
-                    foodId,
-                    SnackSharedElementType.Bounds,
-                    animatedContentScope,
-                    sharedTransitionScope,
-                    boundsTransform
-                ) // Allow width to adjust dynamically
-                .clickable { onSelected() },
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+    Column(
+        modifier = Modifier
+            .applySharedBounds(
+                transitionTag,
+                SnackSharedElementType.Bounds,
+                animatedContentScope,
+                sharedTransitionScope,
+                boundsTransform
+            ).wrapContentHeight()
+            .wrapContentWidth() // Allow width to adjust dynamically
+            .clickable { onSelected() },
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
-            KamelImage(
-                {
+        KamelImage(
+            {
 //            painter = painterResource(image),
-                    asyncPainterResource(data = Url("https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg"))
-                }, contentDescription = "Category Icon",
-                modifier = Modifier.size(50.dp).clip(CircleShape)
-                    .border(
-                        width = 1.dp,
-                        color = if (isSelected) Green else White,
-                        shape = CircleShape
-                    ).applySharedElement(
-                        foodId,
-                        SnackSharedElementType.Image,
-                        animatedContentScope,
-                        sharedTransitionScope,
-                        boundsTransform
-                    )
-            )
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = name,
-                fontSize = TextSize.small,
-                color = if (isSelected) Green else Black,
-                textAlign = TextAlign.Center,
-                maxLines = 1, // Ensure single line
-                overflow = TextOverflow.Ellipsis, // Add ellipsis for truncated text
-                modifier = Modifier.wrapContentWidth().applySharedBounds(
-                    foodId,
-                    SnackSharedElementType.Title,
+                asyncPainterResource(data = Url("https://www.foodiesfeed.com/wp-content/uploads/2023/06/burger-with-melted-cheese.jpg"))
+            }, contentDescription = "Category Icon",
+            modifier = Modifier.size(50.dp).clip(CircleShape)
+                .border(
+                    width = 1.dp,
+                    color = if (isSelected) Green else White,
+                    shape = CircleShape
+                ).applySharedElement(
+                    transitionTag,
+                    SnackSharedElementType.Image,
                     animatedContentScope,
                     sharedTransitionScope,
                     boundsTransform
-                ) // Dynamically adjust width based on text
-            )
+                )
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = name,
+            fontSize = TextSize.small,
+            color = if (isSelected) Green else Black,
+            textAlign = TextAlign.Center,
+            maxLines = 1, // Ensure single line
+            overflow = TextOverflow.Ellipsis, // Add ellipsis for truncated text
+            modifier = Modifier.wrapContentWidth().applySharedBounds(
+                transitionTag,
+                SnackSharedElementType.Title,
+                animatedContentScope,
+                sharedTransitionScope,
+                boundsTransform
+            ) // Dynamically adjust width based on text
+        )
 
-        }
     }
 }

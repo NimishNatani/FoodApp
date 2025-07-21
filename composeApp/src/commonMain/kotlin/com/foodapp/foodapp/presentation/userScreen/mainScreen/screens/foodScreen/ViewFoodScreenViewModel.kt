@@ -67,7 +67,8 @@ class ViewFoodScreenViewModel(private val userRepo: UserRepository) : ViewModel(
                     quantity = 0
                 )
             }, restaurantId = food.restaurantId,
-            restaurantName = restaurantName
+            restaurantName = restaurantName,
+            transitionTag = food.transitionTag
         )
     }
 
