@@ -50,6 +50,7 @@ class AuthRegisterViewModel(private val authRepository: AuthRepository,private v
             if (state.password == state.confirmPassword && state.email.contains("@")) {
                 val result = authRepository.register(state.name, state.email, state.password, isUser)
                 result.onSuccess { authToken ->
+                    println(authToken)
                     tokenStorage.saveToken(authToken.token)
                     _uiState.update { it.copy(isLoading = false, result = authToken.token, message = authToken.message) }
                 }.onError { error ->

@@ -15,7 +15,7 @@ import io.ktor.http.HttpHeaders
 
 class RestaurantApi(private val client: HttpClient, private val tokenStorage: TokenStorage) {
 
-    private val BASE_URL = "http://10.219.151.37:8080/api"
+    private val BASE_URL = "http://10.38.139.37:8080/api"
 
     suspend fun getRestaurantByJwt(): Result<RestaurantDto, DataError.Remote> {
         return safeCall<RestaurantDto> {

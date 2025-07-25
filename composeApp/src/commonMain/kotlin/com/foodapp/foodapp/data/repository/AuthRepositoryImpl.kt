@@ -25,7 +25,7 @@ class AuthRepositoryImpl(
         return if (isUser) {
             val request = UserAuthRequest("",email, password)
             apiService.loginUser(request).map { it.toAuthToken() }
-        } else {val request = RestaurantAuthRequest(email, password)
+        } else {val request = RestaurantAuthRequest("",email, password)
 //            apiService.validate().map { it.toAuthToken() }
             apiService.loginRestaurant(request).map { it.toAuthToken() }
         }
@@ -35,7 +35,7 @@ class AuthRepositoryImpl(
         return if (isUser){
             val request = UserAuthRequest(name,email, password)
             apiService.registerUser(request).map { it.toAuthToken() }
-        } else {val request = RestaurantAuthRequest(email, password)
+        } else {val request = RestaurantAuthRequest(name,email, password)
             apiService.registerRestaurant(request).map { it.toAuthToken() } }
     }
 

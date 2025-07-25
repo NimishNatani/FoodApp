@@ -10,6 +10,7 @@ data class UserAuthRequest(
 )
 @Serializable
 data class RestaurantAuthRequest(
+     val restaurantName:String,
      val restaurantId: String,
      val password: String
 )
