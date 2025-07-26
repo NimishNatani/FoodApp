@@ -3,8 +3,10 @@ package com.foodapp.foodapp.presentation.location
 import io.ktor.client.HttpClient
 
 interface LocationInterface {
-    fun getLatAndLong(): Pair<Double, Double>
-    fun getCity(): String
-    fun getState():String
-    suspend fun geoLocation(httpClient: HttpClient):String
+    suspend fun getLatAndLong(httpClient: HttpClient): Pair<Double, Double>
+    suspend fun getCity(httpClient: HttpClient): String
+    suspend fun getState(httpClient: HttpClient):String
+    suspend fun getCountry(httpClient: HttpClient):String
+    suspend fun getPostalCode(httpClient: HttpClient):String
+//    suspend fun geoLocation():String
 }

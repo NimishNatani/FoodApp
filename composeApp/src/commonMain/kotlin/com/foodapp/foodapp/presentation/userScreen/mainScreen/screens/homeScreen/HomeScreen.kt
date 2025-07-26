@@ -253,7 +253,7 @@ fun UserHomeScreen(
             ) {
                 state.filterResults.nearestRestaurantList.take(6).forEach { restaurant ->
                     NearestRestaurantCard(
-                        restaurantId = restaurant.restaurantId,
+                        restaurantId = restaurant.restaurantId!!,
                         imageUrl = restaurant.restaurantImage,
                         name = restaurant.restaurantName,
                         tags = restaurant.restaurantTags,

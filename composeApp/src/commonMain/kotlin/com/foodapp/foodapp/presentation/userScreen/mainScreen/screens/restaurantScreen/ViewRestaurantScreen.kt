@@ -130,7 +130,7 @@ fun ViewRestaurantScreen(
         }
     }
 
-    Box(modifier = Modifier.nestedScroll(nestedScrollConnection).applySharedBounds(restaurant.restaurantId,
+    Box(modifier = Modifier.nestedScroll(nestedScrollConnection).applySharedBounds(restaurant.restaurantId!!,
         SnackSharedElementType.Bounds,animatedContentScope,sharedTransitionScope,
         boundsTransform
     )) {

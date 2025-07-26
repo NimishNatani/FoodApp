@@ -73,7 +73,7 @@ class UserHomeScreenViewModel(private val restaurantRepository: RestaurantReposi
         onComplete: () -> Unit
     ) {
         viewModelScope.launch(Dispatchers.IO) {
-            restaurantRepository.getRestaurantsByCity(geoLocation.geoLocation(httpClient)).onSuccess { restaurants ->
+            restaurantRepository.getRestaurantsByCity(geoLocation.getCity(httpClient)).onSuccess { restaurants ->
                 _uiState.update { uiState ->
                     uiState.copy(
                         searchResults = SearchItem(
@@ -125,8 +125,8 @@ class UserHomeScreenViewModel(private val restaurantRepository: RestaurantReposi
             // Filter and sort restaurants and food based on the search query
             val filteredAndSortedRestaurants = originalRestaurants.filter { restaurant ->
                 restaurant.restaurantName.contains(searchQuery, ignoreCase = true) ||
-                        restaurant.address.contains(searchQuery, ignoreCase = true) ||
-                        restaurant.city.contains(searchQuery, ignoreCase = true) ||
+                        restaurant.address!!.contains(searchQuery, ignoreCase = true) ||
+                        restaurant.city!!.contains(searchQuery, ignoreCase = true) ||
                         restaurant.restaurantTags.any { tag ->
                             tag.contains(searchQuery, ignoreCase = true)
                         } ||
@@ -139,8 +139,8 @@ class UserHomeScreenViewModel(private val restaurantRepository: RestaurantReposi
                         }
             }.sortedWith(compareBy(
                 { it.restaurantName.contains(searchQuery, ignoreCase = true) },
-                { it.city.contains(searchQuery, ignoreCase = true) },
-                { it.address.contains(searchQuery, ignoreCase = true) }
+                { it.city!!.contains(searchQuery, ignoreCase = true) },
+                { it.address!!.contains(searchQuery, ignoreCase = true) }
             ))
 
             val filteredAndSortedFoods = originalFoods.filter { food ->

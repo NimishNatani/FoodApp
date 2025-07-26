@@ -153,7 +153,7 @@ fun ViewAllCategoryScreen(
         ) {
             items(state.filterResults.nearestRestaurantList) { restaurant ->
                 NearestRestaurantCard(
-                    restaurantId = restaurant.restaurantId,
+                    restaurantId = restaurant.restaurantId!!,
                     imageUrl = restaurant.restaurantImage,
                     tags = restaurant.restaurantTags,
                     name = restaurant.restaurantName,

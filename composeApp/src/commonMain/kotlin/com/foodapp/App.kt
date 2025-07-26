@@ -23,6 +23,8 @@ import com.foodapp.foodapp.presentation.login.LoginScreenRoot
 import com.foodapp.foodapp.presentation.navigation.Route
 import com.foodapp.foodapp.presentation.register.AuthRegisterViewModel
 import com.foodapp.foodapp.presentation.register.RegisterScreenRoot
+import com.foodapp.foodapp.presentation.restaurantScreen.detailScreen.DetailScreenRoot
+import com.foodapp.foodapp.presentation.restaurantScreen.detailScreen.DetailScreenViewModel
 import com.foodapp.foodapp.presentation.starter.AuthValidationViewModel
 import com.foodapp.foodapp.presentation.starter.SplashScreen
 import com.foodapp.foodapp.presentation.starter.UserSelectionScreen
@@ -41,7 +43,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
 
-//@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 @Preview
 fun App() {
@@ -134,31 +135,34 @@ fun App() {
                             }
                         })
                     }
-                    UserMainScreenRoot(
-                        userMainScreenViewModel,
-                        onViewAllRestaurantScreen = { restaurants ->
-                            sharedUserViewModel.setListRestaurants(restaurants)
-                            navController.navigate(Route.RestaurantHomeScreen)
-                        },
-                        onViewAllCategoryScreen = { restaurants ->
-                            sharedUserViewModel.setListRestaurants(restaurants)
-                            navController.navigate(Route.ViewAllCategoryScreen)
-                        }, onViewCategoryItem = { string ->
-                            sharedUserViewModel.setCategory(string)
-                            navController.navigate(Route.ViewAllCategoryScreen)
-                        },
-                        onRestaurantClick = { restaurant ->
-                            sharedUserViewModel.setRestaurant(restaurant)
-                            navController.navigate(Route.ViewRestaurantScreen)
-                        },
-                        onFoodSelected = { food ,restaurant->
-                            sharedUserViewModel.setFood(food)
-                            sharedUserViewModel.setRestaurant(restaurant)
-                            navController.navigate(Route.ViewFoodScreen)
-                        },
-                        sharedTransitionScope = this@SharedTransitionLayout,
-                        animatedContentScope = this@composable,
-                    )
+                    sharedUserViewModel.user.value?.let {
+                        UserMainScreenRoot(
+                            userMainScreenViewModel,
+                            onViewAllRestaurantScreen = { restaurants ->
+                                sharedUserViewModel.setListRestaurants(restaurants)
+                                navController.navigate(Route.RestaurantHomeScreen)
+                            },
+                            onViewAllCategoryScreen = { restaurants ->
+                                sharedUserViewModel.setListRestaurants(restaurants)
+                                navController.navigate(Route.ViewAllCategoryScreen)
+                            },
+                            onViewCategoryItem = { string ->
+                                sharedUserViewModel.setCategory(string)
+                                navController.navigate(Route.ViewAllCategoryScreen)
+                            },
+                            onRestaurantClick = { restaurant ->
+                                sharedUserViewModel.setRestaurant(restaurant)
+                                navController.navigate(Route.ViewRestaurantScreen)
+                            },
+                            onFoodSelected = { food, restaurant ->
+                                sharedUserViewModel.setFood(food)
+                                sharedUserViewModel.setRestaurant(restaurant)
+                                navController.navigate(Route.ViewFoodScreen)
+                            },
+                            sharedTransitionScope = this@SharedTransitionLayout,
+                            animatedContentScope = this@composable,
+                        )
+                    }
 
                 }
                 composable<Route.ViewAllRestaurantScreen> {
@@ -204,7 +208,7 @@ fun App() {
                             ViewFoodScreenRoot(
                                 viewModel = viewModel,
                                 food = food,
-                                restaurantName = restaurant.restaurantName,
+                                restaurantName = restaurant!!.restaurantName,
                                 onBackClick = { navController.popBackStack() },
                                 sharedTransitionScope = this@SharedTransitionLayout,
                                 animatedContentScope = this@composable,
@@ -216,15 +220,21 @@ fun App() {
             navigation<Route.RestaurantGraph>(
                 startDestination = Route.RestaurantHomeScreen
             ) {
+                composable<Route.RestaurantDetailsScreen>{
+                    val sharedRestaurantViewModel =
+                        it.sharedKoinViewModel<RestaurantViewModel>(navController)
+                    val viewModel = koinViewModel<DetailScreenViewModel>()
+                    DetailScreenRoot(viewModel)
+                }
                 composable<Route.RestaurantHomeScreen> {
                     val sharedRestaurantViewModel =
                         it.sharedKoinViewModel<RestaurantViewModel>(navController)
 
                     sharedRestaurantViewModel.getRestaurant(onFailure = {
-                        navController.navigate(Route.UserSelection) {
-                            navController.popBackStack(Route.UserSelection, false)
+                        navController.navigate(Route.RestaurantDetailsScreen) {
+                            navController.popBackStack(Route.RestaurantDetailsScreen, false)
                         }
-                    })
+                    },)
 
 
                     Text(

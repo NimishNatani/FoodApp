@@ -1,5 +1,7 @@
 package com.foodapp.foodapp.di
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.ImageBitmap
 import com.foodapp.core.di.HttpClientFactory
 import com.foodapp.foodapp.data.api.AuthApi
 import com.foodapp.foodapp.data.api.BookingApi
@@ -34,6 +36,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import com.foodapp.foodapp.data.repository.BookingRepositoryImpl
+import com.foodapp.foodapp.presentation.restaurantScreen.detailScreen.DetailScreenViewModel
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.bookingScreen.BookingScreenViewModel
 
 
@@ -78,5 +81,9 @@ val appModule = module {
     viewModel { BookingScreenViewModel(get(),get())}
     viewModel { UserViewModel(  get()) }
     viewModel { RestaurantViewModel(  get()) }
+    viewModel { DetailScreenViewModel(get(),get()) }
 
 }
+
+@Composable
+expect fun PickImage(onImageSelected: (Pair<ImageBitmap, ByteArray>) -> Unit)

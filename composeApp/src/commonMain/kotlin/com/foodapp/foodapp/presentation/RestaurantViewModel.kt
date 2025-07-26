@@ -24,6 +24,9 @@ class RestaurantViewModel(private  val restaurantRepository: RestaurantRepositor
         viewModelScope.launch {
             restaurantRepository.getRestaurantByJwttoken().onSuccess {result ->
                 _restaurant.value = result
+                if(_restaurant.value!!.city.isNullOrEmpty()){
+                    onFailure()
+                }
             }.onError { onFailure() }
 
         }

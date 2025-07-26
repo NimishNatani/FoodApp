@@ -114,7 +114,7 @@ fun UserMainScreen(
     )
     LaunchedEffect(Unit) {
         if (state.callingApi==0) {
-            userHomeScreenViewModel.onAction(UserHomeScreenAction.OnGettingRestaurants("Jaipur"))
+            userHomeScreenViewModel.onAction(UserHomeScreenAction.OnGettingRestaurants("Ajmer"))
             state.callingApi++
         }
         cartScreenViewModel.onAction(CartScreenAction.GetFoodCartList)

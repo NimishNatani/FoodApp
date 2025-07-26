@@ -6,9 +6,9 @@ import com.foodapp.foodapp.domain.models.Restaurant
 fun RestaurantDto.toRestaurant():Restaurant {
    return Restaurant(
         restaurantId = restaurantId,
-        restaurantImage = restaurantImage,
-        restaurantName = restaurantName,
-        contactDetails = contactDetails,
+        restaurantImage = restaurantImage!!,
+        restaurantName = restaurantName!!,
+        contactDetails = contactDetails!!,
         latitude = latitude,
         longitude = longitude,
         address = address,
@@ -17,12 +17,12 @@ fun RestaurantDto.toRestaurant():Restaurant {
         postalCode = postelCode,
         totalReviews = totalReviews,
         ratings = ratings,
-        bookingIds = bookingIds,
-        paymentIds = paymentIds,
-        foodItems =foodItems.map { food ->
+        bookingIds = bookingIds?: emptyList(),
+        paymentIds = paymentIds?: emptyList(),
+        foodItems =foodItems!!.map { food ->
              food.toFood()
         },
         restaurantTags = restaurantTags?: emptyList(),
-        reviewIds = reviewIds
+        reviewIds = reviewIds?: emptyList()
     )
 }

@@ -28,10 +28,11 @@ import org.jetbrains.compose.resources.painterResource
 fun CustomTextField(
     label: String,
     value: String,
-    onValueChange: (String) -> Unit,
+    onValueChange: (String) -> Unit = {},
     type: String,
     backgroundColor: Color = White,
     textColor:Color = Black,
+    isEnabled:Boolean = true
 ) {
     // State to manage password visibility
     var passwordVisible by remember { mutableStateOf(false) }
@@ -50,6 +51,7 @@ fun CustomTextField(
                 else -> KeyboardType.Text
             }
         ),
+        enabled = isEnabled,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
