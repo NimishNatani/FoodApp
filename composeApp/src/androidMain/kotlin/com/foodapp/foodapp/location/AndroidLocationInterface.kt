@@ -53,7 +53,7 @@ class AndroidLocationInterface : LocationInterface {
                     latitude = coordinates.latitude,
                     longitude = coordinates.longitude
                 )
-                println(place)
+                println("comeback "+place)
 
             }
 

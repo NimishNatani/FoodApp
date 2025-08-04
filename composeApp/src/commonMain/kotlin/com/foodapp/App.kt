@@ -7,6 +7,8 @@ import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavBackStackEntry
@@ -224,23 +226,34 @@ fun App() {
                     val sharedRestaurantViewModel =
                         it.sharedKoinViewModel<RestaurantViewModel>(navController)
                     val viewModel = koinViewModel<DetailScreenViewModel>()
-                    DetailScreenRoot(viewModel)
+                    sharedRestaurantViewModel.restaurant.value?.let {restaurant->
+                        DetailScreenRoot(viewModel,restaurant)
+                    }
                 }
                 composable<Route.RestaurantHomeScreen> {
                     val sharedRestaurantViewModel =
                         it.sharedKoinViewModel<RestaurantViewModel>(navController)
 
-                    sharedRestaurantViewModel.getRestaurant(onFailure = {
-                        navController.navigate(Route.RestaurantDetailsScreen) {
-                            navController.popBackStack(Route.RestaurantDetailsScreen, false)
-                        }
-                    },)
+                    val restaurant by sharedRestaurantViewModel.restaurant.collectAsState()
 
+                    LaunchedEffect(Unit) {
+                        sharedRestaurantViewModel.getRestaurant(onFailure = {
+                            navController.navigate(Route.RestaurantDetailsScreen) {
+                                navController.popBackStack(Route.RestaurantDetailsScreen, false)
+                            }
+                        })
+                    }
 
-                    Text(
-                        text = sharedRestaurantViewModel.restaurant.value.toString(),
-                        color = Red
-                    )
+                    // show the restaurant safely
+                    if (restaurant != null) {
+                        Text(
+                            text = restaurant.toString(),
+                            color = Red
+                        )
+                    } else {
+                        // optional: loading / placeholder UI
+                        Text(text = "Loading...", color = Red)
+                    }
                 }
             }
 

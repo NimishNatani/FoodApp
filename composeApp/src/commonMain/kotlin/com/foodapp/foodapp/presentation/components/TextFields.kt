@@ -1,6 +1,7 @@
 package com.foodapp.foodapp.presentation.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -56,6 +57,7 @@ fun CustomTextField(
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clip(RoundedCornerShape(20.dp))
+            .border(width = 1.dp, color = LightGrey, shape = RoundedCornerShape(20.dp))
             .background(White),
         shape = RoundedCornerShape(20.dp),
         colors = TextFieldDefaults.colors(
