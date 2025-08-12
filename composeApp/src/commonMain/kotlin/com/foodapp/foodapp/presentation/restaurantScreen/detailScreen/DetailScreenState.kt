@@ -8,5 +8,6 @@ data class DetailScreenState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val imageUploadTrigger:Boolean = false,
+    val success:Boolean = false,
     val imageByte: ByteArray? = null
 )

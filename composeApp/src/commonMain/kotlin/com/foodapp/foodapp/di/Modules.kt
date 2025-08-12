@@ -81,7 +81,7 @@ val appModule = module {
     viewModel { BookingScreenViewModel(get(),get())}
     viewModel { UserViewModel(  get()) }
     viewModel { RestaurantViewModel(  get()) }
-    viewModel { DetailScreenViewModel(get(),get()) }
+    viewModel { DetailScreenViewModel(get(),get(),get()) }
 
 }
 

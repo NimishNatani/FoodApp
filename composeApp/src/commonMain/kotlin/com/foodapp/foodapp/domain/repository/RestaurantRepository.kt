@@ -11,5 +11,9 @@ interface RestaurantRepository {
 
     suspend fun getRestaurantsByCity(city: String):Result<List<Restaurant>, DataError.Remote>
 
+    suspend fun addRestaurant(restaurant: Restaurant):Result<String, DataError.Remote>
+
+    suspend fun uploadImage(image:ByteArray,restaurantId:String,type:String):Result<String, DataError.Remote>
+
 
 }

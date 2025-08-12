@@ -13,7 +13,7 @@ data class Restaurant(
     var address: String?,
     var city: String?,
     var state: String?,
-    var postalCode: String?,
+    var postelCode: String?,
     var totalReviews: Int = 0,
     val restaurantTags: List<String>,
     var ratings: Double? = null,

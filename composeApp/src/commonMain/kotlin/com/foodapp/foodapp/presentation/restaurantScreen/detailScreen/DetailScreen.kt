@@ -34,7 +34,7 @@ import com.foodapp.foodapp.presentation.components.CustomTextField
 import com.foodapp.foodapp.presentation.components.TagPickerDropdown
 
 @Composable
-fun DetailScreenRoot(viewModel: DetailScreenViewModel, restaurant: Restaurant) {
+fun DetailScreenRoot(viewModel: DetailScreenViewModel, restaurant: Restaurant,onSuccess: () -> Unit) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
         viewModel.addRestaurant(restaurant)
@@ -43,7 +43,8 @@ fun DetailScreenRoot(viewModel: DetailScreenViewModel, restaurant: Restaurant) {
         DetailScreen(state = state,
             onEvent = { event ->
                 viewModel.onAction(event)
-            }
+            },
+            onSuccess = {onSuccess()}
         )
     }
 }
@@ -51,10 +52,13 @@ fun DetailScreenRoot(viewModel: DetailScreenViewModel, restaurant: Restaurant) {
 @Composable
 fun DetailScreen(
     state: DetailScreenState,
-    onEvent: (DetailScreenAction) -> Unit
+    onEvent: (DetailScreenAction) -> Unit,
+    onSuccess:() ->Unit
 ) {
     if (state.isLoading) {
         Text("Loading")
+    }else if(state.success){
+        onSuccess()
     } else if (!state.isLoading && state.errorMessage != null) {
         Text(state.errorMessage)
     } else if (state.restaurant != null) {
@@ -115,7 +119,7 @@ fun DetailScreen(
             CustomTextField("State", state.restaurant!!.state!!, type = "text", isEnabled = false)
             CustomTextField(
                 "Postal Code",
-                state.restaurant!!.postalCode!!,
+                state.restaurant!!.postelCode!!,
                 type = "text",
                 isEnabled = false
             )
@@ -144,8 +148,8 @@ fun DetailScreen(
 
 
             CustomButton(
-                text = "Add Food",
-                onClick = { }
+                text = "Add Restaurant",
+                onClick = { onEvent(DetailScreenAction.OnAddRestaurant)}
             )
         }
     }

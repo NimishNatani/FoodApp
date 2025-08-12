@@ -10,4 +10,5 @@ sealed interface DetailScreenAction {
     data class OnTagsChanged(val tags:List<String>):DetailScreenAction
     data object OnImageUploadTrigger:DetailScreenAction
     data class OnImageSelected(val byteArray: ByteArray?):DetailScreenAction
+    data object OnAddRestaurant:DetailScreenAction
 }

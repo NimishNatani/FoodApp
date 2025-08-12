@@ -29,8 +29,8 @@ class HttpClientFactory(private val tokenStorage: TokenStorage) {
                 )
             }
             install(HttpTimeout) {
-                socketTimeoutMillis = 20_000L
-                requestTimeoutMillis = 20_000L
+                socketTimeoutMillis = 200_000L
+                requestTimeoutMillis = 200_000L
             }
             install(Logging) {
                 logger = object : Logger {

@@ -14,7 +14,7 @@ fun RestaurantDto.toRestaurant():Restaurant {
         address = address,
         city = city,
         state = state,
-        postalCode = postelCode,
+        postelCode = postelCode,
         totalReviews = totalReviews,
         ratings = ratings,
         bookingIds = bookingIds?: emptyList(),

@@ -3,8 +3,10 @@ package com.foodapp.foodapp.presentation.restaurantScreen.detailScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.foodapp.core.domain.onSuccess
 import com.foodapp.foodapp.domain.models.LocationData
 import com.foodapp.foodapp.domain.models.Restaurant
+import com.foodapp.foodapp.domain.repository.RestaurantRepository
 import com.foodapp.foodapp.presentation.location.LocationInterface
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.Dispatchers
@@ -16,7 +18,8 @@ import kotlinx.coroutines.launch
 
 class DetailScreenViewModel(
     private val geoLocation: LocationInterface,
-    private val httpClient: HttpClient
+    private val httpClient: HttpClient,
+    private val restaurantRepository: RestaurantRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DetailScreenState())
@@ -24,8 +27,6 @@ class DetailScreenViewModel(
 
     fun onAction(action: DetailScreenAction) {
         when (action) {
-//            is DetailScreenAction.OnGettingLocation -> {
-//            }
             is DetailScreenAction.OnNameChanged -> {
                 _uiState.update { it.copy(restaurant = it.restaurant!!.copy(restaurantName = action.name)) }
             }
@@ -43,6 +44,10 @@ class DetailScreenViewModel(
             }
             is DetailScreenAction.OnImageSelected -> {
                 _uiState.update { it.copy(imageByte = action.byteArray) }
+            }
+            is DetailScreenAction.OnAddRestaurant -> {
+                _uiState.update { it.copy(isLoading = true) }
+                addRestaurant()
             }
 
         }
@@ -62,7 +67,7 @@ class DetailScreenViewModel(
                 val newRestaurant = Restaurant(
                     city = it.city,
                     state = it.state,
-                    postalCode = it.postalCode,
+                    postelCode = it.postalCode,
                     latitude = it.latitude,
                     longitude = it.longitude,
                     restaurantName = restaurant.restaurantName,
@@ -80,5 +85,15 @@ class DetailScreenViewModel(
                 _uiState.update {ui-> ui.copy(restaurant = newRestaurant) }
             }
         }
+    }
+    private fun addRestaurant(){
+        viewModelScope.launch(Dispatchers.IO) {
+            restaurantRepository.addRestaurant(uiState.value.restaurant!!).onSuccess {
+                restaurantRepository.uploadImage(uiState.value.imageByte!!,uiState.value.restaurant?.restaurantId!!,"restaurant").onSuccess {
+                    _uiState.update { it.copy(isLoading = false, success = true) }
+                }
+            }
+        }
+
     }
 }

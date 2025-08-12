@@ -227,7 +227,7 @@ fun App() {
                         it.sharedKoinViewModel<RestaurantViewModel>(navController)
                     val viewModel = koinViewModel<DetailScreenViewModel>()
                     sharedRestaurantViewModel.restaurant.value?.let {restaurant->
-                        DetailScreenRoot(viewModel,restaurant)
+                        DetailScreenRoot(viewModel,restaurant, onSuccess = {})
                     }
                 }
                 composable<Route.RestaurantHomeScreen> {
