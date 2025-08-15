@@ -2,14 +2,18 @@ package com.foodapp.foodapp.presentation.components
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
@@ -35,15 +40,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.foodapp.core.presentation.Black
 import com.foodapp.core.presentation.DarkGrey
 import com.foodapp.core.presentation.Green
 import com.foodapp.core.presentation.GreenShade
+import com.foodapp.core.presentation.LightGrey
+import com.foodapp.core.presentation.Red
 import com.foodapp.core.presentation.TextSize
 import com.foodapp.core.presentation.White
 import com.foodapp.foodapp.domain.models.FoodCart
@@ -342,5 +351,51 @@ fun FoodCartList(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun FoodItemCard(name: String, desc: String, tags: List<String>, isVeg: Boolean,imageBitmap: ImageBitmap?) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .border(1.dp, LightGrey, RoundedCornerShape(10.dp))
+            .padding(8.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(60.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .background(LightGrey)
+        ){
+            imageBitmap?.let {
+                Image(bitmap = it, contentDescription = null, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Fit)
+            }
+        }
+        Spacer(Modifier.width(12.dp))
+        Column {
+            Text(name, fontWeight = FontWeight.Bold)
+            Text(desc, fontSize = 14.sp, color = DarkGrey)
+            Row {
+                tags.forEach {
+                    Box(
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .clip(RoundedCornerShape(50))
+                            .background(LightGrey)
+                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    ) {
+                        Text(it, fontSize = 12.sp)
+                    }
+                }
+            }
+        }
+        Spacer(Modifier.weight(1f))
+        Icon(
+            Icons.Default.Check,
+            contentDescription = null,
+            tint = if (isVeg) Green else Red
+        )
     }
 }

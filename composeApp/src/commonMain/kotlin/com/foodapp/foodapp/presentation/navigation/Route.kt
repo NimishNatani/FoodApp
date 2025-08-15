@@ -39,6 +39,9 @@ sealed interface Route {
     data object RestaurantDetailsScreen : Route
 
     @Serializable
+    data object RestaurantFoodDetailScreen :Route
+
+    @Serializable
     data object ViewAllCategoryScreen : Route
 
     @Serializable

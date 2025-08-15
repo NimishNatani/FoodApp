@@ -135,11 +135,13 @@ fun DetailScreen(
                 allTags = allTags,
                 selected = selectedTags,
                 onTagToggled = { tag ->
+
                     selectedTags = if (selectedTags.contains(tag)) {
                         selectedTags - tag
                     } else {
-                        selectedTags + tag
+                        selectedTags+ tag
                     }
+                    onEvent(DetailScreenAction.OnTagsChanged(selectedTags))
                 },
                 onClearAll = { selectedTags = emptyList() },
                 onAdd = { /* submit or open dialog */ }

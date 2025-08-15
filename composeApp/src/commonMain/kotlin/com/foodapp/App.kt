@@ -27,6 +27,8 @@ import com.foodapp.foodapp.presentation.register.AuthRegisterViewModel
 import com.foodapp.foodapp.presentation.register.RegisterScreenRoot
 import com.foodapp.foodapp.presentation.restaurantScreen.detailScreen.DetailScreenRoot
 import com.foodapp.foodapp.presentation.restaurantScreen.detailScreen.DetailScreenViewModel
+import com.foodapp.foodapp.presentation.restaurantScreen.foodDetailScreen.FoodDetailScreenRoot
+import com.foodapp.foodapp.presentation.restaurantScreen.foodDetailScreen.FoodDetailScreenViewModel
 import com.foodapp.foodapp.presentation.starter.AuthValidationViewModel
 import com.foodapp.foodapp.presentation.starter.SplashScreen
 import com.foodapp.foodapp.presentation.starter.UserSelectionScreen
@@ -227,8 +229,17 @@ fun App() {
                         it.sharedKoinViewModel<RestaurantViewModel>(navController)
                     val viewModel = koinViewModel<DetailScreenViewModel>()
                     sharedRestaurantViewModel.restaurant.value?.let {restaurant->
-                        DetailScreenRoot(viewModel,restaurant, onSuccess = {})
+                        DetailScreenRoot(viewModel,restaurant, onSuccess = {
+                            navController.navigate(Route.RestaurantFoodDetailScreen){
+                            }
+                        })
                     }
+                }
+                composable<Route.RestaurantFoodDetailScreen>{
+                    val sharedRestaurantViewModel =
+                        it.sharedKoinViewModel<RestaurantViewModel>(navController)
+                    val foodDetailViewModel = koinViewModel<FoodDetailScreenViewModel>()
+                    FoodDetailScreenRoot(foodDetailViewModel)
                 }
                 composable<Route.RestaurantHomeScreen> {
                     val sharedRestaurantViewModel =

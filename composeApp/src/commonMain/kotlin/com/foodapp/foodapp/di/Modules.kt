@@ -37,6 +37,7 @@ import org.koin.dsl.bind
 import org.koin.dsl.module
 import com.foodapp.foodapp.data.repository.BookingRepositoryImpl
 import com.foodapp.foodapp.presentation.restaurantScreen.detailScreen.DetailScreenViewModel
+import com.foodapp.foodapp.presentation.restaurantScreen.foodDetailScreen.FoodDetailScreenViewModel
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.bookingScreen.BookingScreenViewModel
 
 
@@ -82,6 +83,7 @@ val appModule = module {
     viewModel { UserViewModel(  get()) }
     viewModel { RestaurantViewModel(  get()) }
     viewModel { DetailScreenViewModel(get(),get(),get()) }
+    viewModel { FoodDetailScreenViewModel() }
 
 }
 

@@ -33,7 +33,8 @@ fun CustomTextField(
     type: String,
     backgroundColor: Color = White,
     textColor:Color = Black,
-    isEnabled:Boolean = true
+    isEnabled:Boolean = true,
+    modifier: Modifier = Modifier
 ) {
     // State to manage password visibility
     var passwordVisible by remember { mutableStateOf(false) }
@@ -53,7 +54,7 @@ fun CustomTextField(
             }
         ),
         enabled = isEnabled,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clip(RoundedCornerShape(20.dp))

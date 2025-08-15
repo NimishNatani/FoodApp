@@ -20,7 +20,7 @@ import kotlinx.serialization.json.Json
 
 class RestaurantApi(private val client: HttpClient, private val tokenStorage: TokenStorage) {
 
-    private val BASE_URL = "http://10.14.6.24:8080/api"
+    private val BASE_URL = "http://10.14.2.122:8080/api"
 
     suspend fun getRestaurantByJwt(): Result<RestaurantDto, DataError.Remote> {
         return safeCall<RestaurantDto> {

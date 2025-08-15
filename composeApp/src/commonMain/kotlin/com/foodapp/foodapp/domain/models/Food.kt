@@ -1,5 +1,6 @@
 package com.foodapp.foodapp.domain.models
 
+import androidx.compose.ui.graphics.ImageBitmap
 import kotlinproject.composeapp.generated.resources.Res
 import kotlinx.serialization.Serializable
 
@@ -18,7 +19,8 @@ data class Food(
     var totalReviews: Int?,
     var restaurantId: String,
     var restaurantName: String = "",
-    var transitionTag: String = ""
+    var transitionTag: String = "",
+    var imageBitmap:ImageBitmap? = null
 )
 
 @Serializable

@@ -15,7 +15,7 @@ data class Restaurant(
     var state: String?,
     var postelCode: String?,
     var totalReviews: Int = 0,
-    val restaurantTags: List<String>,
+    var restaurantTags: List<String>,
     var ratings: Double? = null,
     var transitionTag: String = "Near",
     var bookingIds: List<String> = emptyList(),
