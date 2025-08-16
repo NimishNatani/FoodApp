@@ -8,5 +8,6 @@ sealed interface FoodDetailScreenAction {
 
     data object OnImageUploadTrigger: FoodDetailScreenAction
     data class OnImageSelected(val byteArray: ByteArray?): FoodDetailScreenAction
-    data class AddNewFood(val food: Food,val imageBitmap: ImageBitmap?):FoodDetailScreenAction
+    data class AddNewFood(val food: Food,val imageBitmap: ImageBitmap?,val imageArray: ByteArray?):FoodDetailScreenAction
+    data object AddFoodToRestaurant:FoodDetailScreenAction
 }

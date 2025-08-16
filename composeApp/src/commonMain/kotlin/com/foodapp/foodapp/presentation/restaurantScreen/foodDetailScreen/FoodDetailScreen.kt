@@ -83,6 +83,8 @@ fun FoodDetailScreen(state: FoodDetailScreenState,onEvent: (FoodDetailScreenActi
 
         var imageBitmap = remember { mutableStateOf<ImageBitmap?>(null) }
 
+        var imageArray = remember { mutableStateOf<ByteArray?>(null) }
+
 
         fun resetForm() {
             foodName = ""
@@ -95,11 +97,13 @@ fun FoodDetailScreen(state: FoodDetailScreenState,onEvent: (FoodDetailScreenActi
             sizePrice = ""
             foodDetails = emptyList()
             imageBitmap.value = null
+            imageArray.value = null
         }
 
         if (state.imageUploadTrigger) {
             PickImage { (bitmap, byteArray) ->
                 imageBitmap.value = bitmap
+                imageArray.value = byteArray
                 onEvent(FoodDetailScreenAction.OnImageSelected(byteArray))
                 onEvent(FoodDetailScreenAction.OnImageUploadTrigger) // reset trigger
             }
@@ -122,9 +126,12 @@ fun FoodDetailScreen(state: FoodDetailScreenState,onEvent: (FoodDetailScreenActi
                             desc = f.first.foodDescription,
                             tags = f.first.foodTags,
                             isVeg = f.first.isVeg,
-                            imageBitmap = f.second
+                            imageBitmap = f.third
                         )
                     }
+                }
+                CustomButton(text = "Add to Restaurant"){
+                    onEvent(FoodDetailScreenAction.AddFoodToRestaurant)
                 }
             }
 
@@ -164,13 +171,13 @@ fun FoodDetailScreen(state: FoodDetailScreenState,onEvent: (FoodDetailScreenActi
                             Text(
                                 text = "isVeg",
                                 color = if (isVeg) Green else DarkGrey,
-                                modifier = Modifier.size(35.dp).clickable { isVeg = true }
+                                modifier = Modifier.size(width = 50.dp, height = 35.dp).clickable { isVeg = true }
                             )
                             Spacer(Modifier.width(12.dp))
                             Text(
                                 text = "nonVeg",
                                 color = if (!isVeg) Red else DarkGrey,
-                                modifier = Modifier.size(50.dp).clickable { isVeg = false }
+                                modifier = Modifier.size(width = 50.dp, height = 35.dp).clickable { isVeg = false }
                             )
                         }
 
@@ -286,7 +293,7 @@ fun FoodDetailScreen(state: FoodDetailScreenState,onEvent: (FoodDetailScreenActi
                                 foodDescription = foodDescription.trim(),
                                 foodTags = foodTags,
                                 foodImage = foodImageUrl,
-                                foodDetails = foodDetails,
+                                foodDetailList = foodDetails,
                                 isAvailable = true,
                                 isVeg = isVeg,
                                 foodType = listOf(if (isVeg) "Veg" else "NonVeg"),
@@ -296,7 +303,7 @@ fun FoodDetailScreen(state: FoodDetailScreenState,onEvent: (FoodDetailScreenActi
                                 restaurantName = "",
                                 transitionTag = ""
                             )
-                            onEvent(FoodDetailScreenAction.AddNewFood(newFood,imageBitmap.value))
+                            onEvent(FoodDetailScreenAction.AddNewFood(newFood,imageBitmap.value,imageArray.value))
                             scope.launch { sheetState.hide() }
                             resetForm()
                         }

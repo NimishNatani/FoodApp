@@ -83,7 +83,7 @@ val appModule = module {
     viewModel { UserViewModel(  get()) }
     viewModel { RestaurantViewModel(  get()) }
     viewModel { DetailScreenViewModel(get(),get(),get()) }
-    viewModel { FoodDetailScreenViewModel() }
+    viewModel { FoodDetailScreenViewModel(get()) }
 
 }
 

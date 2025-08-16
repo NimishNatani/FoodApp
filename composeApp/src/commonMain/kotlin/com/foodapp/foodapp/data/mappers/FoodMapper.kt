@@ -12,7 +12,7 @@ fun FoodDto.toFood(): Food {
         foodDescription = foodDescription,
         foodImage = foodImage,
         foodTags = foodTags,
-        foodDetails = foodDetailList.map { it.toFoodDetail() },
+        foodDetailList = foodDetailList.map { it.toFoodDetail() },
         isAvailable = available,
         isVeg = veg,
         rating = rating,

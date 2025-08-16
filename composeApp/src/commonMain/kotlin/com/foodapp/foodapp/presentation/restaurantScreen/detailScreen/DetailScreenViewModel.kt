@@ -3,6 +3,7 @@ package com.foodapp.foodapp.presentation.restaurantScreen.detailScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.foodapp.core.domain.onError
 import com.foodapp.core.domain.onSuccess
 import com.foodapp.foodapp.domain.models.LocationData
 import com.foodapp.foodapp.domain.models.Restaurant
@@ -89,9 +90,10 @@ class DetailScreenViewModel(
     private fun addRestaurant(){
         viewModelScope.launch(Dispatchers.IO) {
             restaurantRepository.addRestaurant(uiState.value.restaurant!!).onSuccess {
-                restaurantRepository.uploadImage(uiState.value.imageByte!!,uiState.value.restaurant?.restaurantId!!,"restaurant").onSuccess {
-                    _uiState.update { it.copy(isLoading = false, success = true) }
-                }
+                restaurantRepository.uploadImage(uiState.value.imageByte!!,uiState.value.restaurant?.restaurantId!!)
+
+                _uiState.update { it.copy(isLoading = false, success = true) }
+
             }
         }
 

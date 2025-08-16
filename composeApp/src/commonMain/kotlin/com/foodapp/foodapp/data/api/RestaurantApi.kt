@@ -4,6 +4,7 @@ import com.foodapp.core.di.safeCall
 import com.foodapp.core.domain.DataError
 import com.foodapp.core.domain.Result
 import com.foodapp.foodapp.data.dto.RestaurantDto
+import com.foodapp.foodapp.domain.models.Food
 import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.storage.TokenStorage
 import io.ktor.client.HttpClient
@@ -20,7 +21,7 @@ import kotlinx.serialization.json.Json
 
 class RestaurantApi(private val client: HttpClient, private val tokenStorage: TokenStorage) {
 
-    private val BASE_URL = "http://10.14.2.122:8080/api"
+    private val BASE_URL = "http://10.14.1.24:8080/api"
 
     suspend fun getRestaurantByJwt(): Result<RestaurantDto, DataError.Remote> {
         return safeCall<RestaurantDto> {
@@ -66,19 +67,16 @@ class RestaurantApi(private val client: HttpClient, private val tokenStorage: To
     }
 
     suspend fun uploadRestaurantImage(
-        restaurantId: String,
+        id: String,
         imageBytes: ByteArray,
-        type:String
     ): Result<String, DataError.Remote> {
         return safeCall<String> {
             client.submitFormWithBinaryData(
                 url = "$BASE_URL/restaurant/uploadImage",
                 formData = formData {
-                    append("restaurantId", restaurantId)
-                    append("type", type)
                     append("image", imageBytes, Headers.build {
                         append(HttpHeaders.ContentType, "image/jpeg")
-                        append(HttpHeaders.ContentDisposition, "filename=${restaurantId}.jpg")
+                        append(HttpHeaders.ContentDisposition, "filename=${id}.jpg")
                     })
                 }
             ) {
@@ -88,5 +86,39 @@ class RestaurantApi(private val client: HttpClient, private val tokenStorage: To
             }
         }
     }
+
+    suspend fun addFood(food: List<Food>): Result<String, DataError.Remote> {
+        return safeCall<String> {
+            client.post("$BASE_URL/food/add") {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer ${tokenStorage.getToken()}")
+                }
+                setBody(food) // JSON body
+            }
+        }
+    }
+
+    suspend fun uploadFoodImage(
+        id: String,
+        imageBytes: ByteArray,
+    ): Result<String, DataError.Remote> {
+        return safeCall<String> {
+            client.submitFormWithBinaryData(
+                url = "$BASE_URL/food/uploadImage",
+                formData = formData {
+                    append("foodId",id)
+                    append("image", imageBytes, Headers.build {
+                        append(HttpHeaders.ContentType, "image/jpeg")
+                        append(HttpHeaders.ContentDisposition, "filename=${id}.jpg")
+                    })
+                }
+            ) {
+                headers {
+                    append(HttpHeaders.Authorization, "Bearer ${tokenStorage.getToken()}")
+                }
+            }
+        }
+    }
+
 
 }

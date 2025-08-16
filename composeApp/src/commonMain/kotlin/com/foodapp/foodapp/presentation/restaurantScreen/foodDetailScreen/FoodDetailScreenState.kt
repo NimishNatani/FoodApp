@@ -8,7 +8,7 @@ data class FoodDetailScreenState(
     val errorMessage: String? = null,
     val success:Boolean = false,
     val imageByte: ByteArray? = null,
-    val foodList: List<Pair<Food, ImageBitmap?>>? = emptyList(),
+    val foodList: List<Triple<Food, ByteArray?,ImageBitmap?>>? = emptyList(),
     val imageUploadTrigger:Boolean = false,
 
     )

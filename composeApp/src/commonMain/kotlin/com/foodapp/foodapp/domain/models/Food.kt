@@ -11,7 +11,7 @@ data class Food(
     var foodDescription: String,
     var foodTags:List<String>,
     var foodImage: String,
-    var foodDetails: List<FoodDetails>,
+    var foodDetailList: List<FoodDetails>,
     var isAvailable: Boolean,
     var isVeg: Boolean,
     var foodType: List<String>,

@@ -6,6 +6,7 @@ import com.foodapp.core.domain.map
 import com.foodapp.core.domain.onSuccess
 import com.foodapp.foodapp.data.api.RestaurantApi
 import com.foodapp.foodapp.data.mappers.toRestaurant
+import com.foodapp.foodapp.domain.models.Food
 import com.foodapp.foodapp.domain.models.Restaurant
 import com.foodapp.foodapp.domain.models.User
 import com.foodapp.foodapp.domain.repository.RestaurantRepository
@@ -28,7 +29,18 @@ class RestaurantRepositoryImpl(private  val restaurantApi: RestaurantApi):Restau
         return restaurantApi.addRestaurantData(restaurant)
     }
 
-    override suspend fun uploadImage(image: ByteArray,restaurantId:String,type:String): Result<String, DataError.Remote> {
-        return restaurantApi.uploadRestaurantImage(restaurantId,image,type)
+    override suspend fun uploadImage(image: ByteArray,id:String): Result<String, DataError.Remote> {
+        return restaurantApi.uploadRestaurantImage(id,image)
+    }
+
+    override suspend fun addFood(food: List<Food>): Result<String, DataError.Remote> {
+        return restaurantApi.addFood(food.map { it })
+    }
+
+    override suspend fun uploadFoodImage(
+        image: ByteArray?,
+        foodId: String
+    ): Result<String, DataError.Remote> {
+        return uploadImage(image!!,foodId)
     }
 }

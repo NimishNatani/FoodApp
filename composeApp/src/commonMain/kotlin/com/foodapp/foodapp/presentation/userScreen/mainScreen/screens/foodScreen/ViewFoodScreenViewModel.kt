@@ -60,7 +60,7 @@ class ViewFoodScreenViewModel(private val userRepo: UserRepository) : ViewModel(
             foodImage = food.foodImage,
             foodTags = food.foodTags,
             foodDescription = food.foodDescription,
-            foodCartDetailsList = food.foodDetails.map { foodDetail ->
+            foodCartDetailsList = food.foodDetailList.map { foodDetail ->
                 FoodCartDetail(
                     foodSize = foodDetail.foodSize,
                     foodPrice = foodDetail.foodPrice,
