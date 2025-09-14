@@ -25,6 +25,8 @@ import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.cartScreen
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.foodScreen.ViewFoodScreenViewModel
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.homeScreen.UserHomeScreenViewModel
 import com.foodapp.foodapp.presentation.userScreen.mainScreen.screens.restaurantScreen.ViewRestaurantScreenViewModel
+import com.foodapp.foodapp.presentation.restaurantScreen.mainScreen.OwnerMainScreenViewModel
+import com.foodapp.foodapp.presentation.restaurantScreen.mainScreen.ownerHomeScreen.OwnerHomeScreenViewModel
 import com.foodapp.foodapp.storage.TokenStorage
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
@@ -71,19 +73,21 @@ val appModule = module {
     singleOf(::RestaurantRepositoryImpl).bind<RestaurantRepository>()
     singleOf(::BookingRepositoryImpl).bind<BookingRepository>()
 
-    viewModel { AuthRegisterViewModel(authRepository = get(), get()) }
-    viewModel { AuthLoginViewModel(authRepository = get(), get()) }
-    viewModel { AuthValidationViewModel(authRepository = get()) }
-    viewModel { UserMainScreenViewModel( ) }
-    viewModel { UserHomeScreenViewModel(get(),get(),get(),get())}
-    viewModel { ViewRestaurantScreenViewModel(get())}
-    viewModel { ViewFoodScreenViewModel(get()) }
-    viewModel { CartScreenViewModel(get(),get(),get()) }
-    viewModel { BookingScreenViewModel(get(),get())}
-    viewModel { UserViewModel(  get()) }
-    viewModel { RestaurantViewModel(  get()) }
-    viewModel { DetailScreenViewModel(get(),get(),get()) }
-    viewModel { FoodDetailScreenViewModel(get()) }
+    viewModelOf(::AuthRegisterViewModel)
+    viewModelOf(::AuthLoginViewModel)
+    viewModelOf(::AuthValidationViewModel)
+    viewModelOf(::UserMainScreenViewModel)
+    viewModelOf(::UserHomeScreenViewModel)
+    viewModelOf(::ViewRestaurantScreenViewModel)
+    viewModelOf(::ViewFoodScreenViewModel)
+    viewModelOf(::CartScreenViewModel)
+    viewModelOf(::BookingScreenViewModel)
+    viewModelOf(::UserViewModel)
+    viewModelOf(::RestaurantViewModel)
+    viewModelOf(::DetailScreenViewModel)
+    viewModelOf(::FoodDetailScreenViewModel)
+    viewModelOf(::OwnerMainScreenViewModel)
+    viewModelOf(::OwnerHomeScreenViewModel)
 
 }
 

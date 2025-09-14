@@ -8,5 +8,8 @@ interface BookingRepository {
 
     suspend fun saveOrder(booking: Booking): Result<String, DataError.Remote>
 
-    suspend fun getOrders():Result<List<Booking>,DataError.Remote>
+    suspend fun getOrders():Result<List<Booking>, DataError.Remote>
+    suspend fun getOrder( userId:String):List<Booking>
+
+//    suspend fun updateOrder()
 }

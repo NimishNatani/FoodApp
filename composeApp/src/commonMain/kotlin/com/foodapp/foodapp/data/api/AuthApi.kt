@@ -7,6 +7,7 @@ import com.foodapp.foodapp.data.dto.AuthResponse
 import com.foodapp.foodapp.data.dto.CheckUser
 import com.foodapp.foodapp.data.dto.RestaurantAuthRequest
 import com.foodapp.foodapp.data.dto.UserAuthRequest
+import com.foodapp.foodapp.sharedObjects.SharedObject.baseUrl
 import com.foodapp.foodapp.storage.TokenStorage
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -19,7 +20,7 @@ import io.ktor.http.HttpHeaders
 
 class AuthApi(private val client: HttpClient,private val tokenStorage: TokenStorage) {
 //192.168.214.37
-    private val BASE_URL = "http://10.14.1.24:8080/api"
+    private val BASE_URL = baseUrl
 
     suspend fun loginUser(request: UserAuthRequest): Result<AuthResponse, DataError.Remote> {
         return safeCall<AuthResponse> {

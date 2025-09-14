@@ -43,24 +43,28 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 
 @Composable
-fun FoodDetailScreenRoot(viewModel: FoodDetailScreenViewModel){
+fun FoodDetailScreenRoot(viewModel: FoodDetailScreenViewModel,onHomeScreen: () -> Unit){
 
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     FoodDetailScreen(state = state,onEvent = { event ->
         viewModel.onAction(event)
-    })
+    }, onHomeScreen = {onHomeScreen()})
 
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FoodDetailScreen(state: FoodDetailScreenState,onEvent: (FoodDetailScreenAction) -> Unit) {
+fun FoodDetailScreen(state: FoodDetailScreenState,onEvent: (FoodDetailScreenAction) -> Unit,onHomeScreen:()->Unit) {
     if (state.isLoading) {
         Text("Loading")
     } else if (!state.isLoading && state.errorMessage != null) {
         Text(state.errorMessage)
     } else {
+
+        if(state.success){
+            onHomeScreen()
+        }
 
 
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)

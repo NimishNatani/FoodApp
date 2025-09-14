@@ -29,6 +29,8 @@ import com.foodapp.foodapp.presentation.restaurantScreen.detailScreen.DetailScre
 import com.foodapp.foodapp.presentation.restaurantScreen.detailScreen.DetailScreenViewModel
 import com.foodapp.foodapp.presentation.restaurantScreen.foodDetailScreen.FoodDetailScreenRoot
 import com.foodapp.foodapp.presentation.restaurantScreen.foodDetailScreen.FoodDetailScreenViewModel
+import com.foodapp.foodapp.presentation.restaurantScreen.mainScreen.OwnerMainScreenRoot
+import com.foodapp.foodapp.presentation.restaurantScreen.mainScreen.OwnerMainScreenViewModel
 import com.foodapp.foodapp.presentation.starter.AuthValidationViewModel
 import com.foodapp.foodapp.presentation.starter.SplashScreen
 import com.foodapp.foodapp.presentation.starter.UserSelectionScreen
@@ -239,13 +241,18 @@ fun App() {
                     val sharedRestaurantViewModel =
                         it.sharedKoinViewModel<RestaurantViewModel>(navController)
                     val foodDetailViewModel = koinViewModel<FoodDetailScreenViewModel>()
-                    FoodDetailScreenRoot(foodDetailViewModel)
+                    FoodDetailScreenRoot(foodDetailViewModel, onHomeScreen = {
+                        navController.navigate(Route.RestaurantHomeScreen){
+                            navController.popBackStack(Route.RestaurantHomeScreen,false)
+                        }
+                    })
                 }
                 composable<Route.RestaurantHomeScreen> {
                     val sharedRestaurantViewModel =
                         it.sharedKoinViewModel<RestaurantViewModel>(navController)
 
                     val restaurant by sharedRestaurantViewModel.restaurant.collectAsState()
+                    val ownerMainScreenViewModel = koinViewModel<OwnerMainScreenViewModel>()
 
                     LaunchedEffect(Unit) {
                         sharedRestaurantViewModel.getRestaurant(onFailure = {
@@ -256,11 +263,8 @@ fun App() {
                     }
 
                     // show the restaurant safely
-                    if (restaurant != null) {
-                        Text(
-                            text = restaurant.toString(),
-                            color = Red
-                        )
+                    if (restaurant != null&&restaurant?.foodItems!!.isNotEmpty()) {
+                        OwnerMainScreenRoot(ownerMainScreenViewModel,sharedTransitionScope = this@SharedTransitionLayout, animatedContentScope = this@composable)
                     } else {
                         // optional: loading / placeholder UI
                         Text(text = "Loading...", color = Red)

@@ -16,6 +16,7 @@ import kotlin.native.concurrent.ThreadLocal
 
 @ThreadLocal
 object SharedObject {
+    val baseUrl = "http://10.14.1.116:8080/api"
     var sharedUser: Boolean? = null
     @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalAnimationSpecApi::class)
     val textBoundsTransform = BoundsTransform { initialBounds, targetBounds ->

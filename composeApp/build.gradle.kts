@@ -74,6 +74,9 @@ kotlin {
                 implementation(libs.bundles.coil)
 
                 implementation(libs.kamel.image)
+
+                implementation(libs.composeIcons.octicons)
+                implementation(libs.composeIcons.linea)
             }
         }
         val mobileMain by creating {

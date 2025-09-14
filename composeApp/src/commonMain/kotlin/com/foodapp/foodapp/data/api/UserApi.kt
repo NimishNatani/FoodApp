@@ -6,6 +6,7 @@ import com.foodapp.core.domain.Result
 import com.foodapp.foodapp.data.dto.FoodCartDto
 import com.foodapp.foodapp.data.dto.UserDto
 import com.foodapp.foodapp.domain.models.FoodCart
+import com.foodapp.foodapp.sharedObjects.SharedObject.baseUrl
 import com.foodapp.foodapp.storage.TokenStorage
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -16,7 +17,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.HttpHeaders
 
 class UserApi(private val client: HttpClient, private val tokenStorage: TokenStorage) {
-    private val BASE_URL = "http://10.14.1.24:8080/api"
+    private val BASE_URL = baseUrl
 
 
     suspend fun getUserByJwt(): Result<UserDto, DataError.Remote> {

@@ -55,6 +55,7 @@ class FoodDetailScreenViewModel(    private val restaurantRepository: Restaurant
                     restaurantRepository.uploadFoodImage(res.second,res.first.restaurantId+res.first.foodName)
 
                 }
+                _uiState.update { it.copy(isLoading = false, success = true) }
             }
         }
     }
