@@ -177,7 +177,7 @@ fun UserBookingScreen(
     }
 }
 
-fun groupBookings(bookings: List<Booking>): Map<String, List<Booking>> {
+private fun groupBookings(bookings: List<Booking>): Map<String, List<Booking>> {
     val (completedBookings, remainingBookings) = bookings.partition { it.isBookingCompleted }
     val (acceptedBookings, notAcceptedBookings) = remainingBookings.partition { it.isAcceptedByRestaurant }
 

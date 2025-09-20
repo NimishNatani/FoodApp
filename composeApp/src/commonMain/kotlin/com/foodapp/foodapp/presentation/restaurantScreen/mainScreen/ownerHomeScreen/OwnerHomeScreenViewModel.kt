@@ -3,6 +3,7 @@ package com.foodapp.foodapp.presentation.restaurantScreen.mainScreen.ownerHomeSc
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.foodapp.core.domain.onError
 import com.foodapp.core.domain.onSuccess
 import com.foodapp.foodapp.domain.models.Booking
 import com.foodapp.foodapp.domain.repository.BookingRepository
@@ -22,10 +23,15 @@ override fun loadOrders() {
     viewModelScope.launch(Dispatchers.IO) {
         _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
         try {
-            val bookings = repo.getOrder("")
-
+            val bookings = repo.getOrders().onSuccess { bookings ->
                 val uiList = bookings.map {order-> order.toBookingUi() }
+
                 _uiState.value = _uiState.value.copy(isLoading = false, bookings = uiList)
+            }.onError { error ->
+                _uiState.value = _uiState.value.copy(isLoading = false, errorMessage = error.toString())
+            }
+//
+//                val uiList = bookings.map {order-> order.toBookingUi() }
 
         } catch (t: Throwable) {
             _uiState.value = _uiState.value.copy(isLoading = false, errorMessage = t.message ?: "Unknown")

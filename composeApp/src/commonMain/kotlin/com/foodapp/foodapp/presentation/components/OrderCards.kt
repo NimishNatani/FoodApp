@@ -68,7 +68,7 @@ fun OrderCard(booking: Booking, page: Int,modifier: Modifier = Modifier) {
         ) {
             // Image Section
             KamelImage(
-                { asyncPainterResource(data = Url("https://t3.ftcdn.net/jpg/03/24/73/92/360_F_324739203_keeq8udvv0P2h1MLYJ0GLSlTBagoXS48.jpg")) },
+                { asyncPainterResource(data = Url(booking.foodCarts[0].foodImage?:"https://t3.ftcdn.net/jpg/03/24/73/92/360_F_324739203_keeq8udvv0P2h1MLYJ0GLSlTBagoXS48.jpg")) },
                 contentDescription = "Image",
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier

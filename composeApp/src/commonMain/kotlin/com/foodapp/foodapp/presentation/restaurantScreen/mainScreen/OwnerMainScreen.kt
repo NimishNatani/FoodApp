@@ -69,7 +69,7 @@ fun OwnerMainScreen(
     )
 
     LaunchedEffect(Unit){
-
+        ownerHomeScreenViewModel.loadOrders()
     }
 
     Column(modifier = Modifier.fillMaxSize()) {

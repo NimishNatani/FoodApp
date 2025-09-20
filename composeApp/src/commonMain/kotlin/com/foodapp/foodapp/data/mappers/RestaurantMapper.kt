@@ -6,7 +6,7 @@ import com.foodapp.foodapp.domain.models.Restaurant
 fun RestaurantDto.toRestaurant():Restaurant {
    return Restaurant(
         restaurantId = restaurantId,
-        restaurantImage = restaurantImage!!,
+        restaurantImage = restaurantImage,
         restaurantName = restaurantName!!,
         contactDetails = contactDetails!!,
         latitude = latitude,
